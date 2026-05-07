@@ -36,21 +36,32 @@ create table student_subjects (
   primary key (student_id, subject_id)
 );
 
+-- Helper: Rolle ohne RLS lesen (verhindert Endlosrekursion in Policies)
+create or replace function public.get_my_role()
+returns text
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select role from profiles where id = auth.uid() limit 1;
+$$;
+
 -- RLS aktivieren
 alter table profiles enable row level security;
 alter table students enable row level security;
 alter table parent_student enable row level security;
 alter table student_subjects enable row level security;
 
--- Policies: Coaches und Admins sehen alles
+-- Policies: jeder User darf das EIGENE Profil lesen (für Login/Role-Lookup)
+create policy "users_see_own_profile" on profiles
+  for select using (auth.uid() = id);
+
+-- Policy: Coaches und Admins sehen alle Profile
 create policy "coaches_admins_see_all_profiles" on profiles
   for select using (
-    exists (select 1 from profiles p where p.id = auth.uid() and p.role in ('coach','admin'))
+    public.get_my_role() in ('coach','admin')
   );
-
--- Policy: Schüler sehen nur sich selbst
-create policy "students_see_own_profile" on profiles
-  for select using (auth.uid() = id);
 
 -- Policy: Eltern sehen ihre Kinder
 create policy "parents_see_own_children" on profiles

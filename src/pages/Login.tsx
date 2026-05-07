@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -21,10 +21,11 @@ export function Login() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  // Already logged in → redirect
-  if (!loading && role) {
-    navigate(ROLE_ROUTES[role] ?? '/', { replace: true })
-  }
+  useEffect(() => {
+    if (!loading && role && ROLE_ROUTES[role]) {
+      navigate(ROLE_ROUTES[role], { replace: true })
+    }
+  }, [loading, role, navigate])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -34,14 +35,7 @@ export function Login() {
     setSubmitting(false)
     if (err) {
       setError('E-Mail oder Passwort falsch.')
-      return
     }
-    // role is updated via onAuthStateChange; navigate after next render
-  }
-
-  // Watch for role change after successful login
-  if (!loading && role && !submitting) {
-    navigate(ROLE_ROUTES[role] ?? '/', { replace: true })
   }
 
   return (
