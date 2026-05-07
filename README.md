@@ -75,13 +75,14 @@ Reaktiver KI-Assistent im Schüler-Interface. Wird nur aktiv, wenn das Kind ihn 
 
 | Bereich | Entscheidung | Begründung |
 | --- | --- | --- |
-| Backend / Auth / Rollen | **Moodle (headless)** | Moodle-Spezialisten im Team, spart 2–4 Wochen |
-| Frontend | **Komplett custom** (React o. ä.) | Moodle-UX inakzeptabel für Zielgruppe, vollständig entkoppelt |
-| Aufgaben-Datenbank | **Serlo (CC-BY-SA) + KI-generiert auf Serlo-Basis** | Lizenzfrei, skalierbar |
+| Backend / DB / Auth | **Supabase** (Postgres + Auth + Realtime + Storage + Edge Functions) | Deckt alle Anforderungen ab — kein LMS-Overhead, deutlich schnellere Time-to-Launch als ein LMS-basiertes Setup |
+| Frontend | **Komplett custom** (React o. ä.) | Volle Kontrolle über UX und Lernpfad-Logik |
+| Aufgaben-Datenbank | **Serlo (CC-BY-SA) + KI-generiert auf Serlo-Basis** | Lizenzfrei, skalierbar — Daten liegen in Supabase Postgres |
 | KI / Eddy | **Eine API-Lizenz** (z. B. Anthropic Claude) | Pro-Nachricht-Abrechnung, kein Pro-Kind-Modell |
 | Hint-Anreicherung | **KI-Pipeline** über Serlo-Aufgaben | Team & QS prüfen und geben frei |
+| Echtzeit (Coach-Dashboard) | **Supabase Realtime** | Live-Sync der Schüler-Aktivität ins Coach-Dashboard ohne separate Infrastruktur |
 
-**Offene Architektur-Frage:** Wo lebt die Edvance-spezifische Logik (Case-Routing, Mastery-System, Echtzeit-Flags) — als Moodle-Plugin oder separater Microservice? Wird beim Entwickler-Onboarding geklärt.
+> **Hinweis:** Eine frühere Variante mit **Moodle (headless)** als Backend wurde verworfen. Edvance braucht kein klassisches LMS — Supabase deckt Auth, Rollen, Datenbank und Realtime in einem Stack ab.
 
 ---
 
@@ -239,7 +240,7 @@ Erster Schritt · Aufgewärmt · Dranbleiber · Maschine · Hausaufgaben-Held ·
 | Phase | Zeitraum | Was |
 | --- | --- | --- |
 | Spezifikation abschließen | Mai 2026 | Alle offenen Blöcke entschieden, PRDs freigegeben |
-| Entwickler-Start | Juni 2026 | 2 Vollzeit-Entwickler (Moodle-Spezialisten) |
+| Entwickler-Start | Juni 2026 | 2 Vollzeit-Entwickler (Supabase / React) |
 | Entwicklung MVP | Juni – Oktober 2026 | ~5 Monate, 2 Entwickler parallel |
 | Interner Test | Oktober 2026 | Team + Coaches testen, Bugs fixen |
 | Beta-Phase | Nov – Dez 2026 | 5–10 Schüler, 4–8 Wochen, Feedback-Loop |
@@ -261,7 +262,7 @@ Erster Schritt · Aufgewärmt · Dranbleiber · Maschine · Hausaufgaben-Held ·
 - Eltern-Reporting Spec (Inhalt, Prozess, Tarif-Differenzierung)
 - Eddy Lite Spec (reaktiv, kompetenzadaptiv, Lexikon-Verweis)
 - Home-Schooling Quests (3 Typen, automatisch post-session)
-- Technologie-Stack-Entscheidung (Moodle headless + custom Frontend)
+- Technologie-Stack-Entscheidung (Supabase + custom React-Frontend)
 - Timeline bis Launch Januar 2027
 
 ---
@@ -279,7 +280,8 @@ Erster Schritt · Aufgewärmt · Dranbleiber · Maschine · Hausaufgaben-Held ·
 - Eskalation, wenn Coach Report nicht rechtzeitig freigibt?
 
 ### Technologie
-- Moodle-Plugin vs. Microservice für Edvance-Logik (beim Entwickler-Onboarding)
+- Datenmodell in Supabase finalisieren (Aufgaben, Mastery, Sessions, Reports) — beim Entwickler-Onboarding
+- Edge Functions vs. separater Backend-Service für Edvance-spezifische Logik (Case-Routing, Mastery-Engine, Eltern-Report-Generierung)
 - Finale Wahl der KI-API für Eddy (Anthropic Claude empfohlen)
 
 ### Operatives
@@ -299,7 +301,7 @@ Edvance/
 ├── 01_Organisation/        Notion-Stand, Team-Docs
 ├── 02_Finanzen/
 ├── 03_Marketing/
-├── 04_Didaktik & IT/       Moodle/AI, Curricula, Prozesse, Tests
+├── 04_Didaktik & IT/       Lernplattform, Curricula, Prozesse, Tests
 ├── 05_Standorte/
 ├── 06_Investoren & Banken/
 ├── 07_Business & Strategie/  Businessplan (IHK)
