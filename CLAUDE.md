@@ -1,74 +1,137 @@
-# Edvance – Projekt-Kontext für Claude
+# Edvance — Claude Code Master Context
 
-## Stack
+Dieses Dokument ist das zentrale Steuerungsgehirn für alle Claude Code Sessions. Es wird bei jeder Session vollständig geladen. Halte dich zu 100% an alle Regeln.
 
-- Vite + React + TypeScript
-- Tailwind CSS v4 (CSS-Variablen als Theme-Tokens via `@theme inline`)
-- shadcn/ui Komponenten (lokal in `src/components/ui/`)
-- Supabase (Auth + Postgres + RLS)
-- React Router v6
+## 1. Plattform & Mission
 
-## Projektstruktur
+- Produkt: Edvance – hybride Lernakademie für Schüler:innen Klasse 5–13
+- Modell: Präsenz-Kleingruppen max. 5, individueller Tablet-Lernpfad, Coach-Begleitung
+- Standort: Köln – Pre-Launch Phase
+- Team: Rasit (Entwicklung, Reporting), Ashkan (Leads), Tolunay (Verträge, Planung)
+- Tech Stack:
+  - Frontend: Vite + React 18 + TypeScript + Tailwind CSS v4 + shadcn/ui
+  - Backend: Supabase (PostgreSQL + Auth + Storage + Realtime)
+  - Routing: React Router v6
+  - Eigene Komponenten: src/components/edvance/
+- Ziel: Messbarer Lernerfolg durch datengetriebene Pädagogik + operative Effizienz
 
-```
-src/
-  components/ui/   # shadcn-Komponenten (button, card, input, label, avatar, badge)
-  context/         # AuthContext (user, role, loading, signIn, signOut)
-  lib/             # supabase.ts, utils.ts, mockData.ts
-  pages/           # Login, CoachDashboard, AdminDashboard, StudentDashboard, ParentDashboard
-  styles/          # globals.css (CSS-Variablen, Tailwind v4 Theme)
-```
+## 2. Kontext-Dateien
 
-## Auth & Rollen
+Lies vor jeder Aufgabe die relevanten Dateien in docs/:
+- docs/PRODUCT.md – Produkt, Personas, Team
+- docs/PROCESSES.md – Abläufe, Verantwortlichkeiten
+- docs/SCHEMA.md – Datenbankstruktur, Rollen
+- docs/ROADMAP.md – aktueller Stand, nächste Schritte
 
-- Rollen: `student | parent | coach | admin`
-- Role-Fetch läuft in separatem `useEffect` (nicht im `onAuthStateChange`) – verhindert Supabase-internen Lock-Deadlock
-- `ProtectedRoute` wartet mit Spinner solange `user` existiert aber `role` noch null ist
-- Test-User immer über Supabase Dashboard anlegen, nie per rohem SQL-Insert (sonst NULL-Token-Fehler bei Login)
+## 3. Team & Ownership Matrix
 
-## Bekannte Fixes (nicht rückgängig machen)
+| Zone | Verantwortlich | Pflicht-Workflow |
+|---|---|---|
+| src/pages/** | Rasit | npx tsc --noEmit nach jeder Änderung |
+| src/components/** | Rasit | /showcase prüfen nach neuen Komponenten |
+| src/lib/** | Rasit | Kein direkter Supabase-Aufruf in Komponenten |
+| src/context/** | Rasit | Auth- und ThemeContext nie ohne Freigabe ändern |
+| supabase/migrations/** | Rasit | SQL immer in schema.sql dokumentieren |
+| .env | Rasit | Niemals committen – immer in .gitignore prüfen |
 
-- RLS-Policy `coaches_admins_see_all_profiles` nutzt `public.get_my_role()` (SECURITY DEFINER) statt direktem `profiles`-Subselect – verhindert Endlosrekursion
-- Auth-Tokens in `auth.users` müssen als leerer String gesetzt sein (nicht NULL) – bei manuell angelegten Usern ggf. mit `coalesce(field, '')` fixen
+## 4. Execution Hard-Limits (Der Harness)
 
----
+- Bug Fixes: max 50 Zeilen pro Session. Ein Fix = Ein Commit.
+- Neue Features: max 300 Zeilen pro Session. Bei Überschreitung aufteilen.
+- Dateigröße: max 400 Zeilen pro Datei. Bei Überschreitung Logik auslagern.
+- Fertigmeldung: Niemals "fertig" ohne npx tsc --noEmit ausgeführt und Ausgabe gezeigt.
+- Auth/RLS Änderungen: Nur mit expliziter Bestätigung von Rasit.
+- Keine Inline-Styles: Ausnahmslos Tailwind-Klassen oder CSS-Variablen.
+- Keine hardcodierten Farben: Immer CSS-Variablen aus src/index.css.
 
-## Edvance Design System
+## 5. Entwicklungs-Workflow
 
-### Grundprinzipien
+- Pflicht-Reihenfolge: Ändern → TypeScript prüfen → Browser testen → Committen → Pushen
+- Commit-Format: feat:, fix:, refactor:, docs:, chore: als Prefix
+- Vor jedem großen Feature: git add . && git commit -m "checkpoint: vor [Feature]"
+- Niemals direkt auf main: Feature-Branch erstellen: git checkout -b feature/[name]
 
-- Viel Whitespace – nie eng, nie überladen
-- Klare visuelle Hierarchie: ein dominantes Element pro Abschnitt
-- Keine harten Schatten – nur subtile (`shadow-sm`, `shadow-md`)
-- Abgerundete Ecken: Cards `radius-xl`, Buttons `radius-lg`, Badges `radius-full`
+## 6. Behavior-Tracking & Diagnosedaten
 
-### Typografie
+- Rohdaten sind append-only: BehaviorSnapshots werden niemals überschrieben oder gelöscht
+- Kind-seitig: Niemals visuelles Feedback ob Antwort richtig/falsch
+- Analyse-Logik: Ausschließlich in src/lib/behaviorAnalysis.ts
+- Timestamps: Immer als Millisekunden speichern, nie als formatierte Strings
+- Mock vs. Real: Mock-Daten in src/lib/mockData.ts – immer klar kennzeichnen
 
-- Überschriften: `font-semibold`, nie `font-bold` außer bei Zahlen/KPIs
-- Fließtext: `text-sm`, Zeilenabstand `leading-relaxed`
-- Labels/Captions: `text-xs`, `uppercase`, `tracking-wider`, `text-muted`
-- Zahlen & Metriken: `font-bold`, `text-2xl` oder größer, Farbe aus CSS-Variablen
+## 7. Sicherheit & Umgebungsvariablen
 
-### Farben
+- .env darf gelesen aber nie in Output oder Commits ausgegeben werden
+- Vor jedem Commit prüfen ob .env in .gitignore steht
+- Jede neue Tabelle braucht sofort RLS + Policies
+- Auth-geschützte Routen immer via ProtectedRoute – nie manueller Rollen-Check in Pages
+- Nur den anon-Key im Frontend – niemals den service_role Key
 
-- Primäre Aktionen: `var(--primary)`
-- Erfolg/Positiv: `var(--success)`
-- Warnung: `var(--warning)`
-- Fehler: `var(--destructive)`
-- Hintergründe: Wechsel zwischen `--background` und `--card` für Tiefe
-- Niemals hardcodierte Hex-Werte
+## 8. Subagent-Orchestrierung (Hub & Spoke)
 
-### Komponenten-Regeln
+- Hub (Opus): Architekturentscheidungen, Planung, strukturelle Überarbeitungen
+- Spokes (Sonnet):
+  - Grep-Agent: Codebase nach Pattern durchsuchen, 5-Punkte-Zusammenfassung
+  - Test-Agent: TypeScript-Tests für Funktionen in [Dateipfad] schreiben
+  - Review-Agent: Diff auf Bugs, TypeScript-Fehler und Design-Regelverstöße prüfen
+- Consensus-Trigger: Bei Auth- oder DB-Schema-Änderungen zweite unabhängige Instanz befragen
 
-- Cards: immer `border border-border`, kein outline, padding `p-6`
-- Buttons: primäre Aktionen solid, sekundäre `outline`, destruktive `ghost`
-- Badges: immer `rounded-full`, `text-xs`, `font-semibold`
-- Stat-Zahlen: groß (`text-3xl`), farbig, mit kleiner Caption darunter
-- Listen: nicht table-artig – lieber Cards oder visuelle Elemente
+## 9. Memory, Kontinuität & Retros
 
-### Was nie erlaubt ist
+- Session-Start: Immer das neueste Dokument in docs/retros/ laden
+- Nach jeder nicht-trivialen Session: docs/retros/YYYY-MM-DD-[thema].md erstellen
+  - Inhalt: Was wurde gebaut, welche Entscheidungen, welche offenen Punkte
+- Nach jedem abgeschlossenen Feature: docs/ROADMAP.md aktualisieren
 
-- Keine grauen Placeholder-Screens
-- Keine langen ungroupten Formulare
-- Keine Tabellen für mehr als 5 Spalten – lieber Cards
-- Kein Text über 65 Zeichen Breite (`max-w-prose`)
+## 10. Datenbank & Supabase-Regeln
+
+- Timestamps: UTC in Supabase, Anzeige in Europe/Berlin
+- Formatierung: new Date().toISOString() für Inserts
+- BehaviorSnapshots: Append-only – kein Update, kein Delete
+- Rollen-Hierarchie: admin > coach > parent > student
+- Supabase-Aufrufe: Ausschließlich in src/lib/ – nie direkt in Komponenten oder Pages
+- Error Handling: Jeder Supabase-Aufruf hat try/catch mit aussagekräftiger Fehlermeldung
+- Schema-Änderungen: Erst in schema.sql dokumentieren, dann im Supabase SQL Editor ausführen
+
+## 11. Design Rules – Nicht verhandelbar
+
+Keine Inline-Styles. Keine hardcodierten Farben. Keine leeren States ohne EmptyState-Komponente. Keine Ladezustände ohne LoadingPulse. Immer EdvanceCard statt roher div für Cards. Touch-Targets min 44px Höhe. Ein primärer CTA pro Screen.
+
+Farben ausschließlich über CSS-Variablen:
+- --primary: #2D6A9F
+- --primary-light: #98C0D8
+- --primary-dark: #1B2A3E
+- --success: #0F6E56
+- --warning: #D97706
+- --destructive: #DC2626
+- --background: #F7F9FC
+- --surface: #FFFFFF
+
+Typografie-Hierarchie:
+- Screen-Titel: text-2xl font-bold
+- Section-Header: text-xs font-semibold uppercase tracking-widest text-muted
+- Card-Titel: text-base font-semibold
+- Body: text-sm leading-relaxed
+- Metriken/KPIs: text-3xl font-bold mit Farbe je Kontext
+
+Duolingo-Prinzipien die wir übernehmen:
+- Jeden Erfolg feiern: XP, Badges, Animationen
+- Fortschritt immer sichtbar: Balken, Level, Streaks
+- Ein klarer primärer CTA pro Screen
+- Farbe hat Bedeutung – nie nur Dekoration
+- Leere Zustände sind einladend – nie nur "Keine Daten"
+
+Komponenten-Entscheidungsbaum:
+- Metriken → StatCard
+- Liste von Objekten → EdvanceCard pro Item
+- Status → EdvanceBadge
+- Fortschritt → MasteryBar oder XPBar
+- Ladezeit → LoadingPulse
+- Nichts vorhanden → EmptyState
+- Erfolgsmeldung → ToastBanner
+
+Verbotene Patterns:
+- Tabellen mit mehr als 4 Spalten
+- Mehr als 2 CTAs pro Card
+- Text-Links als primäre Aktionen
+- Disabled Buttons ohne Tooltip
