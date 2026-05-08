@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-
-export const THEMES = ['edvance', 'ocean', 'forest', 'sunset'] as const
-export type Theme = (typeof THEMES)[number]
+import { THEMES, type Theme, type ThemeColors } from '@/types'
 
 const STORAGE_KEY = 'edvance:theme'
+const DEFAULT_THEME: Theme = 'edvance'
 
-export const THEME_PREVIEW: Record<Theme, { primary: string; light: string; dark: string }> = {
+export const THEME_PREVIEW: Record<Theme, ThemeColors> = {
   edvance: { primary: '#2D6A9F', light: '#98C0D8', dark: '#1B2A3E' },
   ocean: { primary: '#0E7490', light: '#67E8F9', dark: '#164E63' },
   forest: { primary: '#166534', light: '#86EFAC', dark: '#14532D' },
@@ -20,21 +19,21 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 function readStoredTheme(): Theme {
-  if (typeof window === 'undefined') return 'edvance'
+  if (typeof window === 'undefined') return DEFAULT_THEME
   const stored = window.localStorage.getItem(STORAGE_KEY)
-  return (THEMES as readonly string[]).includes(stored ?? '') ? (stored as Theme) : 'edvance'
+  return (THEMES as readonly string[]).includes(stored ?? '') ? (stored as Theme) : DEFAULT_THEME
 }
 
-function applyTheme(theme: Theme) {
+function applyTheme(theme: Theme): void {
   if (typeof document === 'undefined') return
-  if (theme === 'edvance') {
+  if (theme === DEFAULT_THEME) {
     document.documentElement.removeAttribute('data-theme')
   } else {
     document.documentElement.setAttribute('data-theme', theme)
   }
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({ children }: { children: ReactNode }): JSX.Element {
   const [theme, setThemeState] = useState<Theme>(() => readStoredTheme())
 
   useEffect(() => {
@@ -42,13 +41,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, theme)
   }, [theme])
 
-  const setTheme = (next: Theme) => setThemeState(next)
+  const setTheme = (next: Theme): void => setThemeState(next)
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
 }
 
-export function useTheme() {
+export function useThemeContext(): ThemeContextValue {
   const ctx = useContext(ThemeContext)
-  if (!ctx) throw new Error('useTheme must be used within a ThemeProvider')
+  if (!ctx) throw new Error('useThemeContext must be used within a ThemeProvider')
   return ctx
 }
+
+export { THEMES }
+export type { Theme }

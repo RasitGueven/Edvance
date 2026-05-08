@@ -1,25 +1,28 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import type { UserRole } from '@/types'
 
-const ROLE_ROUTES: Record<string, string> = {
+const ROLE_ROUTES: Record<UserRole, string> = {
   student: '/student',
   parent: '/parent',
   coach: '/coach',
   admin: '/admin',
 }
 
-export function Login() {
+const ERROR_INVALID_CREDENTIALS = 'E-Mail oder Passwort falsch.'
+
+export function Login(): JSX.Element {
   const { signIn, role, loading } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const [submitting, setSubmitting] = useState<boolean>(false)
 
   useEffect(() => {
     if (!loading && role && ROLE_ROUTES[role]) {
@@ -27,15 +30,13 @@ export function Login() {
     }
   }, [loading, role, navigate])
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (event: FormEvent): Promise<void> => {
+    event.preventDefault()
     setError(null)
     setSubmitting(true)
-    const { error: err } = await signIn(email, password)
+    const { error: signInError } = await signIn(email, password)
     setSubmitting(false)
-    if (err) {
-      setError('E-Mail oder Passwort falsch.')
-    }
+    if (signInError) setError(ERROR_INVALID_CREDENTIALS)
   }
 
   return (
@@ -62,7 +63,7 @@ export function Login() {
                 autoComplete="email"
                 placeholder="name@beispiel.de"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
             </div>
@@ -75,7 +76,7 @@ export function Login() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 required
               />
             </div>
