@@ -4,6 +4,7 @@ import { StudentDashboard } from '@/pages/StudentDashboard'
 import { CoachDashboard } from '@/pages/CoachDashboard'
 import { ParentDashboard } from '@/pages/ParentDashboard'
 import { AdminDashboard } from '@/pages/AdminDashboard'
+import { DesignShowcase } from '@/pages/DesignShowcase'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { ThemePanel } from '@/components/ThemePanel'
 
@@ -45,6 +46,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/showcase" element={<DesignShowcase />} />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
