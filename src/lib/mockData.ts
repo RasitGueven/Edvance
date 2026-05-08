@@ -1,24 +1,9 @@
-export type AttendanceStatus = 'present' | 'absent' | 'unknown'
-export type SessionStatus = 'upcoming' | 'active' | 'done'
+// Mock-Daten für die Pre-Launch-Phase. Klar gekennzeichnet als MOCK_*.
+// Wird durch Supabase-Echtdaten ersetzt sobald die Schüler-CRUD-Flows live sind.
 
-export type MockStudent = {
-  id: string
-  name: string
-  class_level: number
-  subjects: string[]
-  attendance: AttendanceStatus
-}
+import type { MockSession } from '@/types'
 
-export type MockSession = {
-  id: string
-  time: string
-  status: SessionStatus
-  room: string
-  coach: string
-  students: MockStudent[]
-}
-
-export const mockSessions: MockSession[] = [
+export const MOCK_SESSIONS: MockSession[] = [
   {
     id: 's1',
     time: '13:00',
@@ -26,10 +11,10 @@ export const mockSessions: MockSession[] = [
     room: 'Raum A1',
     coach: 'Yurtsever Welo',
     students: [
-      { id: 'u1', name: 'Lena Fischer', class_level: 7, subjects: ['Mathematik', 'Deutsch'], attendance: 'present' },
-      { id: 'u2', name: 'Kemal Yildiz', class_level: 8, subjects: ['Englisch'], attendance: 'present' },
-      { id: 'u3', name: 'Sophie Braun', class_level: 7, subjects: ['Mathematik'], attendance: 'absent' },
-      { id: 'u4', name: 'Jonas Müller', class_level: 9, subjects: ['Deutsch', 'Englisch'], attendance: 'present' },
+      { id: 'u1', name: 'Lena Fischer', classLevel: 7, subjects: ['Mathematik', 'Deutsch'], attendance: 'present' },
+      { id: 'u2', name: 'Kemal Yildiz', classLevel: 8, subjects: ['Englisch'], attendance: 'present' },
+      { id: 'u3', name: 'Sophie Braun', classLevel: 7, subjects: ['Mathematik'], attendance: 'absent' },
+      { id: 'u4', name: 'Jonas Müller', classLevel: 9, subjects: ['Deutsch', 'Englisch'], attendance: 'present' },
     ],
   },
   {
@@ -39,11 +24,11 @@ export const mockSessions: MockSession[] = [
     room: 'Raum B2',
     coach: 'Yurtsever Welo',
     students: [
-      { id: 'u5', name: 'Mia Schmidt', class_level: 6, subjects: ['Mathematik'], attendance: 'present' },
-      { id: 'u6', name: 'Noah Wagner', class_level: 10, subjects: ['Englisch', 'Mathematik'], attendance: 'present' },
-      { id: 'u7', name: 'Emre Demir', class_level: 8, subjects: ['Deutsch'], attendance: 'present' },
-      { id: 'u8', name: 'Hanna Richter', class_level: 11, subjects: ['Mathematik'], attendance: 'unknown' },
-      { id: 'u9', name: 'Tim Becker', class_level: 9, subjects: ['Englisch'], attendance: 'present' },
+      { id: 'u5', name: 'Mia Schmidt', classLevel: 6, subjects: ['Mathematik'], attendance: 'present' },
+      { id: 'u6', name: 'Noah Wagner', classLevel: 10, subjects: ['Englisch', 'Mathematik'], attendance: 'present' },
+      { id: 'u7', name: 'Emre Demir', classLevel: 8, subjects: ['Deutsch'], attendance: 'present' },
+      { id: 'u8', name: 'Hanna Richter', classLevel: 11, subjects: ['Mathematik'], attendance: 'unknown' },
+      { id: 'u9', name: 'Tim Becker', classLevel: 9, subjects: ['Englisch'], attendance: 'present' },
     ],
   },
   {
@@ -53,9 +38,9 @@ export const mockSessions: MockSession[] = [
     room: 'Raum C3',
     coach: 'Yurtsever Welo',
     students: [
-      { id: 'u10', name: 'Laura Hofmann', class_level: 5, subjects: ['Deutsch', 'Mathematik'], attendance: 'unknown' },
-      { id: 'u11', name: 'Ben Schulze', class_level: 12, subjects: ['Mathematik'], attendance: 'unknown' },
-      { id: 'u12', name: 'Zeynep Arslan', class_level: 6, subjects: ['Englisch'], attendance: 'unknown' },
+      { id: 'u10', name: 'Laura Hofmann', classLevel: 5, subjects: ['Deutsch', 'Mathematik'], attendance: 'unknown' },
+      { id: 'u11', name: 'Ben Schulze', classLevel: 12, subjects: ['Mathematik'], attendance: 'unknown' },
+      { id: 'u12', name: 'Zeynep Arslan', classLevel: 6, subjects: ['Englisch'], attendance: 'unknown' },
     ],
   },
 ]

@@ -1,14 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Login } from '@/pages/Login'
-import { StudentDashboard } from '@/pages/StudentDashboard'
-import { CoachDashboard } from '@/pages/CoachDashboard'
-import { ParentDashboard } from '@/pages/ParentDashboard'
-import { AdminDashboard } from '@/pages/AdminDashboard'
 import { DesignShowcase } from '@/pages/DesignShowcase'
-import { ProtectedRoute } from '@/components/ProtectedRoute'
-import { ThemePanel } from '@/components/ThemePanel'
+import { StudentDashboard } from '@/pages/student/StudentDashboard'
+import { CoachDashboard } from '@/pages/coach/CoachDashboard'
+import { ParentDashboard } from '@/pages/parent/ParentDashboard'
+import { AdminDashboard } from '@/pages/admin/AdminDashboard'
+import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
+import { ThemePanel } from '@/components/edvance/ThemePanel'
 
-export default function App() {
+export default function App(): JSX.Element {
   return (
     <>
       <Routes>

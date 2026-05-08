@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 // ─── EdvanceCard ──────────────────────────────────────────────────────────────
@@ -416,13 +416,14 @@ interface LoadingPulseProps {
   type?: 'card' | 'list' | 'stat'
 }
 
-function SkeletonBlock({ className }: { className?: string }) {
+function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <div
       className={cn(
         'rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton',
         className,
       )}
+      style={style}
     />
   )
 }

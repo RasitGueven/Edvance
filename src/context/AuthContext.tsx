@@ -1,8 +1,13 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-
-type Role = 'student' | 'parent' | 'coach' | 'admin' | null
+import {
+  getCurrentSession,
+  signIn as signInRequest,
+  signOut as signOutRequest,
+  subscribeToAuthChanges,
+} from '@/lib/supabase/auth'
+import { getProfileRole } from '@/lib/supabase/profiles'
+import type { Role } from '@/types'
 
 type AuthContextValue = {
   user: User | null
@@ -14,18 +19,18 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }): JSX.Element {
   const [user, setUser] = useState<User | null>(null)
   const [role, setRole] = useState<Role>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+    void getCurrentSession().then(({ data }) => {
+      setUser(data?.user ?? null)
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const subscription = subscribeToAuthChanges((session) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
@@ -33,33 +38,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Rollen-Fetch separat – nicht im onAuthStateChange-Callback,
+  // sonst Supabase-interner Lock-Deadlock.
   useEffect(() => {
     if (!user) {
       setRole(null)
       return
     }
     let cancelled = false
-    supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-      .then(({ data }) => {
-        if (!cancelled) setRole((data?.role as Role) ?? null)
-      })
+    void getProfileRole(user.id).then(({ data }) => {
+      if (!cancelled) setRole(data ?? null)
+    })
     return () => {
       cancelled = true
     }
   }, [user])
 
-  const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) return { error: error.message }
-    return { error: null }
+  const signIn = async (
+    email: string,
+    password: string,
+  ): Promise<{ error: string | null }> => {
+    const { error } = await signInRequest(email, password)
+    return { error }
   }
 
-  const signOut = async () => {
-    await supabase.auth.signOut()
+  const signOut = async (): Promise<void> => {
+    await signOutRequest()
   }
 
   return (
@@ -69,8 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useAuth() {
+export function useAuthContext(): AuthContextValue {
   const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within an AuthProvider')
+  if (!ctx) throw new Error('useAuthContext must be used within an AuthProvider')
   return ctx
 }
