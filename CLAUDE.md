@@ -49,7 +49,14 @@ Lies vor jeder Aufgabe die relevanten Dateien in docs/:
 - Pflicht-Reihenfolge: Ändern → TypeScript prüfen → Browser testen → Committen → Pushen
 - Commit-Format: feat:, fix:, refactor:, docs:, chore: als Prefix
 - Vor jedem großen Feature: git add . && git commit -m "checkpoint: vor [Feature]"
-- Niemals direkt auf main: Feature-Branch erstellen: git checkout -b feature/[name]
+
+### Branch-Strategie
+
+- `main`: Produktions-Branch. Wird ausschließlich via Merge aus `dev` aktualisiert. Niemals direkt drauf entwickeln.
+- `dev`: Standard-Arbeitsbranch. Kleine Fixes, Refactorings und Routine-Änderungen werden direkt hier committet.
+- `feature/[name]`: Für größere Features (>1 Session, schemarelevante Änderungen, größere UI-Flows) Feature-Branch von `dev` abzweigen. Nach Abschluss zurück nach `dev` mergen. Feature-Branches bleiben für die Historie bestehen, wann immer es nachvollziehbar ist.
+- Nach abgeschlossenen Milestones: `dev` → `main` mergen.
+- Feature-Branch erstellen: `git checkout dev && git pull && git checkout -b feature/[name]`
 
 ## 6. Behavior-Tracking & Diagnosedaten
 
