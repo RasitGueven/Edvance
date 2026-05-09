@@ -3,7 +3,7 @@
 // Nutzung (empfohlen):
 //   npm run seed:skills
 // Manuell:
-//   npx tsx --env-file=.env.local scripts/seed-microskills.ts
+//   npx tsx --env-file=.env scripts/seed-microskills.ts
 //
 // Idempotent: bereits vorhandene Cluster (Match via subject_id+name) und
 // Microskills (Match via code) werden uebersprungen, nicht doppelt angelegt.
@@ -176,7 +176,7 @@ async function main(): Promise<void> {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!supabaseUrl || !serviceRoleKey) {
     console.error(
-      'Fehlende ENV-Vars in .env.local: SUPABASE_URL (oder VITE_SUPABASE_URL) und SUPABASE_SERVICE_ROLE_KEY.',
+      'Fehlende ENV-Vars in .env: SUPABASE_URL (oder VITE_SUPABASE_URL) und SUPABASE_SERVICE_ROLE_KEY.',
     )
     process.exit(1)
   }

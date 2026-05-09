@@ -3,9 +3,9 @@
 // Nutzung (empfohlen):
 //   npm run seed:serlo
 // Manuell:
-//   npx tsx --env-file=.env.local scripts/import-serlo.ts
+//   npx tsx --env-file=.env scripts/import-serlo.ts
 //
-// Benoetigte ENV-Vars in .env.local:
+// Benoetigte ENV-Vars in .env:
 //   SUPABASE_URL (oder VITE_SUPABASE_URL)
 //   SUPABASE_SERVICE_ROLE_KEY  (NICHT der anon key – server-only)
 //
@@ -306,7 +306,7 @@ async function main(): Promise<void> {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!supabaseUrl || !serviceRoleKey) {
     console.error(
-      'Fehlende ENV-Vars in .env.local: SUPABASE_URL (oder VITE_SUPABASE_URL) und SUPABASE_SERVICE_ROLE_KEY.',
+      'Fehlende ENV-Vars in .env: SUPABASE_URL (oder VITE_SUPABASE_URL) und SUPABASE_SERVICE_ROLE_KEY.',
     )
     process.exit(1)
   }
