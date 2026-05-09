@@ -193,9 +193,12 @@ async function fetchNodeShallow(id: number): Promise<ShallowTaxonomy | { __typen
 }
 
 async function fetchLeafDetails(id: number, type: LeafType): Promise<LeafDetails | null> {
+  // Serlo-Schema (Stand 2026): Exercise hat title direkt; solution ist nicht
+  // mehr separat — sie ist Teil von currentRevision.content (JSON-encoded).
+  // Wir uebernehmen den Inhalt als question und lassen solution leer.
   const fragment =
     type === 'Exercise'
-      ? '... on Exercise { id currentRevision { content } solution { currentRevision { content } } }'
+      ? '... on Exercise { id title currentRevision { content } }'
       : type === 'Article'
       ? '... on Article { id currentRevision { title content } }'
       : '... on Video { id currentRevision { title url } }'
@@ -204,7 +207,7 @@ async function fetchLeafDetails(id: number, type: LeafType): Promise<LeafDetails
   type Resp = {
     uuid:
       | (
-          | { __typename: 'Exercise'; id: number; currentRevision?: { content?: string | null } | null; solution?: { currentRevision?: { content?: string | null } | null } | null }
+          | { __typename: 'Exercise'; id: number; title?: string | null; currentRevision?: { content?: string | null } | null }
           | { __typename: 'Article'; id: number; currentRevision?: { title?: string | null; content?: string | null } | null }
           | { __typename: 'Video'; id: number; currentRevision?: { title?: string | null; url?: string | null } | null }
         )
@@ -218,10 +221,10 @@ async function fetchLeafDetails(id: number, type: LeafType): Promise<LeafDetails
     return {
       __typename: 'Exercise',
       id: node.id,
-      title: null,
+      title: node.title ?? null,
       content: node.currentRevision?.content ?? null,
       url: null,
-      solutionContent: node.solution?.currentRevision?.content ?? null,
+      solutionContent: null,
     }
   }
   if (node.__typename === 'Article') {
