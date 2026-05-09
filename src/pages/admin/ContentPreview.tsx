@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -243,15 +244,18 @@ function ClusterBody({
             {tasks.slice(0, MAX_TASKS_VISIBLE).map((t) => (
               <li key={t.id} className="flex items-center gap-3 text-sm">
                 <ContentTypeBadge type={t.content_type} />
-                <span className="truncate text-foreground">
+                <Link
+                  to={`/admin/task-preview/${t.id}`}
+                  className="min-w-0 flex-1 truncate text-foreground hover:text-primary hover:underline"
+                >
                   {t.title ?? t.question?.slice(0, 80) ?? `serlo:${t.serlo_uuid ?? '?'}`}
-                </span>
+                </Link>
                 {t.serlo_url && (
                   <a
                     href={t.serlo_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="ml-auto flex shrink-0 items-center gap-1 text-xs text-primary hover:underline"
+                    className="flex shrink-0 items-center gap-1 text-xs text-muted hover:text-primary hover:underline"
                   >
                     Serlo <ExternalLink className="h-3 w-3" />
                   </a>
