@@ -121,6 +121,25 @@ export async function getTaskById(taskId: string): Promise<SupabaseResult<Task |
   }
 }
 
+// Cluster nach Name suchen (z.B. fuer Diagnose → Cluster Mapping).
+export async function getClusterByName(
+  name: string,
+): Promise<SupabaseResult<SkillCluster | null>> {
+  try {
+    const { data, error } = await supabase
+      .from('skill_clusters')
+      .select('*')
+      .eq('name', name)
+      .limit(1)
+      .maybeSingle()
+    if (error) return { data: null, error: error.message }
+    return { data: (data as SkillCluster | null) ?? null, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Cluster konnte nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Ein einzelnes Cluster per id.
 export async function getClusterById(
   clusterId: string,
