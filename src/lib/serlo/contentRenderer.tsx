@@ -6,8 +6,24 @@
 //
 // Akzeptiert string (wird JSON-geparsed) oder bereits geparstes Objekt.
 // Faellt auf <pre> zurueck wenn JSON ungueltig oder leer.
+//
+// Math-Nodes werden via KaTeX zu HTML gerendert.
 
 import type { JSX, ReactNode } from 'react'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
+
+function renderMath(latex: string, displayMode: boolean): string {
+  try {
+    return katex.renderToString(latex, {
+      displayMode,
+      throwOnError: false,
+      output: 'html',
+    })
+  } catch {
+    return latex
+  }
+}
 
 // Permissiver Node-Type: Edtr-o ist heterogen, manche Felder sind optional.
 type EdtrNode = {
@@ -66,15 +82,17 @@ function RenderNode({ node }: { node: EdtrNode }): JSX.Element | null {
       const src = node.src ?? ''
       if (node.inline) {
         return (
-          <code className="mx-0.5 inline rounded bg-border-strong/40 px-1.5 py-0.5 font-mono text-sm">
-            {src}
-          </code>
+          <span
+            className="mx-0.5 inline-block align-middle"
+            dangerouslySetInnerHTML={{ __html: renderMath(src, false) }}
+          />
         )
       }
       return (
-        <div className="my-3 flex justify-center">
-          <code className="rounded bg-border-strong/40 px-4 py-2 font-mono text-sm">{src}</code>
-        </div>
+        <div
+          className="my-3 flex justify-center overflow-x-auto"
+          dangerouslySetInnerHTML={{ __html: renderMath(src, true) }}
+        />
       )
     }
 
