@@ -5,6 +5,7 @@ import { StudentDashboard } from '@/pages/student/StudentDashboard'
 import { CoachDashboard } from '@/pages/coach/CoachDashboard'
 import { ParentDashboard } from '@/pages/parent/ParentDashboard'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
+import { ContentPreview } from '@/pages/admin/ContentPreview'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
 import { ThemePanel } from '@/components/edvance/ThemePanel'
 import { DiagnosisProvider } from '@/context/DiagnosisContext'
@@ -46,6 +47,14 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/content"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <ContentPreview />
             </ProtectedRoute>
           }
         />

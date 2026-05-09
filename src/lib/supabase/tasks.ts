@@ -2,10 +2,26 @@ import { supabase } from '@/lib/supabase/client'
 import type {
   Microskill,
   SkillCluster,
+  Subject,
   SupabaseResult,
   Task,
   TaskCoachMetadata,
 } from '@/types'
+
+// Alle Faecher.
+export async function getSubjects(): Promise<SupabaseResult<Subject[]>> {
+  try {
+    const { data, error } = await supabase
+      .from('subjects')
+      .select('*')
+      .order('name', { ascending: true })
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as Subject[], error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Faecher konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
 
 // Aufgaben fuer einen einzelnen Microskill (nur aktive).
 export async function getTasksByMicroskill(
