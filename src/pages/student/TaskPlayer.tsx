@@ -4,12 +4,14 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Lightbulb } from 'luc
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { useAuth } from '@/hooks/useAuth'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
 import {
   getClusterById,
   getTaskById,
   getTasksByClusterOrdered,
 } from '@/lib/supabase/tasks'
+import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
 import { SerloRenderer } from '@/lib/serlo/contentRenderer'
 import { SerloVideoRenderer } from '@/lib/serlo/videoRenderer'
 import type { SkillCluster, Task } from '@/types'
@@ -49,6 +51,7 @@ export function TaskPlayer(): JSX.Element {
 
   const tracker = useBehaviorTracker()
   const startedTaskRef = useRef<string | null>(null)
+  const { user } = useAuth()
 
   // Task + Cluster + Siblings laden bei taskId-Aenderung.
   useEffect(() => {
@@ -128,14 +131,21 @@ export function TaskPlayer(): JSX.Element {
     tracker.onHintRequested()
   }
 
-  const handleSubmit = (e: FormEvent): void => {
+  const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault()
     if (!task || task.content_type !== 'exercise') return
     if (answer.trim().length === 0) return
     tracker.onLastKeystroke()
     const snapshot = tracker.getSnapshot(task.id, answer)
-    console.log('[TaskPlayer] BehaviorSnapshot:', snapshot)
     setSubmitted(true)
+    if (user) {
+      const { error: persistError } = await persistBehaviorSnapshot(task.id, user.id, snapshot)
+      if (persistError) {
+        console.error('[TaskPlayer] BehaviorSnapshot persist failed:', persistError, snapshot)
+      }
+    } else {
+      console.warn('[TaskPlayer] kein User – Snapshot nur lokal:', snapshot)
+    }
   }
 
   const handleAnswerChange = (value: string): void => {
@@ -239,7 +249,7 @@ export function TaskPlayer(): JSX.Element {
         {!submitted && task.content_type === 'exercise' && (
           <Card className="mb-4">
             <CardContent className="pt-6">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-3">
                 <label
                   htmlFor="answer"
                   className="text-xs font-semibold uppercase tracking-wider text-muted"
@@ -377,8 +387,8 @@ function DifficultyBadge({ difficulty }: { difficulty: number }): JSX.Element {
 }
 
 function VideoBlock({ task }: { task: Task }): JSX.Element {
-  // Video-URL liegt aktuell im question-Feld (siehe import-serlo.ts).
-  const url = task.question
+  // Video-URL liegt in serlo_video_url; legacy fallback auf question-Feld.
+  const url = task.serlo_video_url ?? task.question
   if (!url) return <p className="text-sm text-muted">– kein Video-Link –</p>
   return (
     <div className="flex flex-col gap-4">

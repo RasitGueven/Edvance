@@ -155,11 +155,14 @@ export function TaskPreview(): JSX.Element {
         <Card className="mb-4">
           <CardContent className="pt-6">
             {task.content_type === 'video' ? (
-              task.question ? (
-                <SerloVideoRenderer url={task.question} title={task.title ?? undefined} />
-              ) : (
-                <p className="text-sm text-muted">– kein Video-Link –</p>
-              )
+              (() => {
+                const url = task.serlo_video_url ?? task.question
+                return url ? (
+                  <SerloVideoRenderer url={url} title={task.title ?? undefined} />
+                ) : (
+                  <p className="text-sm text-muted">– kein Video-Link –</p>
+                )
+              })()
             ) : (
               <SerloRenderer content={task.question} />
             )}

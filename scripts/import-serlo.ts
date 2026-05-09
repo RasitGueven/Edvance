@@ -116,6 +116,7 @@ type TaskInsert = {
   cluster_id: string | null
   serlo_uuid: number | null
   serlo_url: string | null
+  serlo_video_url: string | null
   content_type: ContentType
   title: string | null
   question: string | null
@@ -399,9 +400,10 @@ async function exploreTaxonomy(
         cluster_id: clusterId,
         serlo_uuid: details.id,
         serlo_url: serloUrl,
+        serlo_video_url: details.__typename === 'Video' ? details.url : null,
         content_type: TYPE_MAP[details.__typename],
         title: details.title,
-        question: details.__typename === 'Video' ? details.url : details.content,
+        question: details.__typename === 'Video' ? null : details.content,
         solution: details.solutionContent,
       },
       ctx.stats,
