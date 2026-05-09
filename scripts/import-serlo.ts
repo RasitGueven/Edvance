@@ -305,6 +305,12 @@ async function insertTask(
   stats[payload.content_type] += 1
   if (payload.cluster_id) stats.matched += 1
   else stats.unmapped += 1
+  const total = stats.exercise + stats.article + stats.video
+  if (total % 10 === 0) {
+    console.log(
+      `     · ${total} importiert  (mapped ${stats.matched} / ohne Cluster ${stats.unmapped} / skipped ${stats.skipped})`,
+    )
+  }
 }
 
 // ── Walker (rekursiv mit flachen Queries) ────────────────────────────────────
@@ -344,6 +350,8 @@ async function exploreTaxonomy(
 
   ctx.stats.taxonomies += 1
   const newPath = [...pathSoFar, node.name]
+  const indent = '  '.repeat(depth)
+  console.log(`${indent}📂 ${node.name}  (${node.children.length} children)`)
 
   for (const child of node.children) {
     if (ctx.stats.exercise + ctx.stats.article + ctx.stats.video >= MAX_LEAVES) {
