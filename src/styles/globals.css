@@ -12,6 +12,7 @@
   --primary-foreground: #ffffff;
   --primary-light: #98C0D8;
   --primary-pale: #EBF4FA;
+  --primary-shadow: #1a4a73;
 
   /* Surface */
   --background: #F7F9FC;
@@ -29,10 +30,13 @@
   /* Status */
   --success: #0F6E56;
   --success-light: #DCFCE7;
+  --success-dark: #0a4f3d;
   --warning: #D97706;
   --warning-light: #FEF3C7;
+  --warning-dark: #b45309;
   --destructive: #DC2626;
   --destructive-light: #FEE2E2;
+  --destructive-dark: #b91c1c;
   --info: #0EA5E9;
   --info-light: #E0F2FE;
 
