@@ -10,7 +10,8 @@
     "lint": "tsc -b --noEmit",
     "seed:serlo": "tsx --env-file=.env scripts/import-serlo.ts",
     "seed:clusters": "tsx --env-file=.env scripts/seed-clusters.ts",
-    "seed:taxonomy": "tsx --env-file=.env scripts/seed-taxonomy.ts"
+    "seed:taxonomy": "tsx --env-file=.env scripts/seed-taxonomy.ts",
+    "mark:diagnostic": "tsx --env-file=.env scripts/mark-diagnostic.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
