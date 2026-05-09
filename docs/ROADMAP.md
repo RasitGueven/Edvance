@@ -7,13 +7,15 @@
 - Onboarding-Flow (Mock-Daten)
 - Design-System: EdvanceCard, MasteryBar, XPBar, StatCard, Badges, EmptyState, LoadingPulse
 - CLAUDE.md Harness konfiguriert
+- Diagnose-Engine mit Behavior-Tracking (Tablet-Sicht + Coach-Sicht + Result-Page)
+- Aufgaben-Schema (Serlo-Import): Tabellen, RLS-Policies, Import-Script, Seed-Script
 
 ## In Arbeit
-- Diagnose-Engine mit Behavior-Tracking
+- (–)
 
 ## Nächste Schritte
-- Diagnose-Ergebnisseite
-- Schüler-Tablet Session-View
+- Schüler-Tablet Session-View (Lernpfad-Rendering aus echten tasks)
 - Home-Quest Flow
 - Elternreport
-- Supabase Echtdaten-Anbindung (nach Mock-Phase)
+- Supabase Echtdaten-Anbindung (Profiles/Students von Mock auf Supabase)
+- Serlo-Import auf weitere Klassenstufen (5–7, 9–13)
