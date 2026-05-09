@@ -104,3 +104,62 @@ export type SupabaseResult<T> = {
   data: T | null
   error: string | null
 }
+
+// ── Content / Aufgaben-Schema ─────────────────────────────────────────────────
+
+export type ContentType = 'exercise' | 'exercise_group' | 'article' | 'video' | 'course'
+
+export type Subject = {
+  id: string
+  name: string
+  serlo_id: number | null
+}
+
+export type SkillCluster = {
+  id: string
+  subject_id: string
+  name: string
+  class_level_min: number
+  class_level_max: number
+  serlo_taxonomy_id: number | null
+  sort_order: number
+}
+
+export type Microskill = {
+  id: string
+  cluster_id: string
+  code: string
+  name: string
+  description: string | null
+  class_level: number
+  prerequisite_ids: string[]
+  sort_order: number
+}
+
+export type Task = {
+  id: string
+  microskill_id: string | null
+  cluster_id: string | null
+  serlo_uuid: number | null
+  serlo_url: string | null
+  content_type: ContentType
+  title: string | null
+  question: string | null
+  solution: string | null
+  hint: string | null
+  common_errors: string | null
+  coach_note: string | null
+  difficulty: number | null
+  estimated_minutes: number
+  class_level: number | null
+  is_active: boolean
+  created_at: string
+}
+
+export type TaskCoachMetadata = {
+  id: string
+  task_id: string
+  typical_errors: string | null
+  observation_hints: string | null
+  intervention_triggers: string | null
+}
