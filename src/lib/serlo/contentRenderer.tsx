@@ -1,13 +1,18 @@
 // Serlo Edtr-o JSON Renderer.
 //
-// Serlo speichert Inhalte (Exercise.currentRevision.content,
-// Article.currentRevision.content) als JSON-Baum von Editor-Nodes.
-// Diese Komponente rendert den Baum nativ als React mit Tailwind-Styles.
+// Serlo speichert Inhalte als verschachteltes JSON mit zwei Layern:
 //
-// Akzeptiert string (wird JSON-geparsed) oder bereits geparstes Objekt.
-// Faellt auf <pre> zurueck wenn JSON ungueltig oder leer.
+//   1. PLUGIN-Layer (editor wrapper):
+//      { plugin: 'text'|'rows'|'article'|'image'|... , state: ... }
+//   2. SLATE-Layer (rich text inside text-Plugin):
+//      { type: 'p'|'h'|'a'|'math'|..., children: [...] } oder
+//      { text: '...', strong?, em? }   (text-leaf, hat keinen type)
 //
-// Math-Nodes werden via KaTeX zu HTML gerendert.
+// Plus ein Top-Level Wrapper:
+//      { id, type: 'https://serlo.org/editor', version, document: {plugin, state} }
+//
+// Math-Nodes werden via KaTeX gerendert. Unbekannte Plugins/Types werden
+// best-effort als Fallback gerendert (Kinder/State weiter traversieren).
 
 import type { JSX, ReactNode } from 'react'
 import katex from 'katex'
@@ -25,57 +30,100 @@ function renderMath(latex: string, displayMode: boolean): string {
   }
 }
 
-// Permissiver Node-Type: Edtr-o ist heterogen, manche Felder sind optional.
+// ── Type-Helfer ──────────────────────────────────────────────────────────────
+
 type EdtrNode = {
+  // Slate-Layer
   type?: string
-  children?: EdtrNode[]
+  children?: unknown
   text?: string
   strong?: boolean
   em?: boolean
+  code?: boolean
   src?: string
   inline?: boolean
   alt?: string
-  caption?: string
-  title?: string
+  caption?: unknown
+  title?: unknown
   level?: number
+  href?: string
+  // Plugin-Wrapper
+  plugin?: string
+  state?: unknown
+  // Plugin-State-Felder (verschiedene plugins)
+  introduction?: unknown
+  content?: unknown
+  exercises?: unknown
+  explanation?: unknown
+  multimedia?: unknown
+  steps?: unknown
+  left?: unknown
+  right?: unknown
+  sign?: unknown
 }
 
-function renderChildren(children: EdtrNode[] | undefined): ReactNode {
-  if (!children || children.length === 0) return null
-  return children.map((child, i) => <RenderNode key={i} node={child} />)
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v)
 }
 
-function RenderNode({ node }: { node: EdtrNode }): JSX.Element | null {
-  if (!node || typeof node !== 'object') return null
-  const type = node.type
+function asNode(v: unknown): EdtrNode | null {
+  return isObject(v) ? (v as EdtrNode) : null
+}
 
-  switch (type) {
-    case 'root':
-    case 'slate':
-      return <>{renderChildren(node.children)}</>
+function asNodeArray(v: unknown): EdtrNode[] {
+  if (!Array.isArray(v)) return []
+  return v.filter(isObject) as EdtrNode[]
+}
 
-    case 'rows':
-      return <div className="flex flex-col gap-4">{renderChildren(node.children)}</div>
+function asString(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+}
 
+// ── Slate-Layer Rendering ────────────────────────────────────────────────────
+
+function renderSlateChildren(value: unknown): ReactNode {
+  const arr = asNodeArray(value)
+  if (arr.length === 0) return null
+  return arr.map((child, i) => <RenderNode key={i} node={child} />)
+}
+
+function renderSlateNode(node: EdtrNode, key?: number): JSX.Element | null {
+  // Text-Leaf: hat 'text' Feld, kein 'type'
+  if (typeof node.text === 'string') {
+    let cls = ''
+    if (node.strong) cls += ' font-semibold'
+    if (node.em) cls += ' italic'
+    if (node.code) cls += ' font-mono text-[0.95em] bg-border-strong/30 px-1 rounded'
+    const trimmed = cls.trim()
+    if (trimmed === '') return <>{node.text}</>
+    return <span key={key} className={trimmed}>{node.text}</span>
+  }
+
+  switch (node.type) {
     case 'p':
-      return <p className="mb-3 text-sm leading-relaxed">{renderChildren(node.children)}</p>
+      return <p className="mb-3 text-sm leading-relaxed">{renderSlateChildren(node.children)}</p>
 
     case 'h': {
       const level = node.level ?? 2
       const baseCls = 'font-semibold mb-2 mt-4 text-foreground'
-      if (level === 1) return <h2 className={`text-2xl ${baseCls}`}>{renderChildren(node.children)}</h2>
-      if (level === 3) return <h4 className={`text-base ${baseCls}`}>{renderChildren(node.children)}</h4>
-      return <h3 className={`text-xl ${baseCls}`}>{renderChildren(node.children)}</h3>
+      if (level === 1) return <h2 className={`text-2xl ${baseCls}`}>{renderSlateChildren(node.children)}</h2>
+      if (level === 3) return <h4 className={`text-base ${baseCls}`}>{renderSlateChildren(node.children)}</h4>
+      return <h3 className={`text-xl ${baseCls}`}>{renderSlateChildren(node.children)}</h3>
     }
 
-    case 'text': {
-      const text = node.text ?? ''
-      let cls = ''
-      if (node.strong) cls += ' font-semibold'
-      if (node.em) cls += ' italic'
-      const trimmed = cls.trim()
-      if (trimmed === '') return <>{text}</>
-      return <span className={trimmed}>{text}</span>
+    case 'a': {
+      const href = node.href ?? '#'
+      const isExternal = /^https?:\/\//.test(href)
+      return (
+        <a
+          href={isExternal ? href : `https://de.serlo.org${href}`}
+          target="_blank"
+          rel="noreferrer"
+          className="text-primary hover:underline"
+        >
+          {renderSlateChildren(node.children)}
+        </a>
+      )
     }
 
     case 'math': {
@@ -96,75 +144,229 @@ function RenderNode({ node }: { node: EdtrNode }): JSX.Element | null {
       )
     }
 
-    case 'img': {
-      const src = node.src ?? ''
-      const alt = node.alt ?? ''
+    case 'unordered-list':
+    case 'ul':
+      return <ul className="mb-3 list-disc pl-6 text-sm leading-relaxed">{renderSlateChildren(node.children)}</ul>
+
+    case 'ordered-list':
+    case 'ol':
+      return <ol className="mb-3 list-decimal pl-6 text-sm leading-relaxed">{renderSlateChildren(node.children)}</ol>
+
+    case 'list-item':
+    case 'li': {
+      // Serlo umschliesst li-Inhalt manchmal in 'list-item-child' { children }
+      return <li className="mb-1">{renderSlateChildren(node.children)}</li>
+    }
+
+    case 'list-item-child':
+      return <>{renderSlateChildren(node.children)}</>
+
+    default:
+      if (node.type) console.warn('[SerloRenderer] unbekannter slate type:', node.type, node)
+      return <>{renderSlateChildren(node.children)}</>
+  }
+}
+
+// ── Plugin-Layer Rendering ───────────────────────────────────────────────────
+
+function renderPlugin(plugin: string, state: unknown): JSX.Element | null {
+  switch (plugin) {
+    case 'text': {
+      // state = array of slate nodes
+      const arr = asNodeArray(state)
+      if (arr.length === 0) return null
+      return <>{arr.map((n, i) => renderSlateNode(n, i))}</>
+    }
+
+    case 'rows': {
+      // state = array of plugin-wrapped children
+      const arr = asNodeArray(state)
+      if (arr.length === 0) return null
+      return <div className="flex flex-col gap-3">{arr.map((n, i) => <RenderNode key={i} node={n} />)}</div>
+    }
+
+    case 'article': {
+      const s = asNode(state)
+      if (!s) return null
+      const intro = asNode(s.introduction)
+      const content = asNode(s.content)
+      const exercises = asNodeArray(s.exercises)
+      return (
+        <div className="flex flex-col gap-5">
+          {intro && <RenderNode node={intro} />}
+          {content && <RenderNode node={content} />}
+          {exercises.length > 0 && (
+            <details className="rounded-lg border-2 border-border bg-card">
+              <summary className="cursor-pointer select-none px-4 py-2 text-sm font-semibold">
+                Verknuepfte Aufgaben ({exercises.length})
+              </summary>
+              <div className="px-4 pb-3 pt-1 text-xs text-muted">
+                Im Original-Artikel auf Serlo verlinkt.
+              </div>
+            </details>
+          )}
+        </div>
+      )
+    }
+
+    case 'articleIntroduction': {
+      const s = asNode(state)
+      if (!s) return null
+      const explanation = asNode(s.explanation)
+      const multimedia = asNode(s.multimedia)
+      return (
+        <div className="flex flex-col gap-3">
+          {explanation && <RenderNode node={explanation} />}
+          {multimedia && <RenderNode node={multimedia} />}
+        </div>
+      )
+    }
+
+    case 'image': {
+      const s = asNode(state)
+      if (!s) return null
+      const src = asString(s.src)
+      const alt = asString(s.alt) ?? ''
+      const caption = asNode(s.caption)
+      if (!src) return null
       return (
         <figure className="my-3">
-          <img src={src} alt={alt} className="max-w-full rounded-lg" loading="lazy" />
-          {node.caption && (
-            <figcaption className="mt-1 text-xs text-muted">{node.caption}</figcaption>
+          <img src={src} alt={alt} loading="lazy" className="max-w-full rounded-lg" />
+          {caption && (
+            <figcaption className="mt-1 text-xs text-muted">
+              <RenderNode node={caption} />
+            </figcaption>
           )}
         </figure>
       )
     }
 
-    case 'spoiler':
+    case 'multimedia': {
+      const s = asNode(state)
+      if (!s) return null
+      const explanation = asNode(s.explanation)
+      const multimedia = asNode(s.multimedia)
+      return (
+        <div className="my-3 grid gap-4 sm:grid-cols-2">
+          {multimedia && <div><RenderNode node={multimedia} /></div>}
+          {explanation && <div><RenderNode node={explanation} /></div>}
+        </div>
+      )
+    }
+
+    case 'spoiler': {
+      const s = asNode(state)
+      if (!s) return null
+      const titleStr = asString(s.title) ?? 'Mehr anzeigen'
+      const content = asNode(s.content)
       return (
         <details className="my-3 rounded-lg border-2 border-border bg-card">
           <summary className="cursor-pointer select-none px-4 py-2 text-sm font-semibold">
-            {node.title ?? 'Mehr anzeigen'}
+            {titleStr}
           </summary>
-          <div className="px-4 pb-3 pt-1">{renderChildren(node.children)}</div>
+          <div className="px-4 pb-3 pt-1">{content && <RenderNode node={content} />}</div>
         </details>
       )
+    }
 
-    case 'ul':
+    case 'box': {
+      const s = asNode(state)
+      if (!s) return null
+      const titleStr = asString(s.title)
+      const content = asNode(s.content)
       return (
-        <ul className="mb-3 list-disc pl-6 text-sm leading-relaxed">
-          {renderChildren(node.children)}
-        </ul>
+        <div className="my-3 rounded-lg border-l-4 border-primary bg-primary/5 p-4">
+          {titleStr && <p className="mb-1 text-sm font-semibold text-primary">{titleStr}</p>}
+          {content && <RenderNode node={content} />}
+        </div>
       )
+    }
 
-    case 'ol':
+    case 'equations': {
+      const s = asNode(state)
+      if (!s) return null
+      const steps = asNodeArray(s.steps)
+      if (steps.length === 0) return null
+      const SIGN_TO_LATEX: Record<string, string> = {
+        equals: '=',
+        'greater-than': '>',
+        'less-than': '<',
+        'greater-than-or-equal': '\\geq',
+        'less-than-or-equal': '\\leq',
+        'almost-equal-to': '\\approx',
+        'equivalent-to': '\\equiv',
+      }
       return (
-        <ol className="mb-3 list-decimal pl-6 text-sm leading-relaxed">
-          {renderChildren(node.children)}
-        </ol>
+        <div className="my-3 flex flex-col gap-1">
+          {steps.map((step, i) => {
+            const left = asString(step.left) ?? ''
+            const sign = asString((step as { sign?: unknown }).sign) ?? 'equals'
+            const right = asString(step.right) ?? ''
+            const latex = `${left} ${SIGN_TO_LATEX[sign] ?? '='} ${right}`
+            return (
+              <div
+                key={i}
+                className="flex justify-center overflow-x-auto"
+                dangerouslySetInnerHTML={{ __html: renderMath(latex, true) }}
+              />
+            )
+          })}
+        </div>
       )
+    }
 
-    case 'li':
-      return <li className="mb-1">{renderChildren(node.children)}</li>
+    case 'exercise': {
+      const s = asNode(state)
+      if (!s) return null
+      const content = asNode(s.content)
+      return content ? <RenderNode node={content} /> : null
+    }
 
-    case 'table':
+    case 'injection':
+    case 'video':
+    case 'highlight':
+    case 'serloTable':
+    case 'geogebra':
       return (
-        <div className="my-3 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <tbody>{renderChildren(node.children)}</tbody>
-          </table>
+        <div className="my-3 rounded-lg border-2 border-dashed border-border p-3 text-xs text-muted">
+          [Serlo-Plugin <code className="font-mono">{plugin}</code> – nicht nativ unterstuetzt]
         </div>
       )
 
-    case 'tr':
-      return <tr className="border-b border-border">{renderChildren(node.children)}</tr>
-
-    case 'th':
-      return (
-        <th className="border border-border bg-background px-3 py-2 text-left font-semibold">
-          {renderChildren(node.children)}
-        </th>
-      )
-
-    case 'td':
-      return (
-        <td className="border border-border px-3 py-2">{renderChildren(node.children)}</td>
-      )
-
-    default:
-      if (type) console.warn('[SerloRenderer] unknown node type:', type, node)
-      return <>{renderChildren(node.children)}</>
+    default: {
+      console.warn('[SerloRenderer] unbekanntes plugin:', plugin, state)
+      // Best-effort Fallback: state als Array → Kinder rendern; als Objekt mit content/children → unwrap.
+      if (Array.isArray(state)) {
+        return (
+          <>{(state as unknown[]).map((n, i) => {
+            const node = asNode(n)
+            return node ? <RenderNode key={i} node={node} /> : null
+          })}</>
+        )
+      }
+      const s = asNode(state)
+      if (s?.content) return <RenderNode node={asNode(s.content) ?? {}} />
+      if (s?.children) return <>{renderSlateChildren(s.children)}</>
+      return null
+    }
   }
 }
+
+// ── Dispatch ─────────────────────────────────────────────────────────────────
+
+function RenderNode({ node }: { node: EdtrNode }): JSX.Element | null {
+  if (!node || typeof node !== 'object') return null
+
+  // Plugin-Wrapper hat Vorrang
+  if (typeof node.plugin === 'string') {
+    return renderPlugin(node.plugin, node.state)
+  }
+
+  // Sonst Slate-Layer
+  return renderSlateNode(node)
+}
+
+// ── Top-Level Entry ──────────────────────────────────────────────────────────
 
 export function SerloRenderer({
   content,
@@ -190,7 +392,7 @@ export function SerloRenderer({
     parsed = content
   }
 
-  if (parsed == null || typeof parsed !== 'object') {
+  if (!isObject(parsed)) {
     return (
       <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
         {String(content)}
@@ -198,9 +400,12 @@ export function SerloRenderer({
     )
   }
 
+  // Serlo Editor Wrapper: { id, type: 'https://serlo.org/editor', document: {...} }
+  const root = isObject(parsed.document) ? (parsed.document as EdtrNode) : (parsed as EdtrNode)
+
   return (
     <div className="serlo-content">
-      <RenderNode node={parsed as EdtrNode} />
+      <RenderNode node={root} />
     </div>
   )
 }
