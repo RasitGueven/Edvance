@@ -142,6 +142,8 @@ export type Task = {
   cluster_id: string | null
   serlo_uuid: number | null
   serlo_url: string | null
+  serlo_video_url: string | null
+  serlo_content_raw: unknown | null
   content_type: ContentType
   title: string | null
   question: string | null

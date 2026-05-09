@@ -105,6 +105,87 @@ export async function getMicroskillsByCluster(
   }
 }
 
+// Eine einzelne Aufgabe per id.
+export async function getTaskById(taskId: string): Promise<SupabaseResult<Task | null>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('id', taskId)
+      .maybeSingle()
+    if (error) return { data: null, error: error.message }
+    return { data: (data as Task | null) ?? null, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Aufgabe konnte nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// Ein einzelnes Cluster per id.
+export async function getClusterById(
+  clusterId: string,
+): Promise<SupabaseResult<SkillCluster | null>> {
+  try {
+    const { data, error } = await supabase
+      .from('skill_clusters')
+      .select('*')
+      .eq('id', clusterId)
+      .maybeSingle()
+    if (error) return { data: null, error: error.message }
+    return { data: (data as SkillCluster | null) ?? null, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Cluster konnte nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// Alle aktiven Tasks eines Clusters in didaktischer Lernreihenfolge:
+// erst Erklären (video, article), dann Üben (exercise nach difficulty),
+// dann Testen (exercise_group, course).
+const TYPE_ORDER: Record<Task['content_type'], number> = {
+  video: 1,
+  article: 2,
+  exercise: 3,
+  exercise_group: 4,
+  course: 5,
+}
+
+export async function getTasksByClusterOrdered(
+  clusterId: string,
+): Promise<SupabaseResult<Task[]>> {
+  const { data, error } = await getTasksByCluster(clusterId)
+  if (error) return { data: null, error }
+  const list = data ?? []
+  const sorted = [...list].sort((a, b) => {
+    const typeDiff = TYPE_ORDER[a.content_type] - TYPE_ORDER[b.content_type]
+    if (typeDiff !== 0) return typeDiff
+    const da = a.difficulty ?? 99
+    const db = b.difficulty ?? 99
+    if (da !== db) return da - db
+    return a.id.localeCompare(b.id)
+  })
+  return { data: sorted, error: null }
+}
+
+// Tasks ohne Cluster-Zuordnung (cluster_id IS NULL). Nuetzlich nach
+// Serlo-Import, wenn das Keyword-Mapping nicht eindeutig war.
+export async function getUnmappedTasks(): Promise<SupabaseResult<Task[]>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .is('cluster_id', null)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as Task[], error: null }
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Tasks ohne Cluster konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Coach-Metadaten zu einer Aufgabe (kann fehlen → null).
 export async function getTaskCoachMetadata(
   taskId: string,

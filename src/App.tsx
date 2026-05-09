@@ -6,6 +6,9 @@ import { CoachDashboard } from '@/pages/coach/CoachDashboard'
 import { ParentDashboard } from '@/pages/parent/ParentDashboard'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { ContentPreview } from '@/pages/admin/ContentPreview'
+import { TaskPreview } from '@/pages/admin/TaskPreview'
+import { ClusterView } from '@/pages/student/ClusterView'
+import { TaskPlayer } from '@/pages/student/TaskPlayer'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
 import { ThemePanel } from '@/components/edvance/ThemePanel'
 import { DiagnosisProvider } from '@/context/DiagnosisContext'
@@ -23,6 +26,22 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['student']}>
               <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/cluster/:clusterId"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <ClusterView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/task/:taskId"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <TaskPlayer />
             </ProtectedRoute>
           }
         />
@@ -55,6 +74,14 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <ContentPreview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/task-preview/:taskId"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <TaskPreview />
             </ProtectedRoute>
           }
         />
