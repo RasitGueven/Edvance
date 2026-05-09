@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "tsc -b --noEmit",
     "seed:serlo": "tsx --env-file=.env scripts/import-serlo.ts",
-    "seed:skills": "tsx --env-file=.env scripts/seed-microskills.ts"
+    "seed:clusters": "tsx --env-file=.env scripts/seed-clusters.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",

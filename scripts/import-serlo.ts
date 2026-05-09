@@ -1,18 +1,23 @@
-// Einmaliger Import: Serlo-Mathematik-Inhalte → Supabase (skill_clusters + tasks).
+// Einmaliger Import: Serlo-Mathematik-Inhalte → Supabase tasks.
+//
+// Mapping-Strategie (Option A):
+//   Edvance hat 5 fixe Kompetenzbereiche (Cluster). Serlo's Taxonomie
+//   ist viel granularer und wird beim Import per Keyword-Heuristik auf
+//   genau einen dieser 5 Cluster gemapped. Tasks ohne Match landen mit
+//   cluster_id = NULL (Admin sortiert spaeter ein).
 //
 // Nutzung (empfohlen):
 //   npm run seed:serlo
 // Manuell:
 //   npx tsx --env-file=.env scripts/import-serlo.ts
 //
-// Benoetigte ENV-Vars in .env:
+// Voraussetzungen:
+//   - schema_content.sql + migrations/001_competency_areas.sql ausgefuehrt
+//   - npm run seed:clusters einmal gelaufen (5 Kompetenzbereiche existieren)
+//
+// ENV-Vars in .env:
 //   SUPABASE_URL (oder VITE_SUPABASE_URL)
 //   SUPABASE_SERVICE_ROLE_KEY  (NICHT der anon key – server-only)
-//
-// Verhalten:
-//   - Idempotent: bereits importierte Cluster/Tasks werden uebersprungen
-//     (Match via serlo_taxonomy_id bzw. serlo_uuid).
-//   - Fehler pro Item werden geloggt, das Script bricht NICHT ab.
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
@@ -64,6 +69,59 @@ query {
 }
 `
 
+// ── Keyword-Mapping: Serlo-Pfad → Edvance-Kompetenzbereich ───────────────────
+//
+// Reihenfolge zaehlt: spezifischere Bereiche (Daten & Zufall, Geometrie)
+// werden vor allgemeineren (Algebra, Zahl) geprueft. Sachrechnen ganz zum
+// Schluss als Fallback fuer Anwendungs-Themen.
+
+const COMPETENCY_KEYWORDS: { name: string; keywords: string[] }[] = [
+  {
+    name: 'Daten & Zufall',
+    keywords: [
+      'stochastik', 'statistik', 'wahrscheinlichkeit', 'diagramm',
+      'mittelwert', 'median', 'zufall', 'baumdiagramm', 'häufigkeit',
+    ],
+  },
+  {
+    name: 'Geometrie & Messen',
+    keywords: [
+      'geometrie', 'fläche', 'volumen', 'pythagoras', 'strahlensatz',
+      'kreis', 'trigonom', 'winkel', 'dreieck', 'viereck', 'körper',
+      'raum', 'längenberechnung',
+    ],
+  },
+  {
+    name: 'Algebra & Funktionen',
+    keywords: [
+      'term', 'gleichung', 'funktion', 'variable', 'linear', 'quadrat',
+      'potenz', 'wurzel', 'exponential', 'ungleichung', 'algebra',
+    ],
+  },
+  {
+    name: 'Zahl & Rechnen',
+    keywords: [
+      'rational', 'bruch', 'dezimal', 'prozent', 'zins', 'rechnen',
+      'ganze zahl', 'natürliche zahl', 'negative zahl', 'rechenoperation',
+    ],
+  },
+  {
+    name: 'Sachrechnen & Modellieren',
+    keywords: [
+      'sachaufgabe', 'sachrechn', 'modell', 'dreisatz', 'tarif',
+      'anwendung', 'textaufgabe',
+    ],
+  },
+]
+
+function mapPathToCluster(path: string[]): string | null {
+  const text = path.join(' ').toLowerCase()
+  for (const { name, keywords } of COMPETENCY_KEYWORDS) {
+    if (keywords.some((kw) => text.includes(kw))) return name
+  }
+  return null
+}
+
 // ── Typen ────────────────────────────────────────────────────────────────────
 
 type SerloRevision = { title?: string | null; content?: string | null; url?: string | null }
@@ -89,12 +147,11 @@ type TaskInsert = {
 }
 
 type Stats = {
-  clusters: number
   exercise: number
-  exercise_group: number
   article: number
   video: number
-  course: number
+  matched: number
+  unmapped: number
   errors: number
 }
 
@@ -137,62 +194,40 @@ async function fetchSerlo(): Promise<SerloNode | null> {
 
 // ── Supabase Helpers ─────────────────────────────────────────────────────────
 
-async function ensureMathematikSubject(supabase: SupabaseClient): Promise<string> {
-  const { data: existing, error: selectError } = await supabase
+async function getMathematikSubjectId(supabase: SupabaseClient): Promise<string> {
+  const { data, error } = await supabase
     .from('subjects')
     .select('id')
     .eq('name', 'Mathematik')
     .maybeSingle()
-  if (selectError) throw new Error(`subjects select: ${selectError.message}`)
-  if (existing?.id) return existing.id as string
-
-  const { data: created, error: insertError } = await supabase
-    .from('subjects')
-    .insert({ name: 'Mathematik', serlo_id: SERLO_MATHEMATIK_ROOT })
-    .select('id')
-    .single()
-  if (insertError) throw new Error(`subjects insert: ${insertError.message}`)
-  return created.id as string
+  if (error) throw new Error(`subjects select: ${error.message}`)
+  if (!data?.id) {
+    throw new Error(
+      'Mathematik-Subject nicht gefunden. Fuehre erst schema.sql + seed:clusters aus.',
+    )
+  }
+  return data.id as string
 }
 
-async function ensureCluster(
+async function loadClusterMap(
   supabase: SupabaseClient,
-  name: string,
-  serloId: number,
   subjectId: string,
-  stats: Stats,
-): Promise<string | null> {
-  const { data: existing, error: selectError } = await supabase
+): Promise<Record<string, string>> {
+  const { data, error } = await supabase
     .from('skill_clusters')
-    .select('id')
-    .eq('serlo_taxonomy_id', serloId)
-    .maybeSingle()
-  if (selectError) {
-    console.error(`  ✗ Cluster select "${name}" (${serloId}): ${selectError.message}`)
-    stats.errors += 1
-    return null
+    .select('id, name')
+    .eq('subject_id', subjectId)
+  if (error) throw new Error(`skill_clusters select: ${error.message}`)
+  const map: Record<string, string> = {}
+  for (const row of data ?? []) {
+    if (row?.name && row?.id) map[row.name as string] = row.id as string
   }
-  if (existing?.id) return existing.id as string
-
-  const { data: created, error: insertError } = await supabase
-    .from('skill_clusters')
-    .insert({
-      subject_id: subjectId,
-      name,
-      class_level_min: 5,
-      class_level_max: 13,
-      serlo_taxonomy_id: serloId,
-    })
-    .select('id')
-    .single()
-  if (insertError) {
-    console.error(`  ✗ Cluster insert "${name}" (${serloId}): ${insertError.message}`)
-    stats.errors += 1
-    return null
+  if (Object.keys(map).length === 0) {
+    throw new Error(
+      'Keine skill_clusters fuer Mathematik gefunden. Fuehre erst seed:clusters aus.',
+    )
   }
-  stats.clusters += 1
-  console.log(`  ✓ Cluster: ${name} (${serloId})`)
-  return created.id as string
+  return map
 }
 
 async function insertTask(
@@ -216,6 +251,8 @@ async function insertTask(
     return
   }
   stats[payload.content_type] += 1
+  if (payload.cluster_id) stats.matched += 1
+  else stats.unmapped += 1
 }
 
 // ── Walker ───────────────────────────────────────────────────────────────────
@@ -223,8 +260,8 @@ async function insertTask(
 async function walkTaxonomy(
   supabase: SupabaseClient,
   node: SerloNode,
-  subjectId: string,
-  parentClusterId: string | null,
+  pathSoFar: string[],
+  clusterMap: Record<string, string>,
   stats: Stats,
 ): Promise<void> {
   const children = node.children?.nodes ?? []
@@ -232,26 +269,22 @@ async function walkTaxonomy(
     if (isEmpty(child)) continue
 
     if (isTaxonomy(child)) {
-      const clusterId = await ensureCluster(
-        supabase,
-        child.name ?? 'Unbenannt',
-        child.id ?? 0,
-        subjectId,
-        stats,
-      )
-      if (clusterId) {
-        await walkTaxonomy(supabase, child, subjectId, clusterId, stats)
-      }
+      const newPath = [...pathSoFar, child.name ?? '']
+      await walkTaxonomy(supabase, child, newPath, clusterMap, stats)
       continue
     }
+
+    const matchedClusterName = mapPathToCluster(pathSoFar)
+    const clusterId = matchedClusterName ? (clusterMap[matchedClusterName] ?? null) : null
+    const serloUrl = child.id != null ? `${SERLO_PUBLIC_BASE}/${child.id}` : null
 
     if (isExercise(child)) {
       await insertTask(
         supabase,
         {
-          cluster_id: parentClusterId,
+          cluster_id: clusterId,
           serlo_uuid: child.id ?? null,
-          serlo_url: child.id != null ? `${SERLO_PUBLIC_BASE}/${child.id}` : null,
+          serlo_url: serloUrl,
           content_type: 'exercise',
           title: null,
           question: child.currentRevision?.content ?? null,
@@ -266,12 +299,11 @@ async function walkTaxonomy(
       await insertTask(
         supabase,
         {
-          cluster_id: parentClusterId,
+          cluster_id: clusterId,
           serlo_uuid: child.id ?? null,
-          serlo_url: child.id != null ? `${SERLO_PUBLIC_BASE}/${child.id}` : null,
+          serlo_url: serloUrl,
           content_type: 'video',
           title: child.currentRevision?.title ?? null,
-          // Video-URL im question-Feld ablegen (Schema hat kein dediziertes Video-URL-Feld).
           question: child.currentRevision?.url ?? null,
           solution: null,
         },
@@ -284,9 +316,9 @@ async function walkTaxonomy(
       await insertTask(
         supabase,
         {
-          cluster_id: parentClusterId,
+          cluster_id: clusterId,
           serlo_uuid: child.id ?? null,
-          serlo_url: child.id != null ? `${SERLO_PUBLIC_BASE}/${child.id}` : null,
+          serlo_url: serloUrl,
           content_type: 'article',
           title: child.currentRevision?.title ?? null,
           question: child.currentRevision?.content ?? null,
@@ -316,14 +348,18 @@ async function main(): Promise<void> {
   })
 
   const stats: Stats = {
-    clusters: 0,
     exercise: 0,
-    exercise_group: 0,
     article: 0,
     video: 0,
-    course: 0,
+    matched: 0,
+    unmapped: 0,
     errors: 0,
   }
+
+  console.log('▶ Mathematik-Subject + Edvance-Cluster laden ...')
+  const subjectId = await getMathematikSubjectId(supabase)
+  const clusterMap = await loadClusterMap(supabase, subjectId)
+  console.log(`  Edvance-Cluster gefunden: ${Object.keys(clusterMap).join(', ')}`)
 
   console.log('▶ Lade Serlo-Mathematik-Taxonomie ...')
   const root = await fetchSerlo()
@@ -332,20 +368,21 @@ async function main(): Promise<void> {
     process.exit(1)
   }
 
-  console.log('▶ Mathematik-Subject sicherstellen ...')
-  const subjectId = await ensureMathematikSubject(supabase)
+  console.log('▶ Walke Taxonomie und importiere Tasks ...')
+  await walkTaxonomy(supabase, root, [root.name ?? 'Mathematik'], clusterMap, stats)
 
-  console.log('▶ Walke Taxonomie und importiere ...')
-  await walkTaxonomy(supabase, root, subjectId, null, stats)
-
+  const total = stats.exercise + stats.article + stats.video
   console.log('')
   console.log('═══════════════════════════════════════════')
   console.log('  IMPORT FERTIG')
   console.log('═══════════════════════════════════════════')
-  console.log(`  Cluster importiert : ${stats.clusters}`)
   console.log(`  Exercises          : ${stats.exercise}`)
   console.log(`  Articles           : ${stats.article}`)
   console.log(`  Videos             : ${stats.video}`)
+  console.log(`  -------------------`)
+  console.log(`  Total Tasks        : ${total}`)
+  console.log(`  → Cluster gemapped : ${stats.matched}`)
+  console.log(`  → ohne Cluster     : ${stats.unmapped}  (Admin sortiert spaeter)`)
   console.log(`  Fehler (geloggt)   : ${stats.errors}`)
   console.log('═══════════════════════════════════════════')
 }
