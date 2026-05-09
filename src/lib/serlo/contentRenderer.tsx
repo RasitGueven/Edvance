@@ -319,7 +319,64 @@ function renderPlugin(plugin: string, state: unknown): JSX.Element | null {
       const s = asNode(state)
       if (!s) return null
       const content = asNode(s.content)
-      return content ? <RenderNode node={content} /> : null
+      const interactive = asNode((s as { interactive?: unknown }).interactive)
+      const solution = asNode((s as { solution?: unknown }).solution)
+      return (
+        <div className="flex flex-col gap-3">
+          {content && <RenderNode node={content} />}
+          {interactive && (
+            <div className="rounded-lg border-2 border-dashed border-border p-3 text-xs text-muted">
+              [Interaktive Aufgabe – Eingabe erfolgt im Edvance-Antwortbereich darunter]
+            </div>
+          )}
+          {solution && (
+            <details className="rounded-lg border-2 border-border bg-card">
+              <summary className="cursor-pointer select-none px-4 py-2 text-sm font-semibold">
+                Loesung anzeigen
+              </summary>
+              <div className="px-4 pb-3 pt-1">
+                <RenderNode node={solution} />
+              </div>
+            </details>
+          )}
+        </div>
+      )
+    }
+
+    case 'exerciseGroup': {
+      const s = asNode(state)
+      if (!s) return null
+      const content = asNode(s.content)
+      const exercises = asNodeArray((s as { exercises?: unknown }).exercises)
+      return (
+        <div className="flex flex-col gap-4">
+          {content && <RenderNode node={content} />}
+          {exercises.map((ex, i) => (
+            <div key={i} className="rounded-lg border-l-4 border-primary bg-primary/5 p-4">
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+                Teilaufgabe {String.fromCharCode(97 + i)})
+              </p>
+              <RenderNode node={ex} />
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    case 'solution':
+    case 'solutionSteps': {
+      const s = asNode(state)
+      if (!s) return null
+      const strategy = asNode((s as { strategy?: unknown }).strategy)
+      const steps = asNode((s as { steps?: unknown }).steps)
+      const innerStrategy = asNode(strategy?.state)
+      const innerSteps = asNode(steps?.state)
+      return (
+        <div className="flex flex-col gap-3">
+          {strategy && <RenderNode node={innerStrategy ?? strategy} />}
+          {steps && <RenderNode node={innerSteps ?? steps} />}
+        </div>
+      )
     }
 
     case 'injection':
@@ -335,7 +392,7 @@ function renderPlugin(plugin: string, state: unknown): JSX.Element | null {
 
     default: {
       console.warn('[SerloRenderer] unbekanntes plugin:', plugin, state)
-      // Best-effort Fallback: state als Array → Kinder rendern; als Objekt mit content/children → unwrap.
+      // Best-effort: state als Array → Kinder rendern.
       if (Array.isArray(state)) {
         return (
           <>{(state as unknown[]).map((n, i) => {
@@ -345,9 +402,17 @@ function renderPlugin(plugin: string, state: unknown): JSX.Element | null {
         )
       }
       const s = asNode(state)
-      if (s?.content) return <RenderNode node={asNode(s.content) ?? {}} />
+      if (s?.content) {
+        const inner = asNode(s.content)
+        if (inner) return <RenderNode node={inner} />
+      }
       if (s?.children) return <>{renderSlateChildren(s.children)}</>
-      return null
+      // Letzter Fallback: Hinweis + Plugin-Name (damit man nicht vor leerer Karte steht).
+      return (
+        <div className="my-2 rounded-lg border-2 border-dashed border-border p-3 text-xs text-muted">
+          [Serlo-Plugin <code className="font-mono">{plugin}</code> – keine Anzeige moeglich]
+        </div>
+      )
     }
   }
 }
