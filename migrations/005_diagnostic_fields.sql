@@ -40,10 +40,11 @@ create index if not exists tasks_diagnostic_idx
   on tasks (is_diagnostic) where is_diagnostic = true;
 
 create index if not exists tasks_microskill_diagnostic_idx
-  on tasks (microskill_id, is_diagnostic, competency_level)
+  on tasks (microskill_id, is_diagnostic, difficulty)
   where is_diagnostic = true;
 
 -- Hinweis: 'competency_level' ist im PRD ein 1|2|3 Wert. Wir nutzen
 -- die existierende 'difficulty' Spalte (1-5) und mappen 1-2 → level 1,
--- 3 → level 2, 4-5 → level 3. Falls strenge 1|2|3 gewuenscht: separate
--- Spalte 'competency_level' in einer Folge-Migration.
+-- 3 → level 2, 4-5 → level 3 in src/lib/diagnostic/generator.ts.
+-- Falls strenge 1|2|3 gewuenscht: separate Spalte 'competency_level'
+-- in einer Folge-Migration.
