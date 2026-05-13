@@ -186,8 +186,7 @@ export async function getTasksByClusterOrdered(
   return { data: sorted, error: null }
 }
 
-// Tasks ohne Cluster-Zuordnung (cluster_id IS NULL). Nuetzlich nach
-// Serlo-Import, wenn das Keyword-Mapping nicht eindeutig war.
+// Tasks ohne Cluster-Zuordnung (cluster_id IS NULL).
 export async function getUnmappedTasks(): Promise<SupabaseResult<Task[]>> {
   try {
     const { data, error } = await supabase

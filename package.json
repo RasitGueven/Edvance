@@ -8,7 +8,6 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "tsc -b --noEmit",
-    "seed:serlo": "tsx --env-file=.env scripts/import-serlo.ts",
     "seed:clusters": "tsx --env-file=.env scripts/seed-clusters.ts",
     "seed:taxonomy": "tsx --env-file=.env scripts/seed-taxonomy.ts",
     "mark:diagnostic": "tsx --env-file=.env scripts/mark-diagnostic.ts"

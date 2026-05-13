@@ -284,7 +284,7 @@ function FilterResults({
                   <RowIcon type={t.content_type} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-foreground">
-                      {t.title ?? t.question?.slice(0, 80) ?? `serlo:${t.serlo_uuid ?? '?'}`}
+                      {t.title ?? t.question?.slice(0, 80) ?? `task:${t.id.slice(0, 8)}`}
                     </p>
                     {t.cluster_id && clusterNameById[t.cluster_id] && (
                       <p className="text-xs text-muted">{clusterNameById[t.cluster_id]}</p>

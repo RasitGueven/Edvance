@@ -7,12 +7,12 @@ profiles            → id, email, role, full_name, created_at
 students            → id, profile_id, class_level, school_name, school_type
 parent_student      → parent_id, student_id
 
-### Inhalte / Aufgaben (Serlo-Import)
-subjects            → id, name, serlo_id
-skill_clusters      → id, subject_id, name, class_level_min, class_level_max, serlo_taxonomy_id, sort_order
+### Inhalte / Aufgaben
+subjects            → id, name
+skill_clusters      → id, subject_id, name, class_level_min, class_level_max, sort_order
                       (= 5 KMK-Kompetenzbereiche pro Fach, klassenstufenuebergreifend)
-microskills         → id, cluster_id, code, name, description, class_level, prerequisite_ids[], sort_order
-tasks               → id, microskill_id, cluster_id, serlo_uuid, serlo_url, content_type, title, question, solution, hint, common_errors, coach_note, difficulty, estimated_minutes, class_level, is_active, created_at
+microskills         → id, cluster_id, code, name, description, class_level, prerequisite_ids[], sort_order, cognitive_type, estimated_minutes, curriculum_ref
+tasks               → id, microskill_id, cluster_id, content_type, title, question, solution, hint, common_errors, coach_note, difficulty, estimated_minutes, class_level, is_active, created_at, cognitive_type, input_type, is_diagnostic, curriculum_ref, question_payload, typical_errors[]
 task_coach_metadata → id, task_id, typical_errors, observation_hints, intervention_triggers, updated_at
 
 #### KMK-Kompetenzbereiche Mathematik (Kl. 8-10)
@@ -22,9 +22,9 @@ task_coach_metadata → id, task_id, typical_errors, observation_hints, interven
 4. Daten & Zufall
 5. Sachrechnen & Modellieren
 
-Serlo-Inhalte werden beim Import per Keyword-Mapping einem dieser
-5 Cluster zugeordnet (siehe `scripts/import-serlo.ts`). Nicht
-zuordbare Tasks landen mit `cluster_id = NULL` und werden manuell sortiert.
+Aufgaben werden einem Cluster und (optional) Mikroskill zugeordnet.
+Nicht zuordbare Tasks landen mit `cluster_id = NULL` und werden manuell
+sortiert.
 
 ### Schueler-Fach Verknuepfung
 student_subjects    → student_id, subject_id

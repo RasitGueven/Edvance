@@ -77,9 +77,9 @@ Reaktiver KI-Assistent im Schüler-Interface. Wird nur aktiv, wenn das Kind ihn 
 | --- | --- | --- |
 | Backend / DB / Auth | **Supabase** (Postgres + Auth + Realtime + Storage + Edge Functions) | Deckt alle Anforderungen ab — kein LMS-Overhead, deutlich schnellere Time-to-Launch als ein LMS-basiertes Setup |
 | Frontend | **Komplett custom** (React o. ä.) | Volle Kontrolle über UX und Lernpfad-Logik |
-| Aufgaben-Datenbank | **Serlo (CC-BY-SA) + KI-generiert auf Serlo-Basis** | Lizenzfrei, skalierbar — Daten liegen in Supabase Postgres |
+| Aufgaben-Datenbank | **Lehrbuch-Import (Lambacher Schweizer NRW) + KI-generiert + manuell** | Daten liegen in Supabase Postgres |
 | KI / Eddy | **Eine API-Lizenz** (z. B. Anthropic Claude) | Pro-Nachricht-Abrechnung, kein Pro-Kind-Modell |
-| Hint-Anreicherung | **KI-Pipeline** über Serlo-Aufgaben | Team & QS prüfen und geben frei |
+| Hint-Anreicherung | **KI-Pipeline** über importierte Aufgaben | Team & QS prüfen und geben frei |
 | Echtzeit (Coach-Dashboard) | **Supabase Realtime** | Live-Sync der Schüler-Aktivität ins Coach-Dashboard ohne separate Infrastruktur |
 
 > **Hinweis:** Eine frühere Variante mit **Moodle (headless)** als Backend wurde verworfen. Edvance braucht kein klassisches LMS — Supabase deckt Auth, Rollen, Datenbank und Realtime in einem Stack ab.
@@ -135,8 +135,8 @@ Reaktiver KI-Assistent im Schüler-Interface. Wird nur aktiv, wenn das Kind ihn 
 
 | Quelle | Tag | Lizenz |
 | --- | --- | --- |
-| Serlo.org | `serlo` | CC-BY-SA — kommerziell nutzbar, Lizenzhinweis erforderlich |
-| KI-generiert auf Serlo-Basis | `ki_generiert` | Qualitätsprüfung vor Freigabe |
+| Lambacher Schweizer (Klett) Kl. 8 NRW | `mathebuch_lambacher_8_nrw` | Lizenz mit Klett zu klären |
+| KI-generiert | `ki_generiert` | Qualitätsprüfung vor Freigabe |
 | Manuell (Team / QS) | `manuell` | Höchste Qualitätsstufe |
 
 ### Aufgabentypen (MVP)

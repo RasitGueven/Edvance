@@ -14,8 +14,6 @@ import {
   getTasksByClusterOrdered,
 } from '@/lib/supabase/tasks'
 import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
-import { SerloRenderer } from '@/lib/serlo/contentRenderer'
-import { SerloVideoRenderer } from '@/lib/serlo/videoRenderer'
 import type { SkillCluster, Task } from '@/types'
 
 type AnswerMode = 'type' | 'draw'
@@ -273,7 +271,7 @@ export function TaskPlayer(): JSX.Element {
             ) : task.content_type === 'exercise_group' || task.content_type === 'course' ? (
               <UnsupportedBlock type={task.content_type} />
             ) : (
-              <SerloRenderer content={task.question} />
+              <TaskContent text={task.question} />
             )}
           </CardContent>
         </Card>
@@ -444,14 +442,29 @@ function DifficultyBadge({ difficulty }: { difficulty: number }): JSX.Element {
   )
 }
 
+function TaskContent({ text }: { text: string | null | undefined }): JSX.Element {
+  if (!text) return <p className="text-sm italic text-muted">– kein Inhalt –</p>
+  return (
+    <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
+      {text}
+    </pre>
+  )
+}
+
 function VideoBlock({ task }: { task: Task }): JSX.Element {
-  // Video-URL liegt in serlo_video_url; legacy fallback auf question-Feld.
-  const url = task.serlo_video_url ?? task.question
+  const url = task.question
   if (!url) return <p className="text-sm text-muted">– kein Video-Link –</p>
   return (
     <div className="flex flex-col gap-4">
-      <SerloVideoRenderer url={url} title={task.title ?? undefined} />
-      {task.solution && <SerloRenderer content={task.solution} />}
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-2 self-start rounded-lg border-2 border-border bg-card px-4 py-3 text-sm font-semibold text-primary hover:bg-primary/5"
+      >
+        {task.title ?? 'Video oeffnen'}
+      </a>
+      {task.solution && <TaskContent text={task.solution} />}
     </div>
   )
 }
@@ -462,9 +475,6 @@ function UnsupportedBlock({ type }: { type: ContentType }): JSX.Element {
       <p className="text-sm font-semibold text-muted">
         Inhaltstyp <code className="rounded bg-border-strong/40 px-1.5 py-0.5">{type}</code>{' '}
         ist noch nicht unterstuetzt.
-      </p>
-      <p className="mt-1 text-xs text-muted">
-        (serlo_content_raw fehlt im Schema – kommt in einer Folge-Migration.)
       </p>
     </div>
   )
