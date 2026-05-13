@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useDiagnosis } from '@/context/DiagnosisContext'
 import { mockDiagnosisTasks } from '@/lib/diagnosisMockData'
 import {
@@ -7,9 +7,22 @@ import {
   buildDiagnosisResult,
   recommendFocus,
 } from '@/lib/behaviorAnalysis'
+import { getClustersBySubject, getSubjects } from '@/lib/supabase/tasks'
 import type { BehaviorAnalysis, BehaviorSnapshot } from '@/types/diagnosis'
 import { Button } from '@/components/ui/button'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+
+// Mapping: Diagnose-Mock-Cluster (M8.* taxonomy) → KMK-Kompetenzbereich
+// (Schema seit Migration 001). Bei Klick auf einen Fokus-Cluster im
+// Lernplan-Block wird ueber diesen Namen das echte Cluster in Supabase
+// gefunden und zur ClusterView navigiert.
+const DIAGNOSIS_TO_COMPETENCY: Record<string, string> = {
+  'Rationale Zahlen': 'Zahl & Rechnen',
+  'Terme & Gleichungen': 'Algebra & Funktionen',
+  'Proportionalität': 'Sachrechnen & Modellieren',
+  'Prozentrechnung': 'Zahl & Rechnen',
+  'Lineare Funktionen': 'Algebra & Funktionen',
+}
 import {
   ChevronDown,
   ChevronUp,
@@ -503,6 +516,30 @@ export function DiagnosisResult() {
   const { state, setCoachNote, resetSession } = useDiagnosis()
   const navigate = useNavigate()
 
+  // Map Cluster-Name (KMK) → cluster_id in Supabase, fuer Klick-Navigation.
+  const [clusterIdByName, setClusterIdByName] = useState<Record<string, string>>({})
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const { data: subjects } = await getSubjects()
+      const math = subjects?.find((s) => s.name === 'Mathematik')
+      if (!math) return
+      const { data: clusters } = await getClustersBySubject(math.id)
+      if (cancelled || !clusters) return
+      const map: Record<string, string> = {}
+      for (const c of clusters) map[c.name] = c.id
+      setClusterIdByName(map)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const clusterIdFor = (diagnosisName: string): string | undefined => {
+    const targetName = DIAGNOSIS_TO_COMPETENCY[diagnosisName] ?? diagnosisName
+    return clusterIdByName[targetName]
+  }
+
   const result = useMemo(
     () =>
       buildDiagnosisResult({
@@ -786,41 +823,52 @@ export function DiagnosisResult() {
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {focus.map((s, i) => (
-                <div
-                  key={s.skill_cluster}
-                  className="rounded-2xl bg-card p-5"
-                  style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black text-white"
-                      style={{
-                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                        borderBottom: '3px solid var(--primary-shadow)',
-                      }}
-                    >
-                      {i + 1}
-                    </span>
-                    <p className="text-sm font-black text-foreground flex-1">{s.skill_cluster}</p>
+              {focus.map((s, i) => {
+                const cid = clusterIdFor(s.skill_cluster)
+                const card = (
+                  <div
+                    className="rounded-2xl bg-card p-5 transition-shadow group-hover:shadow-md"
+                    style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black text-white"
+                        style={{
+                          background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                          borderBottom: '3px solid var(--primary-shadow)',
+                        }}
+                      >
+                        {i + 1}
+                      </span>
+                      <p className="text-sm font-black text-foreground flex-1">{s.skill_cluster}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-muted">
+                        Aktuell L{s.level} ({s.label})
+                      </p>
+                      <span className="text-xs font-black text-primary">
+                        {cid ? '→ Lernen starten' : '→ Ziel L7+'}
+                      </span>
+                    </div>
+                    <div className="mt-3 h-1.5 w-full rounded-full bg-border overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${(s.level / 10) * 100}%`,
+                          background: 'linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-muted">
-                      Aktuell L{s.level} ({s.label})
-                    </p>
-                    <span className="text-xs font-black text-primary">→ Ziel L7+</span>
-                  </div>
-                  <div className="mt-3 h-1.5 w-full rounded-full bg-border overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${(s.level / 10) * 100}%`,
-                        background: 'linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+                return cid ? (
+                  <Link key={s.skill_cluster} to={`/student/cluster/${cid}`} className="group block">
+                    {card}
+                  </Link>
+                ) : (
+                  <div key={s.skill_cluster}>{card}</div>
+                )
+              })}
             </div>
 
             <p className="mt-5 text-xs font-semibold text-muted leading-relaxed">

@@ -1,0 +1,135 @@
+{
+  "_comment": "Beispiel-Output von generateDiagnosticTest fuer Klasse 8 Mathe, Ziel 'Luecken schliessen', Note 4. Fixer Seed=42. Verwendet fictive task-IDs und coach-hints zur Illustration — bei Live-Aufruf werden echte Supabase-Tasks gepickt.",
+  "input": {
+    "student_id": "demo-student-1",
+    "grade": 8,
+    "school_type": "GESAMTSCHULE",
+    "subject": "MATH",
+    "goal": "CLOSE_GAPS",
+    "known_weak_topics": ["M8.AF.02"],
+    "last_grade_in_subject": 4
+  },
+  "options": { "seed": 42 },
+  "test": {
+    "student_id": "demo-student-1",
+    "subject": "MATH",
+    "grade": 8,
+    "generated_at": "2026-05-10T14:00:00.000Z",
+    "estimated_total_minutes": 18,
+    "coverage": [
+      { "topic_id": "M8.ZR.02", "topic_label": "Prozentwert, Grundwert, Prozentsatz", "task_id": "demo-task-zr-02-mc" },
+      { "topic_id": "M8.AF.02", "topic_label": "Lineare Gleichungen loesen", "task_id": "demo-task-af-02-free" },
+      { "topic_id": "M8.GM.01", "topic_label": "Flaecheninhalte ebener Figuren", "task_id": "demo-task-gm-01-steps" },
+      { "topic_id": "M8.DZ.01", "topic_label": "Daten in Diagrammen darstellen und ablesen", "task_id": "demo-task-dz-01-matching" },
+      { "topic_id": "M8.SM.01", "topic_label": "Dreisatz bei direkter Proportionalitaet", "task_id": "demo-task-sm-01-steps" },
+      { "topic_id": "M8.GM.03", "topic_label": "Satz des Pythagoras anwenden", "task_id": "demo-task-gm-03-draw" }
+    ],
+    "tasks": [
+      {
+        "sequence": 1,
+        "task_id": "demo-task-zr-02-mc",
+        "topic_id": "M8.ZR.02",
+        "topic_label": "Prozentwert, Grundwert, Prozentsatz",
+        "input_type": "MC",
+        "competency_level": 1,
+        "estimated_minutes": 2,
+        "coach_hint": "Achte ob das Kind Grundwert und Prozentwert verwechselt. Multiple-Choice deckt typische Verwechslungen auf.",
+        "typical_errors": [
+          "Verwechselt Grundwert und Prozentwert",
+          "Verschiebt Komma um eine Stelle (Prozentsatz vs. Dezimal)"
+        ]
+      },
+      {
+        "sequence": 2,
+        "task_id": "demo-task-af-02-free",
+        "topic_id": "M8.AF.02",
+        "topic_label": "Lineare Gleichungen loesen",
+        "input_type": "FREE_INPUT",
+        "competency_level": 1,
+        "estimated_minutes": 3,
+        "coach_hint": "known_weak_topic — auf level 1. Auf Aequivalenzumformung achten, vor allem Vorzeichen beim Umstellen.",
+        "typical_errors": [
+          "Vorzeichenfehler beim Umstellen",
+          "Vergessene Klammer-Aufloesung"
+        ]
+      },
+      {
+        "sequence": 3,
+        "task_id": "demo-task-gm-01-steps",
+        "topic_id": "M8.GM.01",
+        "topic_label": "Flaecheninhalte ebener Figuren",
+        "input_type": "STEPS",
+        "competency_level": 1,
+        "estimated_minutes": 3,
+        "coach_hint": "Schritt-fuer-Schritt-Format zeigt ob Formel-Auswahl bewusst oder geraten ist.",
+        "typical_errors": [
+          "Verwechselt Formeln (Dreieck vs Parallelogramm)",
+          "Vergisst /2 beim Dreieck"
+        ]
+      },
+      {
+        "sequence": 4,
+        "task_id": "demo-task-sm-01-steps",
+        "topic_id": "M8.SM.01",
+        "topic_label": "Dreisatz bei direkter Proportionalitaet",
+        "input_type": "STEPS",
+        "competency_level": 1,
+        "estimated_minutes": 3,
+        "coach_hint": "Pruefe ob das Kind den Dreisatz mechanisch anwendet oder das Verhaeltnis versteht.",
+        "typical_errors": [
+          "Multipliziert/dividiert in falscher Reihenfolge",
+          "Erkennt nicht, ob direkt oder antiproportional"
+        ]
+      },
+      {
+        "sequence": 5,
+        "task_id": "demo-task-dz-01-matching",
+        "topic_id": "M8.DZ.01",
+        "topic_label": "Daten in Diagrammen darstellen und ablesen",
+        "input_type": "MATCHING",
+        "competency_level": 1,
+        "estimated_minutes": 3,
+        "coach_hint": "Diagrammtypen → Anwendungsbereich zuordnen. Aufdecken ob Diagramm-Vokabular verstanden ist.",
+        "typical_errors": [
+          "Saeulen- und Balkendiagramm verwechselt",
+          "Kreisdiagramm faelschlich fuer Zeitreihen genutzt"
+        ]
+      },
+      {
+        "sequence": 6,
+        "task_id": "demo-task-gm-03-draw",
+        "topic_id": "M8.GM.03",
+        "topic_label": "Satz des Pythagoras anwenden",
+        "input_type": "DRAW",
+        "competency_level": 1,
+        "estimated_minutes": 4,
+        "coach_hint": "Anhang weil Geometrie im Lehrplan. Sehe ob Hypotenuse korrekt identifiziert wird.",
+        "typical_errors": [
+          "Verwechselt Hypotenuse mit Kathete",
+          "Quadriert nicht oder vergisst Wurzel am Ende"
+        ]
+      }
+    ]
+  },
+  "uncovered": [
+    {
+      "topic_id": "<cluster-uuid-algebra>",
+      "topic_label": "Algebra & Funktionen",
+      "reason": "Keine zusaetzliche diagnostische Aufgabe verfuegbar (Hauptaufgabe wurde auf Pflicht-MC ersetzt) — wird aber durch M8.AF.02 indirekt abgedeckt."
+    }
+  ],
+  "warnings": [
+    "Pflicht-Inputtyp MATCHING wurde durch DZ.01 ersetzt anstatt aus dem urspruenglichen Cluster-Pick."
+  ],
+  "coverage_report": {
+    "subject": "MATH",
+    "grade": 8,
+    "total_clusters_expected": 5,
+    "clusters_covered": 5,
+    "coverage_pct": 100,
+    "total_minutes": 18,
+    "in_target_range": true,
+    "missing_input_types": [],
+    "notes": "Alle 5 KMK-Kompetenzbereiche min. 1x repraesentiert. Zeitbudget 18 Min im Zielkorridor 16-22."
+  }
+}

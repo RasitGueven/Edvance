@@ -1,0 +1,186 @@
+{
+  "$schema": "Edvance Mikroskill-Taxonomie v1",
+  "subject": "MATH",
+  "grade": 8,
+  "curriculum": "NRW Kernlehrplan Mathematik Sekundarstufe I (2019)",
+  "competency_areas": [
+    {
+      "cluster_name": "Zahl & Rechnen",
+      "microskills": [
+        {
+          "topic_id": "M8.ZR.01",
+          "topic_label": "Bruchrechnung sicher anwenden",
+          "cognitive_type": "FACT",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": [],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.7.1",
+          "description": "Brueche addieren, subtrahieren, multiplizieren, dividieren; gemischte Zahlen umformen."
+        },
+        {
+          "topic_id": "M8.ZR.02",
+          "topic_label": "Prozentwert, Grundwert, Prozentsatz",
+          "cognitive_type": "TRANSFER",
+          "estimated_minutes": 4,
+          "prerequisite_topic_ids": ["M8.ZR.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.7.2",
+          "description": "Drei Grundaufgaben der Prozentrechnung in Sachkontexten loesen."
+        },
+        {
+          "topic_id": "M8.ZR.03",
+          "topic_label": "Zinsrechnung mit Zeitanteilen",
+          "cognitive_type": "ANALYSIS",
+          "estimated_minutes": 5,
+          "prerequisite_topic_ids": ["M8.ZR.02"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.1",
+          "description": "Jahres-, Monats- und Tageszinsen berechnen; Zinsformel umstellen."
+        },
+        {
+          "topic_id": "M8.ZR.04",
+          "topic_label": "Rationale Zahlen: Vorzeichenregeln",
+          "cognitive_type": "FACT",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": [],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.7.3",
+          "description": "Addition, Subtraktion, Multiplikation und Division ganzer und rationaler Zahlen mit Vorzeichen."
+        }
+      ]
+    },
+    {
+      "cluster_name": "Algebra & Funktionen",
+      "microskills": [
+        {
+          "topic_id": "M8.AF.01",
+          "topic_label": "Terme aufstellen und vereinfachen",
+          "cognitive_type": "FACT",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": ["M8.ZR.04"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.2",
+          "description": "Terme zusammenfassen, Klammern aufloesen, Distributivgesetz anwenden."
+        },
+        {
+          "topic_id": "M8.AF.02",
+          "topic_label": "Lineare Gleichungen loesen",
+          "cognitive_type": "TRANSFER",
+          "estimated_minutes": 4,
+          "prerequisite_topic_ids": ["M8.AF.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.3",
+          "description": "Lineare Gleichungen mit einer Variablen, auch mit Klammern und Bruechen, loesen."
+        },
+        {
+          "topic_id": "M8.AF.03",
+          "topic_label": "Lineare Funktionen interpretieren",
+          "cognitive_type": "TRANSFER",
+          "estimated_minutes": 4,
+          "prerequisite_topic_ids": ["M8.AF.02"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.4",
+          "description": "Funktionsgleichungen, Graphen, Steigung und y-Achsenabschnitt erkennen und umrechnen."
+        },
+        {
+          "topic_id": "M8.AF.04",
+          "topic_label": "Textaufgabe in lineare Gleichung uebersetzen",
+          "cognitive_type": "ANALYSIS",
+          "estimated_minutes": 5,
+          "prerequisite_topic_ids": ["M8.AF.02"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.5",
+          "description": "Sachsituation mathematisieren, Variable einfuehren, loesen und im Kontext interpretieren."
+        }
+      ]
+    },
+    {
+      "cluster_name": "Geometrie & Messen",
+      "microskills": [
+        {
+          "topic_id": "M8.GM.01",
+          "topic_label": "Flaecheninhalte ebener Figuren",
+          "cognitive_type": "FACT",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": [],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.6.1",
+          "description": "Flaeche von Rechteck, Dreieck, Parallelogramm, Trapez berechnen."
+        },
+        {
+          "topic_id": "M8.GM.02",
+          "topic_label": "Volumen und Oberflaeche von Prisma und Zylinder",
+          "cognitive_type": "TRANSFER",
+          "estimated_minutes": 4,
+          "prerequisite_topic_ids": ["M8.GM.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.6",
+          "description": "Volumen und Mantel-/Oberflaecheninhalt berechnen, Einheiten umrechnen."
+        },
+        {
+          "topic_id": "M8.GM.03",
+          "topic_label": "Satz des Pythagoras anwenden",
+          "cognitive_type": "ANALYSIS",
+          "estimated_minutes": 5,
+          "prerequisite_topic_ids": ["M8.GM.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.7",
+          "description": "Pythagoras in geometrischen und Sachkontexten zur Streckenberechnung einsetzen."
+        }
+      ]
+    },
+    {
+      "cluster_name": "Daten & Zufall",
+      "microskills": [
+        {
+          "topic_id": "M8.DZ.01",
+          "topic_label": "Daten in Diagrammen darstellen und ablesen",
+          "cognitive_type": "FACT",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": [],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.7.4",
+          "description": "Saeulen-, Balken-, Kreis- und Liniendiagramme lesen und beschriften."
+        },
+        {
+          "topic_id": "M8.DZ.02",
+          "topic_label": "Mittelwert, Median und Spannweite berechnen",
+          "cognitive_type": "TRANSFER",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": ["M8.DZ.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.8",
+          "description": "Lage- und Streumasse aus Datensaetzen berechnen und vergleichen."
+        },
+        {
+          "topic_id": "M8.DZ.03",
+          "topic_label": "Wahrscheinlichkeit einstufiger Zufallsexperimente",
+          "cognitive_type": "ANALYSIS",
+          "estimated_minutes": 4,
+          "prerequisite_topic_ids": ["M8.ZR.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.9",
+          "description": "Laplace-Wahrscheinlichkeit, relative Haeufigkeit, Ereignisse identifizieren."
+        }
+      ]
+    },
+    {
+      "cluster_name": "Sachrechnen & Modellieren",
+      "microskills": [
+        {
+          "topic_id": "M8.SM.01",
+          "topic_label": "Dreisatz bei direkter Proportionalitaet",
+          "cognitive_type": "FACT",
+          "estimated_minutes": 3,
+          "prerequisite_topic_ids": ["M8.ZR.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.7.5",
+          "description": "Aufgaben mit direkt proportionalen Groessen mit Dreisatz loesen."
+        },
+        {
+          "topic_id": "M8.SM.02",
+          "topic_label": "Tarif- und Kostenmodelle vergleichen",
+          "cognitive_type": "TRANSFER",
+          "estimated_minutes": 5,
+          "prerequisite_topic_ids": ["M8.AF.03", "M8.SM.01"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.10",
+          "description": "Verschiedene Tarife (Grundgebuehr + Verbrauch) als lineare Funktionen modellieren und Schnittpunkte deuten."
+        },
+        {
+          "topic_id": "M8.SM.03",
+          "topic_label": "Mehrschrittige Anwendungsaufgaben",
+          "cognitive_type": "ANALYSIS",
+          "estimated_minutes": 5,
+          "prerequisite_topic_ids": ["M8.AF.04", "M8.ZR.02"],
+          "curriculum_ref": "NRW.KLP.MA.SI.K.8.11",
+          "description": "Sachprobleme mit mehreren Loesungsschritten strukturieren, Teilergebnisse verbinden, Plausibilitaet pruefen."
+        }
+      ]
+    }
+  ]
+}

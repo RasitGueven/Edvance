@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent, type JSX, type KeyboardEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Lightbulb, PenLine, Type } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { DrawCanvas } from '@/components/edvance/DrawCanvas'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { MathToolbar } from '@/components/edvance/MathToolbar'
 import { useAuth } from '@/hooks/useAuth'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
 import {
@@ -15,6 +17,8 @@ import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
 import { SerloRenderer } from '@/lib/serlo/contentRenderer'
 import { SerloVideoRenderer } from '@/lib/serlo/videoRenderer'
 import type { SkillCluster, Task } from '@/types'
+
+type AnswerMode = 'type' | 'draw'
 
 type ContentType = Task['content_type']
 
@@ -48,9 +52,12 @@ export function TaskPlayer(): JSX.Element {
   const [answer, setAnswer] = useState<string>('')
   const [hintShown, setHintShown] = useState<boolean>(false)
   const [submitted, setSubmitted] = useState<boolean>(false)
+  const [mode, setMode] = useState<AnswerMode>('type')
+  const [drawingDataUrl, setDrawingDataUrl] = useState<string | null>(null)
 
   const tracker = useBehaviorTracker()
   const startedTaskRef = useRef<string | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { user } = useAuth()
 
   // Task + Cluster + Siblings laden bei taskId-Aenderung.
@@ -65,6 +72,8 @@ export function TaskPlayer(): JSX.Element {
     setAnswer('')
     setHintShown(false)
     setSubmitted(false)
+    setMode('type')
+    setDrawingDataUrl(null)
 
     void (async () => {
       const taskResult = await getTaskById(taskId)
@@ -131,12 +140,19 @@ export function TaskPlayer(): JSX.Element {
     tracker.onHintRequested()
   }
 
+  const effectiveAnswer = (): string =>
+    mode === 'type' ? answer : (drawingDataUrl ?? '')
+
+  const hasAnswer = (): boolean =>
+    mode === 'type' ? answer.trim().length > 0 : drawingDataUrl !== null
+
   const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault()
     if (!task || task.content_type !== 'exercise') return
-    if (answer.trim().length === 0) return
+    if (!hasAnswer()) return
     tracker.onLastKeystroke()
-    const snapshot = tracker.getSnapshot(task.id, answer)
+    const finalAnswer = effectiveAnswer()
+    const snapshot = tracker.getSnapshot(task.id, finalAnswer)
     setSubmitted(true)
     if (user) {
       const { error: persistError } = await persistBehaviorSnapshot(task.id, user.id, snapshot)
@@ -155,6 +171,23 @@ export function TaskPlayer(): JSX.Element {
 
   const handleAnswerKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => {
     tracker.onKeyDown(e)
+  }
+
+  const insertSymbol = (symbol: string): void => {
+    const ta = textareaRef.current
+    if (!ta) {
+      handleAnswerChange(answer + symbol)
+      return
+    }
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const next = answer.slice(0, start) + symbol + answer.slice(end)
+    handleAnswerChange(next)
+    requestAnimationFrame(() => {
+      ta.focus()
+      const pos = start + symbol.length
+      ta.setSelectionRange(pos, pos)
+    })
   }
 
   const handleAcknowledgeNonExercise = (): void => {
@@ -250,21 +283,46 @@ export function TaskPlayer(): JSX.Element {
           <Card className="mb-4">
             <CardContent className="pt-6">
               <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-3">
-                <label
-                  htmlFor="answer"
-                  className="text-xs font-semibold uppercase tracking-wider text-muted"
-                >
-                  Dein Loesungsweg
-                </label>
-                <textarea
-                  id="answer"
-                  value={answer}
-                  onChange={(e) => handleAnswerChange(e.target.value)}
-                  onKeyDown={handleAnswerKeyDown}
-                  placeholder="Zeige deinen Loesungsweg …"
-                  rows={5}
-                  className="min-h-[120px] w-full resize-y rounded-xl border-2 border-border bg-card p-3 text-sm leading-relaxed focus:border-primary focus:outline-none"
-                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant={mode === 'type' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setMode('type')}
+                  >
+                    <Type className="mr-1 h-4 w-4" /> Tippen
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={mode === 'draw' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setMode('draw')}
+                  >
+                    <PenLine className="mr-1 h-4 w-4" /> Zeichnen
+                  </Button>
+                  <span className="ml-auto text-xs font-semibold uppercase tracking-wider text-muted">
+                    Dein Loesungsweg
+                  </span>
+                </div>
+
+                {mode === 'type' ? (
+                  <>
+                    <textarea
+                      ref={textareaRef}
+                      id="answer"
+                      value={answer}
+                      onChange={(e) => handleAnswerChange(e.target.value)}
+                      onKeyDown={handleAnswerKeyDown}
+                      placeholder="Zeige deinen Loesungsweg …"
+                      rows={5}
+                      className="min-h-[120px] w-full resize-y rounded-xl border-2 border-border bg-card p-3 text-sm leading-relaxed focus:border-primary focus:outline-none"
+                    />
+                    <MathToolbar onInsert={insertSymbol} />
+                  </>
+                ) : (
+                  <DrawCanvas onChange={setDrawingDataUrl} />
+                )}
+
                 <div className="flex flex-wrap items-center gap-2">
                   {task.hint && (
                     <button
@@ -280,7 +338,7 @@ export function TaskPlayer(): JSX.Element {
                   <Button
                     type="submit"
                     size="lg"
-                    disabled={answer.trim().length === 0}
+                    disabled={!hasAnswer()}
                     className="ml-auto"
                   >
                     Antwort einreichen
