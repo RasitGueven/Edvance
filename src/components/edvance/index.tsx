@@ -8,6 +8,7 @@ interface EdvanceCardProps {
   variant?: 'default' | 'raised' | 'navy' | 'blue-pale'
   accent?: 'none' | 'left-primary' | 'left-success' | 'left-warning' | 'left-destructive'
   className?: string
+  onClick?: () => void
 }
 
 export function EdvanceCard({
@@ -15,31 +16,36 @@ export function EdvanceCard({
   variant = 'default',
   accent = 'none',
   className,
+  onClick,
 }: EdvanceCardProps) {
   const variantStyles: Record<string, string> = {
-    default: 'bg-[var(--surface)] border border-[var(--border)]',
-    raised: 'bg-[var(--surface-raised)] border border-[var(--border)]',
-    navy: 'bg-[var(--brand-navy)] text-[var(--text-inverse)] border border-[var(--brand-navy)]',
+    default:    'bg-[var(--surface)] border border-[var(--border)]',
+    raised:     'bg-[var(--surface-raised)] border border-[var(--border)]',
+    navy:       'bg-[var(--brand-navy)] text-[var(--text-inverse)] border border-[var(--brand-navy)]',
     'blue-pale': 'bg-[var(--primary-pale)] border border-[var(--primary-light)]',
   }
 
   const accentStyles: Record<string, string> = {
-    none: '',
-    'left-primary': 'border-l-4 border-l-[var(--primary)]',
-    'left-success': 'border-l-4 border-l-[var(--success)]',
-    'left-warning': 'border-l-4 border-l-[var(--warning)]',
+    none:               '',
+    'left-primary':     'border-l-4 border-l-[var(--primary)]',
+    'left-success':     'border-l-4 border-l-[var(--success)]',
+    'left-warning':     'border-l-4 border-l-[var(--warning)]',
     'left-destructive': 'border-l-4 border-l-[var(--destructive)]',
   }
+
+  const isInteractive = !!onClick
 
   return (
     <div
       className={cn(
-        'rounded-[var(--radius-xl)] p-6',
+        'rounded-[var(--radius-xl)] p-6 shadow-card',
         variantStyles[variant],
         accentStyles[accent],
+        variant !== 'navy' && 'transition-shadow duration-200 hover:shadow-elevation-md',
+        isInteractive && 'cursor-pointer active:scale-[0.99] transition-transform',
         className,
       )}
-      style={{ boxShadow: 'var(--shadow-card)' }}
+      onClick={onClick}
     >
       {children}
     </div>
@@ -70,7 +76,8 @@ export function EdvanceBadge({
       'bg-[var(--destructive-light)] text-[var(--destructive)] border border-[var(--destructive)]',
     muted:
       'bg-[var(--border)] text-[var(--text-muted)] border border-[var(--border-strong)]',
-    xp: 'bg-[var(--xp-gold)] text-[var(--brand-navy)] border border-[var(--xp-gold)]',
+    xp:
+      'bg-[var(--xp-gold)] text-[var(--brand-navy)] border border-[var(--xp-gold)] font-bold',
     streak:
       'bg-[var(--streak-orange)] text-white border border-[var(--streak-orange)]',
   }
@@ -132,16 +139,13 @@ export function MasteryBar({ level, showLabel = false, size = 'md' }: MasteryBar
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
       {showLabel && (
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             Niveau {clamped}/10
           </span>
-          <span
-            className="text-xs font-semibold"
-            style={{ color }}
-          >
+          <span className="text-xs font-bold" style={{ color }}>
             {label}
           </span>
         </div>
@@ -185,21 +189,25 @@ export function XPBar({ current, max, level, levelName }: XPBarProps) {
 
   useEffect(() => {
     setPulse(true)
-    const t = setTimeout(() => setPulse(false), 1500)
+    const t = setTimeout(() => setPulse(false), 500)
     return () => clearTimeout(t)
   }, [current])
 
   return (
     <div className="flex items-center gap-3">
       <div
-        className="flex-none flex items-center justify-center w-10 h-10 rounded-[var(--radius-full)] text-sm font-bold text-[var(--brand-navy)]"
-        style={{ backgroundColor: 'var(--xp-gold)' }}
+        className={cn(
+          'flex-none flex items-center justify-center w-10 h-10',
+          'rounded-[var(--radius-full)] text-sm font-bold text-[var(--brand-navy)]',
+          'bg-[var(--xp-gold)] shadow-elevation-sm',
+          pulse && 'animate-bounce-pop',
+        )}
       >
         {level}
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs font-semibold text-[var(--text-muted)]">{levelName}</span>
           <span
             className={cn(
@@ -207,16 +215,13 @@ export function XPBar({ current, max, level, levelName }: XPBarProps) {
               pulse && 'animate-xp-pulse',
             )}
           >
-            {current.toLocaleString()} / {max.toLocaleString()} XP
+            {current.toLocaleString('de-DE')} / {max.toLocaleString('de-DE')} XP
           </span>
         </div>
-        <div className="h-2 w-full rounded-[var(--radius-full)] overflow-hidden bg-[var(--xp-gold-light)]">
+        <div className="h-2.5 w-full rounded-[var(--radius-full)] overflow-hidden bg-[var(--xp-gold-light)]">
           <div
-            className="mastery-bar-fill h-full rounded-[var(--radius-full)]"
-            style={{
-              width: mounted ? `${pct}%` : '0%',
-              backgroundColor: 'var(--xp-gold)',
-            }}
+            className="xp-bar-fill h-full rounded-[var(--radius-full)]"
+            style={{ width: mounted ? `${pct}%` : '0%' }}
           />
         </div>
       </div>
@@ -244,25 +249,22 @@ export function StatCard({
   const isPositive = trend?.startsWith('+')
 
   return (
-    <EdvanceCard className="flex items-start gap-4">
+    <EdvanceCard className="group flex items-start gap-4 hover:-translate-y-0.5 transition-transform duration-200">
       <div
-        className="flex-none flex items-center justify-center w-12 h-12 rounded-[var(--radius-lg)] text-xl"
-        style={{ backgroundColor: `color-mix(in srgb, ${color} 12%, white)` }}
+        className="flex-none flex items-center justify-center w-12 h-12 rounded-[var(--radius-lg)] text-xl shrink-0 transition-transform duration-200 group-hover:scale-110"
+        style={{ backgroundColor: `color-mix(in srgb, ${color} 14%, white)` }}
       >
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p
-            className="text-3xl font-bold leading-none"
-            style={{ color }}
-          >
+          <p className="text-3xl font-bold leading-none" style={{ color }}>
             {value}
           </p>
           {trend && (
             <span
               className={cn(
-                'text-xs font-semibold rounded-[var(--radius-full)] px-2 py-0.5',
+                'text-xs font-semibold rounded-[var(--radius-full)] px-2 py-0.5 shrink-0',
                 isPositive
                   ? 'bg-[var(--success-light)] text-[var(--success)]'
                   : 'bg-[var(--destructive-light)] text-[var(--destructive)]',
@@ -318,10 +320,11 @@ export function AvatarInitials({ name, size = 'md', color = 'auto' }: AvatarInit
   return (
     <div
       className={cn(
-        'flex-none flex items-center justify-center rounded-[var(--radius-full)] font-bold text-white',
+        'flex-none flex items-center justify-center rounded-[var(--radius-full)] font-bold text-white select-none',
         sizeStyles[size],
       )}
       style={{ backgroundColor: bg }}
+      title={name}
       aria-label={name}
     >
       {getInitials(name)}
@@ -338,25 +341,22 @@ interface ProgressStepProps {
 
 export function ProgressStep({ steps, current }: ProgressStepProps) {
   return (
-    <div className="flex items-center gap-0">
+    <div className="flex items-center">
       {steps.map((step, idx) => {
-        const isPast = idx < current
+        const isPast   = idx < current
         const isActive = idx === current
-        const isLast = idx === steps.length - 1
+        const isLast   = idx === steps.length - 1
 
         return (
           <React.Fragment key={idx}>
             <div className="flex flex-col items-center gap-1.5 min-w-0">
               <div
                 className={cn(
-                  'w-8 h-8 rounded-[var(--radius-full)] flex items-center justify-center text-xs font-bold border-2 transition-all',
-                  isPast &&
-                    'bg-[var(--success)] border-[var(--success)] text-white',
-                  isActive &&
-                    'bg-[var(--primary)] border-[var(--primary)] text-white scale-110',
-                  !isPast &&
-                    !isActive &&
-                    'bg-transparent border-[var(--border-strong)] text-[var(--text-muted)]',
+                  'w-8 h-8 rounded-[var(--radius-full)] flex items-center justify-center',
+                  'text-xs font-bold border-2 transition-all duration-200',
+                  isPast   && 'bg-[var(--success)] border-[var(--success)] text-white',
+                  isActive && 'bg-[var(--primary)] border-[var(--primary)] text-white scale-110 shadow-elevation-sm',
+                  !isPast && !isActive && 'bg-transparent border-[var(--border-strong)] text-[var(--text-muted)]',
                 )}
               >
                 {isPast ? '✓' : idx + 1}
@@ -365,7 +365,7 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
                 className={cn(
                   'text-xs max-w-[64px] text-center leading-tight',
                   isActive && 'font-semibold text-[var(--primary)]',
-                  isPast && 'text-[var(--success)]',
+                  isPast   && 'text-[var(--success)]',
                   !isPast && !isActive && 'text-[var(--text-muted)]',
                 )}
               >
@@ -375,7 +375,7 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
             {!isLast && (
               <div
                 className={cn(
-                  'flex-1 h-0.5 mb-5 mx-1',
+                  'flex-1 h-0.5 mb-5 mx-1 transition-colors duration-300',
                   isPast ? 'bg-[var(--success)]' : 'bg-[var(--border)]',
                 )}
               />
@@ -398,8 +398,8 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center text-center py-16 px-6 gap-4">
-      <div className="text-5xl leading-none">{icon}</div>
+    <div className="flex flex-col items-center justify-center text-center py-16 px-6 gap-4 animate-fade-in">
+      <div className="text-5xl leading-none select-none">{icon}</div>
       <div className="flex flex-col gap-2 max-w-xs">
         <h3 className="text-base font-semibold text-[var(--text-primary)]">{title}</h3>
         <p className="text-sm leading-relaxed text-[var(--text-muted)]">{description}</p>
@@ -419,10 +419,7 @@ interface LoadingPulseProps {
 function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <div
-      className={cn(
-        'rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton',
-        className,
-      )}
+      className={cn('rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton', className)}
       style={style}
     />
   )
@@ -431,10 +428,7 @@ function SkeletonBlock({ className, style }: { className?: string; style?: React
 export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
   if (type === 'card') {
     return (
-      <div
-        className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)]"
-        style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--surface)' }}
-      >
+      <div className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] shadow-card bg-[var(--surface)]">
         <SkeletonBlock className="h-5 w-1/2 mb-4" />
         <SkeletonBlock className="h-4 w-full mb-2" />
         <SkeletonBlock className="h-4 w-3/4 mb-2" />
@@ -449,8 +443,7 @@ export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] flex items-start gap-3"
-            style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--surface)' }}
+            className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] shadow-card bg-[var(--surface)] flex items-start gap-3"
           >
             <SkeletonBlock className="w-12 h-12 rounded-[var(--radius-lg)] flex-none" />
             <div className="flex-1 flex flex-col gap-2">
@@ -469,7 +462,10 @@ export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
         <div key={i} className="flex items-center gap-3">
           <SkeletonBlock className="w-10 h-10 rounded-[var(--radius-full)] flex-none" />
           <div className="flex-1 flex flex-col gap-1.5">
-            <SkeletonBlock className="h-3.5" style={{ width: `${70 + (i % 3) * 10}%` } as React.CSSProperties} />
+            <SkeletonBlock
+              className="h-3.5"
+              style={{ width: `${70 + (i % 3) * 10}%` } as React.CSSProperties}
+            />
             <SkeletonBlock className="h-3 w-1/2" />
           </div>
         </div>
@@ -487,76 +483,57 @@ interface ToastBannerProps {
   onClose?: () => void
 }
 
-const TOAST_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  success: {
-    bg: 'var(--success)',
-    text: '#fff',
-    border: 'var(--success)',
-  },
-  xp: {
-    bg: 'var(--xp-gold)',
-    text: 'var(--brand-navy)',
-    border: 'var(--xp-gold)',
-  },
-  warning: {
-    bg: 'var(--warning-light)',
-    text: 'var(--warning)',
-    border: 'var(--warning)',
-  },
-  error: {
-    bg: 'var(--destructive)',
-    text: '#fff',
-    border: 'var(--destructive)',
-  },
+const TOAST_CLASS: Record<string, string> = {
+  success: 'toast-success',
+  xp:      'toast-xp',
+  warning: 'toast-warning',
+  error:   'toast-error',
+}
+
+const TOAST_ICON: Record<string, string> = {
+  success: '✓',
+  xp:      '🎉',
+  warning: '⚠️',
+  error:   '✕',
 }
 
 export function ToastBanner({ type, message, xpAmount, onClose }: ToastBannerProps) {
   const [exiting, setExiting] = useState(false)
-  const styles = TOAST_STYLES[type]
 
   useEffect(() => {
-    const hideTimer = setTimeout(() => {
-      setExiting(true)
-    }, 2700)
+    const hideTimer = setTimeout(() => setExiting(true), 2700)
     return () => clearTimeout(hideTimer)
   }, [])
 
   useEffect(() => {
     if (!exiting) return
-    const closeTimer = setTimeout(() => {
-      onClose?.()
-    }, 200)
+    const closeTimer = setTimeout(() => onClose?.(), 200)
     return () => clearTimeout(closeTimer)
   }, [exiting, onClose])
 
   return (
     <div
       className={cn(
-        'fixed top-6 left-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-[var(--radius-lg)] font-semibold',
+        'fixed top-6 left-1/2 z-50',
+        'flex items-center gap-3 px-5 py-3',
+        'rounded-[var(--radius-lg)] font-semibold border-[1.5px]',
+        '-translate-x-1/2 min-w-[280px] max-w-[480px]',
+        'shadow-elevation-lg',
+        TOAST_CLASS[type],
         exiting ? 'animate-toast-out' : 'animate-toast-in',
       )}
-      style={{
-        backgroundColor: styles.bg,
-        color: styles.text,
-        border: `1.5px solid ${styles.border}`,
-        boxShadow: 'var(--shadow-lg)',
-        transform: 'translateX(-50%)',
-        minWidth: '280px',
-        maxWidth: '480px',
-      }}
       role="alert"
     >
-      {type === 'xp' && (
-        <span className="text-2xl leading-none">🎉</span>
-      )}
-      {type === 'success' && <span className="text-xl leading-none">✓</span>}
-      {type === 'warning' && <span className="text-xl leading-none">⚠️</span>}
-      {type === 'error' && <span className="text-xl leading-none">✕</span>}
+      <span className={cn('text-xl leading-none', type === 'xp' && 'text-2xl')}>
+        {TOAST_ICON[type]}
+      </span>
 
       <span className="flex-1 text-sm">{message}</span>
 
       {type === 'xp' && xpAmount !== undefined && (
-        <span className="text-xl font-bold leading-none">+{xpAmount} XP</span>
+        <span className="text-xl font-bold leading-none animate-bounce-pop">
+          +{xpAmount} XP
+        </span>
       )}
     </div>
   )

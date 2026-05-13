@@ -7,13 +7,16 @@
 - Onboarding-Flow (Mock-Daten)
 - Design-System: EdvanceCard, MasteryBar, XPBar, StatCard, Badges, EmptyState, LoadingPulse
 - CLAUDE.md Harness konfiguriert
+- Diagnose-Engine mit Behavior-Tracking (Tablet-Sicht + Coach-Sicht + Result-Page)
+- Aufgaben-Schema: Tabellen, RLS-Policies, Seed-Script für KMK-Cluster
+- NRW Klasse 8 Mathe Taxonomie + Diagnostic-Generator
 
 ## In Arbeit
-- Diagnose-Engine mit Behavior-Tracking
+- Serlo-Import komplett entfernt (Migration 006) — Aufgaben-DB ist leer, neue Befüllung steht an
 
 ## Nächste Schritte
-- Diagnose-Ergebnisseite
-- Schüler-Tablet Session-View
+- Mathebuch-Import (Lambacher Schweizer 8. Klasse NRW) via Chrome-MCP
+- Schüler-Tablet Session-View (Lernpfad-Rendering aus echten tasks)
 - Home-Quest Flow
 - Elternreport
-- Supabase Echtdaten-Anbindung (nach Mock-Phase)
+- Supabase Echtdaten-Anbindung (Profiles/Students von Mock auf Supabase)
