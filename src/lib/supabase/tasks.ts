@@ -186,6 +186,25 @@ export async function getTasksByClusterOrdered(
   return { data: sorted, error: null }
 }
 
+// Alle Tasks aus einer Quelle (z.B. 'mathebuch_lambacher_8_nrw'),
+// sortiert nach source_ref fuer stabile Anzeige-Reihenfolge.
+export async function getTasksBySource(
+  source: string,
+): Promise<SupabaseResult<Task[]>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('source', source)
+      .order('source_ref', { ascending: true, nullsFirst: false })
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as Task[], error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Tasks aus Quelle konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Tasks ohne Cluster-Zuordnung (cluster_id IS NULL).
 export async function getUnmappedTasks(): Promise<SupabaseResult<Task[]>> {
   try {
