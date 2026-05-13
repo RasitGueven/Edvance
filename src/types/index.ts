@@ -145,6 +145,8 @@ export type Task = {
   id: string
   microskill_id: string | null
   cluster_id: string | null
+  source: string
+  source_ref: string | null
   content_type: ContentType
   title: string | null
   question: string | null
