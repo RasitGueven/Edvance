@@ -27,14 +27,43 @@ Der Importer baut daraus `source_ref` z.B. `kap3.s42.nr5b`.
 - `solution` (string) — Loesung/Loesungsweg, Markdown+LaTeX wie question
 - `hint` (string) — Tipp/Hilfestellung
 - `difficulty` (number 1..5)
-- `estimated_minutes` (number)
+- `competence` (string) — **Topic-Code** aus der NRW-Klasse-8-Taxonomie
+  (siehe Tabelle unten). Wenn gesetzt, uebernimmt der Importer
+  `estimated_minutes`, `cognitive_type` und `curriculum_ref` automatisch.
+- `estimated_minutes` (number) — **nur setzen, wenn die Aufgabe deutlich
+  vom Topic-Default abweicht** (z.B. mehrstufige Pythagoras-Konstruktion).
+  Sonst leer lassen → Wert kommt aus der Taxonomie.
 - `class_level` (number) — Default 8
-- `competence` (string) — KMK-Kompetenzbereich-Name (z.B. "Algebra & Funktionen")
-  oder Mikroskill-Code aus `src/lib/taxonomy/nrw_math_klasse8.json`
 - `content_type` — `exercise` (Default), `exercise_group`, `article`, `course`
 
 Zusatzfelder werden vom Importer aktuell ignoriert (aber nicht abgelehnt).
 Wenn du regelmaessig Felder mitlieferst, die wir auswerten sollten, sag Bescheid.
+
+## Topic-Codes (Klasse 8 NRW)
+
+| Code | Topic | Default-Minuten |
+|---|---|---|
+| `M8.ZR.01` | Bruchrechnung sicher anwenden | 3 |
+| `M8.ZR.02` | Prozentwert, Grundwert, Prozentsatz | 4 |
+| `M8.ZR.03` | Zinsrechnung mit Zeitanteilen | 5 |
+| `M8.ZR.04` | Rationale Zahlen: Vorzeichenregeln | 3 |
+| `M8.AF.01` | Terme aufstellen und vereinfachen | 3 |
+| `M8.AF.02` | Lineare Gleichungen loesen | 4 |
+| `M8.AF.03` | Lineare Funktionen interpretieren | 4 |
+| `M8.AF.04` | Textaufgabe in lineare Gleichung uebersetzen | 5 |
+| `M8.GM.01` | Flaecheninhalte ebener Figuren | 3 |
+| `M8.GM.02` | Volumen und Oberflaeche von Prisma und Zylinder | 4 |
+| `M8.GM.03` | Satz des Pythagoras anwenden | 5 |
+| `M8.DZ.01` | Daten in Diagrammen darstellen und ablesen | 3 |
+| `M8.DZ.02` | Mittelwert, Median und Spannweite berechnen | 3 |
+| `M8.DZ.03` | Wahrscheinlichkeit einstufiger Zufallsexperimente | 4 |
+| `M8.SM.01` | Dreisatz bei direkter Proportionalitaet | 3 |
+| `M8.SM.02` | Tarif- und Kostenmodelle vergleichen | 5 |
+| `M8.SM.03` | Mehrschrittige Anwendungsaufgaben | 5 |
+
+Wenn keine Zuordnung passt: `competence` weglassen. Der Importer warnt
+nicht — aber `estimated_minutes` fallen auf Default 3 zurueck und die
+Aufgabe ist nicht via Topic auffindbar.
 
 ## Speicherort
 
@@ -62,8 +91,7 @@ nutzt nur die JSON-Inhalte, nicht die Verzeichnisnamen.
   "solution": "$3x + 2x - 8 - 5 = 5x - 13$",
   "hint": "Klammer aufloesen, dann gleichartige Terme zusammenfassen.",
   "difficulty": 2,
-  "estimated_minutes": 3,
-  "competence": "Algebra & Funktionen"
+  "competence": "M8.AF.01"
 }
 ```
 

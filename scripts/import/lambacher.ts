@@ -23,8 +23,17 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 const SOURCE = 'mathebuch_lambacher_8_nrw'
 const RAW_DIR = 'scripts/import/raw/lambacher-8-nrw'
 const RUNS_DIR = 'scripts/import/runs'
+const TAXONOMY_PATH = 'src/lib/taxonomy/nrw_math_klasse8.json'
 
 type RawTask = Record<string, unknown>
+
+type TopicInfo = {
+  topic_id: string
+  estimated_minutes: number
+  cognitive_type: 'FACT' | 'TRANSFER' | 'ANALYSIS'
+  curriculum_ref: string
+  cluster_name: string
+}
 
 type Stats = {
   filesRead: number
@@ -41,6 +50,7 @@ type RunLog = {
   dryRun: boolean
   stats: Stats
   errors: { file: string; message: string }[]
+  unknownCompetences: string[]
 }
 
 // Roh-JSONs rekursiv einsammeln.
@@ -53,6 +63,32 @@ function collectJsonFiles(root: string): string[] {
     else if (entry.endsWith('.json')) out.push(full)
   }
   return out
+}
+
+// Lookup-Map topic_id → TopicInfo aus der Taxonomie. Single Source of Truth
+// fuer estimated_minutes, cognitive_type, curriculum_ref pro Microskill.
+function loadTaxonomy(): Map<string, TopicInfo> {
+  const map = new Map<string, TopicInfo>()
+  if (!existsSync(TAXONOMY_PATH)) return map
+  const raw = JSON.parse(readFileSync(TAXONOMY_PATH, 'utf8')) as {
+    competency_areas?: {
+      cluster_name: string
+      microskills?: Partial<TopicInfo>[]
+    }[]
+  }
+  for (const cluster of raw.competency_areas ?? []) {
+    for (const ms of cluster.microskills ?? []) {
+      if (!ms.topic_id) continue
+      map.set(ms.topic_id, {
+        topic_id: ms.topic_id,
+        estimated_minutes: ms.estimated_minutes ?? 3,
+        cognitive_type: ms.cognitive_type ?? 'FACT',
+        curriculum_ref: ms.curriculum_ref ?? '',
+        cluster_name: cluster.cluster_name,
+      })
+    }
+  }
+  return map
 }
 
 function asString(v: unknown): string | null {
@@ -77,9 +113,21 @@ function buildSourceRef(raw: RawTask): string | null {
 }
 
 // Mapping Roh → DB. Question ist Pflicht – Aufgaben ohne Frage werden geskippt.
-function toDbTask(raw: RawTask): Record<string, unknown> | null {
+// Wenn raw.competence einen Topic-Code (z.B. "M8.AF.01") liefert, werden
+// estimated_minutes / cognitive_type / curriculum_ref aus der Taxonomie
+// uebernommen, sofern raw selbst keinen Wert setzt.
+function toDbTask(
+  raw: RawTask,
+  taxonomy: Map<string, TopicInfo>,
+  unknownCompetences: Set<string>,
+): Record<string, unknown> | null {
   const question = asString(raw.question)
   if (!question) return null
+
+  const competenceRaw = asString(raw.competence)
+  const topic = competenceRaw ? taxonomy.get(competenceRaw) ?? null : null
+  if (competenceRaw && !topic) unknownCompetences.add(competenceRaw)
+
   return {
     source: SOURCE,
     source_ref: buildSourceRef(raw),
@@ -89,10 +137,12 @@ function toDbTask(raw: RawTask): Record<string, unknown> | null {
     solution: asString(raw.solution),
     hint: asString(raw.hint),
     difficulty: asNumber(raw.difficulty),
-    estimated_minutes: asNumber(raw.estimated_minutes) ?? 3,
+    estimated_minutes:
+      asNumber(raw.estimated_minutes) ?? topic?.estimated_minutes ?? 3,
     class_level: asNumber(raw.class_level) ?? 8,
     is_active: true,
-    curriculum_ref: asString(raw.curriculum_ref) ?? asString(raw.competence),
+    cognitive_type: asString(raw.cognitive_type) ?? topic?.cognitive_type ?? null,
+    curriculum_ref: asString(raw.curriculum_ref) ?? topic?.curriculum_ref ?? null,
   }
 }
 
@@ -131,7 +181,11 @@ async function main(): Promise<void> {
     skipped: 0,
   }
   const errors: RunLog['errors'] = []
+  const unknownCompetences = new Set<string>()
   const startedAt = new Date().toISOString()
+
+  const taxonomy = loadTaxonomy()
+  console.log(`▶ ${taxonomy.size} Microskill(s) aus Taxonomie geladen`)
 
   const files = collectJsonFiles(RAW_DIR)
   stats.filesRead = files.length
@@ -163,7 +217,7 @@ async function main(): Promise<void> {
     }
     const items = Array.isArray(raw) ? raw : [raw]
     for (const item of items) {
-      const row = toDbTask(item)
+      const row = toDbTask(item, taxonomy, unknownCompetences)
       if (!row) {
         stats.skipped += 1
         errors.push({ file, message: 'kein "question"-Feld' })
@@ -189,12 +243,22 @@ async function main(): Promise<void> {
   console.log(`  Skipped           : ${stats.skipped}`)
   console.log(`  Parse-Fehler      : ${stats.parseErrors}`)
   console.log(`  Upsert-Fehler     : ${stats.upsertErrors}`)
+  if (unknownCompetences.size > 0) {
+    console.log(`  Unbekannte Codes  : ${[...unknownCompetences].join(', ')}`)
+  }
   console.log('═══════════════════════════════════════════')
 
   // Run-Log immer schreiben, auch im Dry-Run.
   if (!existsSync(RUNS_DIR)) mkdirSync(RUNS_DIR, { recursive: true })
   const logPath = join(RUNS_DIR, `${startedAt.replace(/[:.]/g, '-')}.json`)
-  const log: RunLog = { startedAt, finishedAt, dryRun, stats, errors }
+  const log: RunLog = {
+    startedAt,
+    finishedAt,
+    dryRun,
+    stats,
+    errors,
+    unknownCompetences: [...unknownCompetences],
+  }
   writeFileSync(logPath, JSON.stringify(log, null, 2))
   console.log(`  Log: ${logPath}`)
 }
