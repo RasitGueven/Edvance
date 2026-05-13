@@ -102,9 +102,11 @@ create index if not exists tasks_microskill_diagnostic_idx
   on tasks (microskill_id, is_diagnostic, difficulty)
   where is_diagnostic = true;
 
-create unique index if not exists tasks_source_ref_unique
-  on tasks (source, source_ref)
-  where source_ref is not null;
+-- Hinweis: ehemals partial unique index (WHERE source_ref IS NOT NULL).
+-- Migration 008 hat das durch echten UNIQUE CONSTRAINT ersetzt, weil
+-- PostgREST-Upsert ohne WHERE-Praedikat sonst kein ON CONFLICT findet.
+alter table tasks
+  add constraint tasks_source_ref_unique unique (source, source_ref);
 
 create index if not exists tasks_source_idx on tasks (source);
 
