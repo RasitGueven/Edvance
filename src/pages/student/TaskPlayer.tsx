@@ -14,6 +14,7 @@ import {
   getTasksByClusterOrdered,
 } from '@/lib/supabase/tasks'
 import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
+import { MathContent } from '@/lib/render/MathContent'
 import type { SkillCluster, Task } from '@/types'
 
 type AnswerMode = 'type' | 'draw'
@@ -271,7 +272,7 @@ export function TaskPlayer(): JSX.Element {
             ) : task.content_type === 'exercise_group' || task.content_type === 'course' ? (
               <UnsupportedBlock type={task.content_type} />
             ) : (
-              <TaskContent text={task.question} />
+              <MathContent text={task.question} />
             )}
           </CardContent>
         </Card>
@@ -442,15 +443,6 @@ function DifficultyBadge({ difficulty }: { difficulty: number }): JSX.Element {
   )
 }
 
-function TaskContent({ text }: { text: string | null | undefined }): JSX.Element {
-  if (!text) return <p className="text-sm italic text-muted">– kein Inhalt –</p>
-  return (
-    <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
-      {text}
-    </pre>
-  )
-}
-
 function VideoBlock({ task }: { task: Task }): JSX.Element {
   const url = task.question
   if (!url) return <p className="text-sm text-muted">– kein Video-Link –</p>
@@ -464,7 +456,7 @@ function VideoBlock({ task }: { task: Task }): JSX.Element {
       >
         {task.title ?? 'Video oeffnen'}
       </a>
-      {task.solution && <TaskContent text={task.solution} />}
+      {task.solution && <MathContent text={task.solution} />}
     </div>
   )
 }
