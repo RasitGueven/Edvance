@@ -141,6 +141,12 @@ export type Microskill = {
   curriculum_ref: string | null
 }
 
+export type TaskAsset = {
+  url: string
+  alt: string
+  caption?: string
+}
+
 export type Task = {
   id: string
   microskill_id: string | null
@@ -165,6 +171,7 @@ export type Task = {
   curriculum_ref: string | null
   question_payload: unknown | null
   typical_errors: string[] | null
+  assets: TaskAsset[]
 }
 
 // Diagnostic-Generator Output-Typen (siehe src/lib/diagnostic/generator.ts).

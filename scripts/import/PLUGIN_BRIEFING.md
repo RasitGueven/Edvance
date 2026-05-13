@@ -35,6 +35,29 @@ Der Importer baut daraus `source_ref` z.B. `kap3.s42.nr5b`.
   Sonst leer lassen → Wert kommt aus der Taxonomie.
 - `class_level` (number) — Default 8
 - `content_type` — `exercise` (Default), `exercise_group`, `article`, `course`
+- `assets` (array) — Bilder/Abbildungen die zur Aufgabe gehoeren.
+  Format pro Eintrag: `{ "url": "...", "alt": "...", "caption": "..." }`.
+  `url` + `alt` Pflicht, `caption` optional. Eintraege ohne url/alt werden
+  vom Importer stillschweigend verworfen.
+
+  **Speicher-Empfehlung:** Public Storage-Bucket `task-assets` in Supabase
+  (im Studio: Storage → New Bucket → Name `task-assets`, Public ✓).
+  Datei hochladen, Public-URL kopieren, in `url` setzen.
+
+  **Wichtig:** Klett-CDN-URLs (z.B. Bilder hinter Login) funktionieren in
+  unserer App nicht — bitte selbst nachzeichnen/scannen und in den eigenen
+  Bucket laden, oder das Asset weglassen und im `alt` beschreiben.
+
+  Beispiel:
+  ```json
+  "assets": [
+    {
+      "url": "https://<projekt>.supabase.co/storage/v1/object/public/task-assets/kap01/wuerfel-ventilkappe.png",
+      "alt": "Wuerfel mit schwerem Metallgewinde auf Seite 1",
+      "caption": "Abb. 1"
+    }
+  ]
+  ```
 
 Zusatzfelder werden vom Importer aktuell ignoriert (aber nicht abgelehnt).
 Wenn du regelmaessig Felder mitlieferst, die wir auswerten sollten, sag Bescheid.

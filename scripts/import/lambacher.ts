@@ -101,6 +101,23 @@ function asNumber(v: unknown): number | null {
   return null
 }
 
+// Assets validieren: nur Eintraege mit url + alt durchlassen. Caption optional.
+type AssetIn = { url?: unknown; alt?: unknown; caption?: unknown }
+
+function asAssets(v: unknown): { url: string; alt: string; caption?: string }[] {
+  if (!Array.isArray(v)) return []
+  const out: { url: string; alt: string; caption?: string }[] = []
+  for (const item of v as AssetIn[]) {
+    if (typeof item !== 'object' || item === null) continue
+    const url = asString(item.url)
+    const alt = asString(item.alt)
+    if (!url || !alt) continue
+    const caption = asString(item.caption) ?? undefined
+    out.push(caption ? { url, alt, caption } : { url, alt })
+  }
+  return out
+}
+
 // source_ref aus chapter/page/task_number generieren. Stabil + lesbar.
 function buildSourceRef(raw: RawTask): string | null {
   const ch = asString(raw.chapter) ?? asNumber(raw.chapter)?.toString()
@@ -143,6 +160,7 @@ function toDbTask(
     is_active: true,
     cognitive_type: asString(raw.cognitive_type) ?? topic?.cognitive_type ?? null,
     curriculum_ref: asString(raw.curriculum_ref) ?? topic?.curriculum_ref ?? null,
+    assets: asAssets(raw.assets),
   }
 }
 

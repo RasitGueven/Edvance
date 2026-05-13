@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type JSX } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { AssetList } from '@/lib/render/AssetList'
 import { MathContent } from '@/lib/render/MathContent'
 import { getTasksBySource } from '@/lib/supabase/tasks'
 import type { Task } from '@/types'
@@ -60,6 +61,7 @@ function TaskCard({ task }: { task: Task }): JSX.Element {
           </h2>
           <MetaRow task={task} />
         </div>
+        <AssetList assets={task.assets} />
         <MathContent text={task.question} />
         <div className="flex flex-wrap gap-2 border-t border-border pt-3">
           {task.hint && (

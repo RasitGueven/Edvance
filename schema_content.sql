@@ -81,7 +81,9 @@ create table tasks (
   typical_errors text[],
   -- aus Migration 007 (Quelle + Idempotenz-Referenz)
   source text not null default 'unbekannt',
-  source_ref text
+  source_ref text,
+  -- aus Migration 009 (Bilder/Abbildungen)
+  assets jsonb not null default '[]'::jsonb
 );
 
 -- Coach-Hinweise pro Aufgabe (erweiterbar)
@@ -94,7 +96,7 @@ create table task_coach_metadata (
   updated_at timestamptz default now()
 );
 
--- Indizes (aus Migrations 005 + 007)
+-- Indizes (aus Migrations 005 + 007 + 009)
 create index if not exists tasks_diagnostic_idx
   on tasks (is_diagnostic) where is_diagnostic = true;
 
@@ -109,6 +111,10 @@ alter table tasks
   add constraint tasks_source_ref_unique unique (source, source_ref);
 
 create index if not exists tasks_source_idx on tasks (source);
+
+create index if not exists tasks_has_assets_idx
+  on tasks ((jsonb_array_length(assets) > 0))
+  where jsonb_array_length(assets) > 0;
 
 -- RLS aktivieren
 alter table subjects enable row level security;
