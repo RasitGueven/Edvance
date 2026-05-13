@@ -212,7 +212,7 @@ function TaskRow({
       <RowIcon type={task.content_type} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-foreground">
-          {task.title ?? task.question?.slice(0, 80) ?? `serlo:${task.serlo_uuid ?? '?'}`}
+          {task.title ?? task.question?.slice(0, 80) ?? `task:${task.id.slice(0, 8)}`}
         </p>
         {subtitle && <p className="text-xs text-muted">{subtitle}</p>}
       </div>

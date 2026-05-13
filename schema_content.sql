@@ -1,19 +1,18 @@
 -- ============================================================================
--- Edvance Content Schema (Aufgaben / Serlo-Import)
+-- Edvance Content Schema (Aufgaben / Cluster / Microskills)
 --
 -- Manueller Schritt: Diese Datei im Supabase SQL Editor ausfuehren.
 --
 -- ⚠️  KONFLIKT MIT schema.sql:
 -- Die Tabelle `subjects` existiert bereits aus schema.sql mit der Form
 --   (id uuid, name text CHECK (name in ('Mathematik','Deutsch','Englisch')))
--- und ist mit Werten vorbefuellt. Diese Datei definiert `subjects` neu mit
--- zusaetzlichem `serlo_id` und ohne CHECK-Constraint.
+-- und ist mit Werten vorbefuellt. Diese Datei definiert `subjects` neu ohne
+-- CHECK-Constraint.
 --
 -- Wenn schema.sql bereits ausgefuehrt wurde, statt der `create table subjects`
 -- Anweisung unten den folgenden additiven Block ausfuehren:
 --
 --   alter table subjects drop constraint if exists subjects_name_check;
---   alter table subjects add column if not exists serlo_id integer unique;
 --
 -- Danach die `create table subjects (...)` Anweisung unten ueberspringen.
 -- ============================================================================
@@ -21,8 +20,7 @@
 -- Fach (Mathematik, Deutsch, Englisch)
 create table subjects (
   id uuid primary key default gen_random_uuid(),
-  name text not null,
-  serlo_id integer unique
+  name text not null
 );
 
 -- Themencluster (z.B. "Terme & Gleichungen", "Rationale Zahlen")
@@ -32,7 +30,6 @@ create table skill_clusters (
   name text not null,
   class_level_min integer not null check (class_level_min between 5 and 13),
   class_level_max integer not null check (class_level_max between 5 and 13),
-  serlo_taxonomy_id integer unique,
   sort_order integer default 0
 );
 
@@ -48,13 +45,11 @@ create table microskills (
   sort_order integer default 0
 );
 
--- Aufgaben (aus Serlo importiert oder manuell erstellt)
+-- Aufgaben (manuell erstellt oder aus externer Quelle importiert)
 create table tasks (
   id uuid primary key default gen_random_uuid(),
   microskill_id uuid references microskills(id) on delete set null,
   cluster_id uuid references skill_clusters(id) on delete set null,
-  serlo_uuid integer unique,
-  serlo_url text,
   content_type text not null check (
     content_type in ('exercise','exercise_group','article','video','course')
   ),

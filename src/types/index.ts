@@ -116,7 +116,6 @@ export type InputType = 'MC' | 'FREE_INPUT' | 'STEPS' | 'MATCHING' | 'DRAW'
 export type Subject = {
   id: string
   name: string
-  serlo_id: number | null
 }
 
 export type SkillCluster = {
@@ -125,7 +124,6 @@ export type SkillCluster = {
   name: string
   class_level_min: number
   class_level_max: number
-  serlo_taxonomy_id: number | null
   sort_order: number
 }
 
@@ -147,10 +145,6 @@ export type Task = {
   id: string
   microskill_id: string | null
   cluster_id: string | null
-  serlo_uuid: number | null
-  serlo_url: string | null
-  serlo_video_url: string | null
-  serlo_content_raw: unknown | null
   content_type: ContentType
   title: string | null
   question: string | null
