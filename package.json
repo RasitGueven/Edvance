@@ -11,7 +11,8 @@
     "seed:clusters": "tsx --env-file=.env scripts/seed-clusters.ts",
     "seed:taxonomy": "tsx --env-file=.env scripts/seed-taxonomy.ts",
     "mark:diagnostic": "tsx --env-file=.env scripts/mark-diagnostic.ts",
-    "import:lambacher": "tsx --env-file=.env scripts/import/lambacher.ts"
+    "import:lambacher": "tsx --env-file=.env scripts/import/lambacher.ts",
+    "generate:assets": "tsx --env-file=.env scripts/generate-assets.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
@@ -31,6 +32,7 @@
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",
