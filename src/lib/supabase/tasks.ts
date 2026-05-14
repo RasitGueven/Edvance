@@ -105,6 +105,24 @@ export async function getMicroskillsByCluster(
   }
 }
 
+// Microskills nach Liste von IDs (z.B. zum Auflösen der Namen aus tasks.microskill_id).
+export async function getMicroskillsByIds(
+  ids: string[],
+): Promise<SupabaseResult<Microskill[]>> {
+  if (ids.length === 0) return { data: [], error: null }
+  try {
+    const { data, error } = await supabase
+      .from('microskills')
+      .select('*')
+      .in('id', ids)
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as Microskill[], error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Microskills konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Eine einzelne Aufgabe per id.
 export async function getTaskById(taskId: string): Promise<SupabaseResult<Task | null>> {
   try {
