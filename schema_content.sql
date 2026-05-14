@@ -1,7 +1,11 @@
 -- ============================================================================
 -- Edvance Content Schema (Aufgaben / Cluster / Microskills)
 --
--- Manueller Schritt: Diese Datei im Supabase SQL Editor ausfuehren.
+-- Stand: Migration 007 inklusive (Diagnostic-Felder, Serlo-Removal, source/source_ref).
+-- Diese Datei spiegelt den realen DB-Stand. Inkrementelle Aenderungen seit der
+-- Erstausfuehrung laufen ueber migrations/00X_*.sql.
+--
+-- Manueller Schritt: Diese Datei im Supabase SQL Editor ausfuehren (Greenfield).
 --
 -- ⚠️  KONFLIKT MIT schema.sql:
 -- Die Tabelle `subjects` existiert bereits aus schema.sql mit der Form
@@ -42,7 +46,11 @@ create table microskills (
   description text,
   class_level integer not null check (class_level between 5 and 13),
   prerequisite_ids uuid[] default '{}',
-  sort_order integer default 0
+  sort_order integer default 0,
+  -- aus Migration 005 (Diagnostic-Felder)
+  cognitive_type text check (cognitive_type in ('FACT','TRANSFER','ANALYSIS')),
+  estimated_minutes integer,
+  curriculum_ref text
 );
 
 -- Aufgaben (manuell erstellt oder aus externer Quelle importiert)
@@ -63,7 +71,19 @@ create table tasks (
   estimated_minutes integer default 3,
   class_level integer check (class_level between 5 and 13),
   is_active boolean default true,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  -- aus Migration 005 (Diagnostic-Felder)
+  cognitive_type text check (cognitive_type in ('FACT','TRANSFER','ANALYSIS')),
+  input_type text check (input_type in ('MC','FREE_INPUT','STEPS','MATCHING','DRAW')),
+  is_diagnostic boolean default false,
+  curriculum_ref text,
+  question_payload jsonb,
+  typical_errors text[],
+  -- aus Migration 007 (Quelle + Idempotenz-Referenz)
+  source text not null default 'unbekannt',
+  source_ref text,
+  -- aus Migration 009 (Bilder/Abbildungen)
+  assets jsonb not null default '[]'::jsonb
 );
 
 -- Coach-Hinweise pro Aufgabe (erweiterbar)
@@ -75,6 +95,26 @@ create table task_coach_metadata (
   intervention_triggers text,
   updated_at timestamptz default now()
 );
+
+-- Indizes (aus Migrations 005 + 007 + 009)
+create index if not exists tasks_diagnostic_idx
+  on tasks (is_diagnostic) where is_diagnostic = true;
+
+create index if not exists tasks_microskill_diagnostic_idx
+  on tasks (microskill_id, is_diagnostic, difficulty)
+  where is_diagnostic = true;
+
+-- Hinweis: ehemals partial unique index (WHERE source_ref IS NOT NULL).
+-- Migration 008 hat das durch echten UNIQUE CONSTRAINT ersetzt, weil
+-- PostgREST-Upsert ohne WHERE-Praedikat sonst kein ON CONFLICT findet.
+alter table tasks
+  add constraint tasks_source_ref_unique unique (source, source_ref);
+
+create index if not exists tasks_source_idx on tasks (source);
+
+create index if not exists tasks_has_assets_idx
+  on tasks ((jsonb_array_length(assets) > 0))
+  where jsonb_array_length(assets) > 0;
 
 -- RLS aktivieren
 alter table subjects enable row level security;
