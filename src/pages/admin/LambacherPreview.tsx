@@ -1,201 +1,206 @@
-import { useEffect, useMemo, useState, type JSX } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { useEffect, useMemo, useState, type JSX, type ReactNode } from 'react'
+import { Brain, ImageIcon, ListChecks } from 'lucide-react'
+import { EdvanceCard, EmptyState, LoadingPulse } from '@/components/edvance'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { AssetList } from '@/lib/render/AssetList'
-import { MathContent } from '@/lib/render/MathContent'
-import { getTasksBySource } from '@/lib/supabase/tasks'
-import type { Task } from '@/types'
+import {
+  INITIAL_FILTER_STATE,
+  TaskFilterBar,
+  type TaskFilterState,
+} from '@/components/edvance/tasks/TaskFilterBar'
+import { TaskPreviewCard } from '@/components/edvance/tasks/TaskPreviewCard'
+import { getMicroskillsByIds, getTasksBySource } from '@/lib/supabase/tasks'
+import type { Microskill, Task } from '@/types'
 
 const SOURCE = 'mathebuch_lambacher_8_nrw'
 
-type Filter = 'all' | 'exercise' | 'exercise_group' | 'article' | 'video' | 'course'
-
-function DifficultyDots({ value }: { value: number | null }): JSX.Element {
-  const v = value ?? 0
-  return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`Schwierigkeit ${v}/5`}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span
-          key={i}
-          className={
-            i <= v
-              ? 'h-1.5 w-1.5 rounded-full bg-primary'
-              : 'h-1.5 w-1.5 rounded-full bg-muted-foreground/20'
-          }
-        />
-      ))}
-    </span>
-  )
+function filterTasks(tasks: Task[], state: TaskFilterState): Task[] {
+  const q = state.search.trim().toLowerCase()
+  return tasks.filter((t) => {
+    if (q) {
+      const haystack = `${t.title ?? ''} ${t.source_ref ?? ''}`.toLowerCase()
+      if (!haystack.includes(q)) return false
+    }
+    if (state.contentTypes.size > 0 && !state.contentTypes.has(t.content_type)) return false
+    if (state.cognitiveTypes.size > 0) {
+      if (!t.cognitive_type || !state.cognitiveTypes.has(t.cognitive_type)) return false
+    }
+    if (state.difficulties.size > 0) {
+      const d = t.difficulty ?? 0
+      if (!state.difficulties.has(d)) return false
+    }
+    if (state.hasAssets && (!t.assets || t.assets.length === 0)) return false
+    return true
+  })
 }
 
-function MetaRow({ task }: { task: Task }): JSX.Element {
-  const chips = [
-    task.source_ref,
-    task.curriculum_ref,
-    task.cognitive_type,
-    task.estimated_minutes ? `${task.estimated_minutes} Min` : null,
-    task.class_level ? `Klasse ${task.class_level}` : null,
-  ].filter(Boolean) as string[]
+function StatPanel({
+  value,
+  label,
+  icon,
+  color = 'var(--primary)',
+}: {
+  value: number
+  label: string
+  icon: ReactNode
+  color?: string
+}): JSX.Element {
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-      <DifficultyDots value={task.difficulty} />
-      {chips.map((c) => (
-        <span key={c} className="rounded-md bg-secondary px-2 py-0.5 font-mono">
-          {c}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-function TaskCard({ task }: { task: Task }): JSX.Element {
-  const [showHint, setShowHint] = useState(false)
-  const [showSolution, setShowSolution] = useState(false)
-  return (
-    <Card>
-      <CardContent className="space-y-4 p-6">
-        <div className="space-y-2">
-          <h2 className="text-base font-semibold text-foreground">
-            {task.title ?? 'Ohne Titel'}
-          </h2>
-          <MetaRow task={task} />
-        </div>
-        <AssetList assets={task.assets} />
-        <MathContent text={task.question} />
-        <div className="flex flex-wrap gap-2 border-t border-border pt-3">
-          {task.hint && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowHint((v) => !v)}
-            >
-              {showHint ? 'Hinweis ausblenden' : 'Hinweis zeigen'}
-            </Button>
-          )}
-          {task.solution && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowSolution((v) => !v)}
-            >
-              {showSolution ? 'Lösung ausblenden' : 'Lösung zeigen'}
-            </Button>
-          )}
-        </div>
-        {showHint && task.hint && (
-          <div className="rounded-md bg-secondary p-3">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Hinweis
-            </p>
-            <MathContent text={task.hint} />
-          </div>
-        )}
-        {showSolution && task.solution && (
-          <div className="rounded-md bg-secondary p-3">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Lösung
-            </p>
-            <MathContent text={task.solution} />
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <EdvanceCard className="flex items-center gap-4">
+      <div
+        className="flex h-12 w-12 flex-none items-center justify-center rounded-[var(--radius-lg)]"
+        style={{
+          backgroundColor: `color-mix(in srgb, ${color} 14%, white)`,
+          color,
+        }}
+      >
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-2xl font-bold leading-none" style={{ color }}>
+          {value}
+        </p>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">{label}</p>
+      </div>
+    </EdvanceCard>
   )
 }
 
 export function LambacherPreview(): JSX.Element {
   const [tasks, setTasks] = useState<Task[]>([])
+  const [microskills, setMicroskills] = useState<Map<string, Microskill>>(new Map())
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<Filter>('all')
+  const [filter, setFilter] = useState<TaskFilterState>(INITIAL_FILTER_STATE)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError(null)
-    void getTasksBySource(SOURCE).then((result) => {
+    void (async () => {
+      const taskResult = await getTasksBySource(SOURCE)
       if (cancelled) return
-      if (result.error) setError(result.error)
-      else setTasks(result.data ?? [])
+      if (taskResult.error) {
+        setError(taskResult.error)
+        setLoading(false)
+        return
+      }
+      const list = taskResult.data ?? []
+      setTasks(list)
+
+      const ids = Array.from(
+        new Set(list.map((t) => t.microskill_id).filter((id): id is string => !!id)),
+      )
+      if (ids.length > 0) {
+        const msResult = await getMicroskillsByIds(ids)
+        if (cancelled) return
+        if (msResult.data) {
+          const map = new Map<string, Microskill>()
+          for (const ms of msResult.data) map.set(ms.id, ms)
+          setMicroskills(map)
+        }
+      }
       setLoading(false)
-    })
+    })()
     return () => {
       cancelled = true
     }
   }, [])
 
-  const filtered = useMemo(() => {
-    if (filter === 'all') return tasks
-    return tasks.filter((t) => t.content_type === filter)
-  }, [tasks, filter])
+  const filtered = useMemo(() => filterTasks(tasks, filter), [tasks, filter])
 
-  const counts = useMemo(() => {
-    const byType: Record<string, number> = {}
-    for (const t of tasks) byType[t.content_type] = (byType[t.content_type] ?? 0) + 1
-    return byType
+  const stats = useMemo(() => {
+    const withAssets = tasks.filter((t) => t.assets && t.assets.length > 0).length
+    const withSolution = tasks.filter((t) => !!t.solution).length
+    return { total: tasks.length, withAssets, withSolution }
   }, [tasks])
 
   return (
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle="Lambacher 8 NRW – Vorschau" />
-      <main className="mx-auto max-w-3xl space-y-4 px-4 py-8">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-bold text-foreground">
-            Mathebuch-Import: Vorschau
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Quelle: <code className="font-mono">{SOURCE}</code> · {tasks.length} Aufgaben in der DB
+      <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">
+        <EdvanceCard variant="navy" className="flex flex-col gap-2">
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-80">
+            Mathebuch-Import
           </p>
-        </header>
+          <h1 className="text-2xl font-bold leading-tight">
+            Lambacher Schweizer 8 NRW — Aufgaben-Vorschau
+          </h1>
+          <p className="text-sm opacity-80">
+            Quelle: <code className="font-mono">{SOURCE}</code>
+          </p>
+        </EdvanceCard>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('all')}
-          >
-            Alle ({tasks.length})
-          </Button>
-          {(['exercise', 'exercise_group', 'article', 'video', 'course'] as Filter[]).map((t) =>
-            counts[t] ? (
-              <Button
-                key={t}
-                variant={filter === t ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilter(t)}
-              >
-                {t} ({counts[t]})
-              </Button>
-            ) : null,
-          )}
-        </div>
+        {!loading && !error && tasks.length > 0 && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatPanel
+              value={stats.total}
+              label="Aufgaben gesamt"
+              icon={<ListChecks className="h-6 w-6" />}
+            />
+            <StatPanel
+              value={stats.withAssets}
+              label="Mit Abbildung"
+              icon={<ImageIcon className="h-6 w-6" />}
+              color="var(--success)"
+            />
+            <StatPanel
+              value={stats.withSolution}
+              label="Mit Lösung"
+              icon={<Brain className="h-6 w-6" />}
+              color="var(--warning)"
+            />
+          </div>
+        )}
 
-        {loading && <p className="text-sm text-muted-foreground">Lade Aufgaben …</p>}
+        {!loading && !error && tasks.length > 0 && (
+          <TaskFilterBar
+            state={filter}
+            onChange={setFilter}
+            onReset={() => setFilter(INITIAL_FILTER_STATE)}
+            totalCount={tasks.length}
+            filteredCount={filtered.length}
+          />
+        )}
+
+        {loading && <LoadingPulse lines={3} />}
 
         {error && (
-          <Card>
-            <CardContent className="p-6">
-              <p className="text-sm font-semibold text-destructive">Fehler beim Laden</p>
-              <p className="mt-1 text-sm text-muted-foreground">{error}</p>
-            </CardContent>
-          </Card>
+          <EdvanceCard accent="left-destructive">
+            <p className="text-sm font-semibold text-[var(--destructive)]">Fehler beim Laden</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">{error}</p>
+          </EdvanceCard>
         )}
 
-        {!loading && !error && filtered.length === 0 && (
-          <Card>
-            <CardContent className="p-6">
-              <p className="text-sm text-muted-foreground">
-                Keine Aufgaben gefunden für diese Quelle.
-              </p>
-            </CardContent>
-          </Card>
+        {!loading && !error && tasks.length === 0 && (
+          <EmptyState
+            icon="·"
+            title="Noch keine Aufgaben importiert"
+            description={`Keine Tasks aus Quelle "${SOURCE}" in der DB.`}
+          />
         )}
 
-        <div className="space-y-4">
-          {filtered.map((t) => (
-            <TaskCard key={t.id} task={t} />
-          ))}
+        {!loading && !error && tasks.length > 0 && filtered.length === 0 && (
+          <EmptyState
+            icon="·"
+            title="Keine Treffer"
+            description="Mit den aktuellen Filtern findet sich keine Aufgabe. Setze Filter zurück, um alle Aufgaben zu sehen."
+          />
+        )}
+
+        <div className="flex flex-col gap-4">
+          {filtered.map((t) => {
+            const ms = t.microskill_id ? microskills.get(t.microskill_id) : null
+            return (
+              <TaskPreviewCard
+                key={t.id}
+                task={t}
+                microskillName={ms?.name ?? null}
+                onTaskUpdated={(updated) =>
+                  setTasks((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
+                }
+              />
+            )
+          })}
         </div>
       </main>
     </div>

@@ -5,6 +5,7 @@ import type {
   Subject,
   SupabaseResult,
   Task,
+  TaskAsset,
   TaskCoachMetadata,
 } from '@/types'
 
@@ -97,6 +98,24 @@ export async function getMicroskillsByCluster(
       .select('*')
       .eq('cluster_id', clusterId)
       .order('sort_order', { ascending: true })
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as Microskill[], error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Microskills konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// Microskills nach Liste von IDs (z.B. zum Auflösen der Namen aus tasks.microskill_id).
+export async function getMicroskillsByIds(
+  ids: string[],
+): Promise<SupabaseResult<Microskill[]>> {
+  if (ids.length === 0) return { data: [], error: null }
+  try {
+    const { data, error } = await supabase
+      .from('microskills')
+      .select('*')
+      .in('id', ids)
     if (error) return { data: null, error: error.message }
     return { data: (data ?? []) as Microskill[], error: null }
   } catch (err) {
@@ -219,6 +238,27 @@ export async function getUnmappedTasks(): Promise<SupabaseResult<Task[]>> {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Tasks ohne Cluster konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// tasks.assets ueberschreiben (z.B. nach Bild-Upload oder Asset-Remove).
+// Gibt die aktualisierte Task-Reihe zurueck.
+export async function updateTaskAssets(
+  taskId: string,
+  assets: TaskAsset[],
+): Promise<SupabaseResult<Task>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .update({ assets })
+      .eq('id', taskId)
+      .select('*')
+      .single()
+    if (error) return { data: null, error: error.message }
+    return { data: data as Task, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Aufgabe konnte nicht aktualisiert werden'
     return { data: null, error: message }
   }
 }
