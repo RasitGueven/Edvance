@@ -1,9 +1,10 @@
 import type { JSX } from 'react'
 import { EdvanceBadge, EdvanceCard } from '@/components/edvance'
 import { AssetList } from '@/lib/render/AssetList'
-import { MathContent } from '@/lib/render/MathContent'
+import { TaskAssetEditor } from './TaskAssetEditor'
 import { TaskMetaRow } from './TaskMetaRow'
 import { TaskPedagogyAccordion } from './TaskPedagogyAccordion'
+import { TaskQuestionBlock } from './TaskQuestionBlock'
 import type { ContentType, Task } from '@/types'
 
 const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
@@ -17,9 +18,11 @@ const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
 export function TaskPreviewCard({
   task,
   microskillName,
+  onTaskUpdated,
 }: {
   task: Task
   microskillName?: string | null
+  onTaskUpdated?: (updated: Task) => void
 }): JSX.Element {
   return (
     <EdvanceCard className="flex flex-col gap-6">
@@ -49,14 +52,9 @@ export function TaskPreviewCard({
 
       {task.assets && task.assets.length > 0 && <AssetList assets={task.assets} />}
 
-      {task.question && (
-        <div className="rounded-[var(--radius-md)] bg-[var(--primary-pale)] p-6">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-            Aufgabenstellung
-          </p>
-          <MathContent text={task.question} />
-        </div>
-      )}
+      {onTaskUpdated && <TaskAssetEditor task={task} onUpdated={onTaskUpdated} />}
+
+      <TaskQuestionBlock task={task} />
 
       <TaskPedagogyAccordion task={task} />
     </EdvanceCard>

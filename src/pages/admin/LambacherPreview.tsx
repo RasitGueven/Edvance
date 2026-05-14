@@ -190,7 +190,16 @@ export function LambacherPreview(): JSX.Element {
         <div className="flex flex-col gap-4">
           {filtered.map((t) => {
             const ms = t.microskill_id ? microskills.get(t.microskill_id) : null
-            return <TaskPreviewCard key={t.id} task={t} microskillName={ms?.name ?? null} />
+            return (
+              <TaskPreviewCard
+                key={t.id}
+                task={t}
+                microskillName={ms?.name ?? null}
+                onTaskUpdated={(updated) =>
+                  setTasks((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
+                }
+              />
+            )
           })}
         </div>
       </main>

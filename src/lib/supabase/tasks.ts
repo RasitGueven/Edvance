@@ -5,6 +5,7 @@ import type {
   Subject,
   SupabaseResult,
   Task,
+  TaskAsset,
   TaskCoachMetadata,
 } from '@/types'
 
@@ -237,6 +238,27 @@ export async function getUnmappedTasks(): Promise<SupabaseResult<Task[]>> {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Tasks ohne Cluster konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// tasks.assets ueberschreiben (z.B. nach Bild-Upload oder Asset-Remove).
+// Gibt die aktualisierte Task-Reihe zurueck.
+export async function updateTaskAssets(
+  taskId: string,
+  assets: TaskAsset[],
+): Promise<SupabaseResult<Task>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .update({ assets })
+      .eq('id', taskId)
+      .select('*')
+      .single()
+    if (error) return { data: null, error: error.message }
+    return { data: data as Task, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Aufgabe konnte nicht aktualisiert werden'
     return { data: null, error: message }
   }
 }
