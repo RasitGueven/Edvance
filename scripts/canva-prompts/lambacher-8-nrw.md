@@ -1,6 +1,6 @@
 # Canva Magic Media Prompts — Lambacher Schweizer 8 NRW
 
-Pro Lambacher-Aufgabe ein Prompt zum direkten Einsetzen in Canva (Magic Media / Magic Studio).
+Pro Lambacher-Aufgabe ein Prompt zum direkten Einsetzen in Canva (Magic Media / Magic Studio). Jeder Prompt enthält **konkreten Aufgaben-Bezug** (Szenario, Objekte, Schlüssel-Detail) — nicht nur ein generisches Bild des Themas.
 
 ## Workflow
 1. **Canva öffnen** → Magic Media → "Image" Tab
@@ -22,101 +22,104 @@ Wenn ein Ergebnis zu generisch wirkt: das `flat vector illustration` durch `isom
 
 ## kap1.s10.nr1 — Würfelexperiment – Häufigkeiten zuordnen
 
-**Kontext:** Ein Würfel mit Metallgewicht auf Seite 1 (Ventilkappe fürs Fahrrad), 200 Würfe, Häufigkeiten zuordnen zu Wahrscheinlichkeit vor/nach + relative/absolute Häufigkeit.
+**Kontext:** Ein Würfel mit Metallgewicht auf Seite 1 (Ventilkappe fürs Fahrrad), 200 Würfe, Häufigkeiten aus 4 Tabellen-Zeilen zuordnen.
 
 **Canva-Prompt:**
-> A wooden six-sided die viewed in three-quarter perspective with a small dark metallic weight visibly attached to the face showing one dot, the die resting on a clean surface, flat vector illustration, navy blue and light blue color palette (#2D6A9F, #98C0D8), white background, friendly educational textbook style, no text labels
+> A six-sided wooden die viewed in three-quarter perspective with a small dark metallic bicycle valve cap clearly attached to the face showing one dot, the weighted die resting on a wooden tabletop next to a small open notepad with handwritten tally marks suggesting 200 rolls counted, flat vector illustration, navy and light blue color palette (#2D6A9F, #98C0D8), white background, friendly educational textbook style, no readable text
 
 ---
 
 ## kap1.s10.nr2 — Legosteine als Würfel – Schätzungen bewerten
 
-**Kontext:** Lego-Steine in verschiedenen Größen (Vierer, Sechser, Achter) als Würfel beschriftet, Schätzungen vergleichen.
+**Kontext:** Paul nutzt drei verschiedene Legosteine (Vierer, Sechser, Achter) wie Würfel mit den Augen 1–6, schätzt Wahrscheinlichkeiten, 400 Würfe ergeben empirische Häufigkeiten.
 
 **Canva-Prompt:**
-> Three colorful LEGO bricks lined up side by side - a 4-stud rectangular brick, a 6-stud brick, and an 8-stud brick - each painted with dice dots (1 through 6) on the visible faces, flat vector illustration, navy and light blue color palette, white background, friendly educational textbook style, no text labels
+> Three colorful rectangular LEGO bricks of different stud counts lined up on a tabletop — a 4-stud brick on the left, a 6-stud brick in the middle, an 8-stud brick on the right — each brick painted with dice dots from one to six on its visible faces, the bricks have just been tossed and rest on slightly different sides showing different dot counts, flat vector illustration, navy and light blue color palette, white background, friendly educational textbook style, no text labels
 
 ---
 
 ## kap1.s10.nr3 — Zylinderwürfel – Wahrscheinlichkeiten schätzen
 
-**Kontext:** Zylindrische "Würfel" (1,5 cm Durchmesser, verschiedene Höhen 1 cm und 2 cm) mit Wappen W / Zahl Z auf Kreisflächen + Rand R als drittes Ergebnis.
+**Kontext:** Zylindrische "Würfel" (1,5 cm Durchmesser, Höhen 1 cm und 2 cm) mit Wappen W / Zahl Z auf den Kreisflächen + Rand R (auf der Seite gelandet) als drittes Ergebnis. Sandro & Sabine je 50 Würfe.
 
 **Canva-Prompt:**
-> Three short cylindrical pucks lined up, each 1.5cm wide but at different heights (a flat coin-like one, a medium one 1cm tall, and a taller 2cm one), viewed at a slight angle, top circular face of one showing a stylized coin crest, top of another showing a numeral, flat vector illustration, navy and light blue color palette, white background, educational diagram style, no text labels
+> Three short cylindrical wooden pucks 1.5cm in diameter but at three different heights (a thin coin-like one, a medium puck 1cm tall, a 2cm taller puck) arranged together on a tabletop in three-quarter perspective, one puck has fallen on its side showing the round curved edge, another lies flat showing a coin-style crest pattern on its top face, the third shows a numeral on its top face, flat vector illustration, navy and light blue color palette, white background, educational diagram style, no readable text
 
 ---
 
 ## kap1.s10.nr4 — Teste dich! – Flügelmuttern würfeln
 
-**Kontext:** Flügelmuttern als "Würfel", eine Seite schwarz, andere weiß markiert. Drei mögliche Ergebnisse: schwarz / weiß / Boden (stehend auf Seite).
+**Kontext:** Flügelmuttern werden geworfen, eine Wing-Seite schwarz, andere weiß markiert. Drei Outcomes: schwarz oben, weiß oben, oder Boden (auf Gewinde stehend). Heiko 50 Würfe, Simon 200 Würfe.
 
 **Canva-Prompt:**
-> A handful of metallic wing nuts scattered on a clean flat surface, each wing nut has two flat wing-shaped handles, some landing with one wing flat-side-up painted black, some showing white-painted wing, some standing on edge balanced on their threaded base, top-down view, flat vector illustration, navy and light blue color palette, white background, educational textbook style
+> A handful of metallic wing nuts scattered on a clean wooden tabletop, each wing nut has two flat wing-shaped handles painted black on one side and white on the other, after being tossed roughly half lie flat with the black wing facing up, half lie flat with the white wing facing up, and a few stand balanced upright on their threaded base, top-down view from above, flat vector illustration, navy and light blue color palette, white background, educational textbook style
 
 ---
 
 ## kap1.s11.nr5 — Dreimal würfeln – fairer Vorschlag?
 
-**Kontext:** Ulla und Mario streiten, wer den Tisch decken muss. Wette: 3× würfeln, bei 6 deckt Ulla, sonst Mario. Experimentell prüfen ob fair.
+**Kontext:** Ulla und Mario streiten, wer den Tisch deckt. Wette: Mario darf 3× würfeln; wenn dabei eine 6 fällt, deckt Ulla. Soll Mario darauf eingehen?
 
 **Canva-Prompt:**
-> A friendly cartoon scene of two teenagers, a girl and a boy, sitting across each other at a wooden kitchen table, a six-sided die on the table between them, the girl gesturing as if proposing a deal, the boy listening thoughtfully, flat vector illustration, navy and light blue color palette, warm educational style, no text or speech bubbles
+> A friendly cartoon scene of two teenagers seated across each other at a wooden dining table — a girl on the left smiling and gesturing as if proposing a bet, a boy on the right looking thoughtful — three small six-sided dice rolling across the table between them, the closest die showing the number six clearly on top, dinner plates and cutlery visible at the table edges, flat vector illustration, navy and light blue color palette, warm friendly educational textbook style, no text or speech bubbles
 
 ---
 
 ## kap1.s11.nr6 — Quader – Wahrscheinlichkeit und Flächeninhalt
 
-**Kontext:** Quader (1,3 × 2 × 2,3 cm), Wahrscheinlichkeit pro Seitenfläche proportional zum Flächeninhalt?
+**Kontext:** Quader mit Kantenlängen 1,3 cm × 2 cm × 2,3 cm. Frage: ist die Wahrscheinlichkeit pro Seitenfläche proportional zu deren Flächeninhalt? Drei deutlich unterschiedlich große Seitenpaare.
 
 **Canva-Prompt:**
-> A rectangular cuboid box with three visibly different edge lengths (clearly not a cube — taller than wide, wider than deep), shown in isometric 3D perspective, faint dimension lines indicating the three different edges, flat vector illustration, navy and light blue color palette, white background, technical educational textbook style, no number labels
+> A rectangular cuboid box clearly not a cube with three visibly different edge lengths (the box is short, somewhat wider, and noticeably elongated in one direction), shown in 3D isometric perspective resting on a flat surface, all three different-sized faces visible (one obviously largest, one medium, one smallest), faint thin construction lines emphasizing the three edge directions, flat vector illustration, navy and light blue color palette, white background, technical math textbook style, no dimension numbers
 
 ---
 
 ## kap1.s11.nr7 — Teste dich! – Reißnägel-Wahrscheinlichkeit
 
-**Kontext:** Reißnägel werden geworfen, manchmal landen sie auf "Kopf" (flach), manchmal anders. 3 Schüler:innen mit unterschiedlichen Wurf-Zahlen schätzen Wahrscheinlichkeiten.
+**Kontext:** Reißnägel werden geworfen, sie landen entweder mit dem Kopf flach (Spitze nach oben) oder schief auf der Seite. Helena (250 Würfe), Susanne (500), Jan (750) schätzen ~68 % "Kopf".
 
 **Canva-Prompt:**
-> A scattered group of metallic thumbtacks (drawing pins with flat round heads and sharp points) on a clean surface, top-down view, some landing head-flat-up showing the round head, some landing on their side with the point sticking out, flat vector illustration, navy and light blue color palette, white background, friendly educational textbook style
+> A scattered group of about fifteen metallic thumbtacks on a clean wooden surface, top-down view from directly above, roughly two-thirds of the thumbtacks have landed flat with the round metal head facing up and the sharp pin pointing straight down (out of view), the remaining one-third have landed on their side with the round head tilted and the sharp pin visibly sticking out to one side, flat vector illustration, navy and light blue color palette, white background, friendly educational textbook style
 
 ---
 
 ## kap1.s11.nr8 — Drei Münzen – Wahrscheinlichkeiten bestimmen
 
-**Kontext:** Drei verschiedene Münzen gleichzeitig werfen, zählen wie viele "Wappen" zeigen (0/1/2/3). Wahrscheinlichkeiten bestimmen + 8 Möglichkeiten auflisten.
+**Kontext:** Jonas wirft drei verschiedene Münzen gleichzeitig und zählt wie viele "Wappen" zeigen (0/1/2/3). 60 Würfe. Heiko meint: 8 mögliche Ergebnisse, also durch Abzählen lösbar.
 
 **Canva-Prompt:**
-> Three Euro coins of different sizes shown in mid-air falling onto a wooden table surface, captured in motion, some coins showing the side with a national crest, others showing the side with a number, flat vector illustration, navy and light blue color palette, white background, friendly educational textbook style, no text
+> Three Euro coins of clearly different sizes (small, medium, large) shown in mid-air falling onto a wooden table surface, frozen mid-toss with motion lines, two of the coins showing the side with a national crest pattern and one showing the numerical side, the three coins fan out slightly so all three are clearly visible, flat vector illustration, navy and light blue color palette, white background, friendly educational textbook style, no text
 
 ---
 
 ## kap1.s11.nr9 — Münzwurf-Streit – Experiment und Forschungsergebnis
 
-**Kontext:** Diskussion Hannah/Max/Claudia über Münzwurf mit 2, 4, 8, 100 Münzen. Symmetrie vs Streuung. Forschungsergebnis formulieren.
+**Kontext:** Hannah / Max / Claudia diskutieren: 50 % Wappen ist unabhängig von Münzanzahl wahrscheinlich, ABER bei wenigen Münzen ist exakt 50 % wahrscheinlicher als bei vielen. Gruppen 2 vs 4 vs 8 Münzen.
 
 **Canva-Prompt:**
-> Several silver coins arranged in three small groups on a clean surface — a group of 2 coins, a group of 4 coins, and a group of 8 coins — top-down view from directly above, each coin showing a generic crest pattern, flat vector illustration, navy and light blue color palette, white background, minimalist educational textbook style, no text
+> Three small groups of silver coins arranged in a row on a clean white tabletop, top-down view from directly above — a tight group of just 2 coins on the left, a group of 4 coins in the middle, a larger group of 8 coins on the right — each coin clearly showing a generic crest pattern on its visible side, the groups getting progressively denser from left to right, flat vector illustration, navy and light blue color palette, white background, minimalist educational textbook style
 
 ---
 
 ## kap1.s11.nr10 — Teste dein Grundwissen! – Terme aufstellen
 
-**Kontext:** Algebra. Terme aus einer ganzen Zahl x bilden (Vorgänger, Doppeltes, etc.), mit x=3 und x=-2 prüfen. Sehr abstrakt — schwer zu illustrieren.
+**Kontext:** Algebra. Terme aus ganzer Zahl x bilden (Vorgänger x-1, Doppeltes 2x, Doppeltes des Vorgängers, etc.), Probe mit x=3 und x=-2. Reine Symbolik — bildlich nur schwach illustrierbar.
 
-**Canva-Prompt:**
-> A stylized chalkboard or whiteboard with the algebraic variable letter 'x' written prominently in the center, surrounded by faint math operator symbols (plus, minus, parentheses, multiplication dot), simple flat vector illustration, navy and light blue color palette, white background, friendly math textbook aesthetic
+**Aufgabenbezogener Prompt (Zahlenstrahl mit x):**
+> A clean horizontal number line drawn across a white background showing integers from negative four to positive eight, a small blue marker labeled with the letter 'x' placed on the position three, a thin curved arrow pointing leftward from the x marker to position two suggesting predecessor, and another curved arrow pointing to position six suggesting doubling, flat minimalist vector illustration, navy and light blue color palette, white background, mathematical textbook style, only single-letter labels
 
-**Alternative falls zu abstrakt:**
-> A friendly cartoon teenager sitting at a desk with a notebook open, writing math equations with a pencil, soft blue lighting, flat vector illustration, navy and light blue color palette, white background, educational textbook style, no readable text
+**Fallback (falls Zahlenstrahl zu mathy wirkt):**
+> A friendly cartoon teenager sitting at a wooden desk with an open exercise book, writing simple algebra in pencil, soft blue lighting, a small chalk x symbol drawn on the page in close-up, flat vector illustration, navy and light blue color palette, white background, educational textbook style, no readable text
+
+**Hinweis:** Bei dieser Aufgabe ist „kein Bild" oft die ehrlichere Wahl — abstrakte Algebra braucht keine Illustration. Wenn du die Anti-Illustration-Linie ziehen willst: einfach kein Asset hochladen, AssetList rendert dann nichts.
 
 ---
 
 ## Tipps zur Iteration
 
-- **Aspect Ratio** in Canva immer **3:2 (landscape)** wählen → matched die AssetList die wir in TaskPreviewCard rendern (`max-h-72` mit auto-width)
+- **Aspect Ratio** in Canva immer **3:2 (landscape)** wählen → matched die AssetList die wir in TaskPreviewCard rendern
 - **Variations** in Canva: bei jedem Prompt 4 Varianten generieren, beste auswählen
-- **Re-Roll** wenn AI ein Element falsch versteht (z.B. Würfel mit 7 Seiten): Prompt unverändert nochmal generieren, oft ist die zweite Runde besser
+- **Re-Roll** wenn AI ein Element falsch versteht (Würfel mit 7 Seiten, Münzen mit Buchstaben, etc.): Prompt unverändert nochmal generieren, oft ist die zweite Runde besser
 - **Edit nach Generation:** in Canva selbst Farben anpassen falls AI nicht exakt den Edvance-Navy trifft. Mit Brand Kit (Canva Pro) kannst du `#1B2A3E` und `#2D6A9F` als Marken-Farben hinterlegen, dann via Color-Swap matchen
 - **Datei-Naming beim Export:** `kap1.s10.nr1.png` etc. — dann später bei „Bild hinzufügen" im Editor direkt erkennbar
+- **Aufgabenbezug fehlt:** wenn AI das Schlüssel-Detail (z.B. „valve cap on side 1") konsequent ignoriert, hilft oft ein extra Satz am Prompt-Ende wie „IMPORTANT: the metal weight must be visible on the side showing one dot"
