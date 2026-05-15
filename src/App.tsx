@@ -14,6 +14,7 @@ import { DiagnosisProvider } from '@/context/DiagnosisContext'
 import { DiagnosisSession } from '@/pages/DiagnosisSession'
 import { DiagnosisResult } from '@/pages/DiagnosisResult'
 import { TaskWidgetDemo } from '@/pages/student/TaskWidgetDemo'
+import { DesignDemo } from '@/pages/demo/DesignDemo'
 
 export default function App(): JSX.Element {
   return (
@@ -80,6 +81,7 @@ export default function App(): JSX.Element {
 
         <Route path="/showcase" element={<DesignShowcase />} />
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
+        <Route path="/demo/design" element={<DesignDemo />} />
 
         {/* Diagnose-Engine: zugänglich ohne Login (Tablet-Sicht für Schüler).
             Coach erreicht den Coach-View über ?view=coach. */}

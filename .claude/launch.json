@@ -5,6 +5,7 @@
       "name": "edvance-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "cwd": "C:\\Users\\rasit\\Edvance",
       "port": 5173
     }
   ]

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Search, X } from 'lucide-react'
+import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Search, X, Flame } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { EdvanceBadge, EdvanceCard, XPBar } from '@/components/edvance'
+import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
 import type { SkillCluster, Subject, Task } from '@/types'
 
@@ -18,6 +20,9 @@ const TYPE_FILTERS: { value: TypeFilter; label: string }[] = [
 ]
 
 export function StudentDashboard(): JSX.Element {
+  const { user } = useAuth()
+  const firstName = (user?.email?.split('@')[0] ?? 'Lernender').split('.')[0]
+  const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1)
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null)
   const [clusters, setClusters] = useState<SkillCluster[]>([])
@@ -112,30 +117,58 @@ export function StudentDashboard(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[var(--background)]">
       <EdvanceNavbar subtitle="Mein Lernplan" />
-      <main className="mx-auto max-w-3xl px-4 py-6">
-        <h1 className="text-2xl font-bold text-foreground">Mein Lernplan</h1>
-        <p className="mt-1 text-sm text-muted">
-          Waehle ein Thema oder suche direkt nach einer Aufgabe.
-        </p>
 
+      {/* Hero-Section */}
+      <section className="relative overflow-hidden bg-gradient-hero noise-overlay">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
+          style={{ background: 'var(--color-moment-gold)' }}
+        />
+        <div className="mx-auto max-w-3xl px-4 py-8 text-white">
+          <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+            <div className="min-w-0">
+              <p className="text-eyebrow opacity-70">Heute · Mein Lernplan</p>
+              <h1 className="text-display text-3xl mt-1.5 leading-none">
+                Hi {displayName} 👋
+              </h1>
+              <p className="mt-2 text-sm opacity-80 max-w-md">
+                Wähle ein Thema oder suche direkt nach einer Aufgabe.
+              </p>
+            </div>
+
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold">
+              <Flame className="h-3.5 w-3.5 text-[var(--color-moment-gold)]" />
+              5 Tage Streak
+            </div>
+          </div>
+
+          {/* XP-Card mit Glass-Effekt */}
+          <div className="glass-dark rounded-[var(--radius-xl)] p-5">
+            <XPBar current={340} max={500} level={4} levelName="Entdecker" />
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-3xl px-4 py-8">
         {error && (
-          <Card className="mt-6">
+          <Card className="mb-6">
             <CardContent className="pt-6 text-sm text-destructive">{error}</CardContent>
           </Card>
         )}
 
         {/* Search + Filters */}
-        <div className="mt-6 flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Suche nach Aufgabe, Video, Artikel …"
-              className="h-11 w-full rounded-xl border-2 border-border bg-card pl-10 pr-10 text-sm focus:border-primary focus:outline-none"
+              className="h-12 w-full rounded-xl border border-[var(--border)] bg-white pl-11 pr-11 text-sm shadow-premium-sm focus:border-[var(--color-primary)] focus:shadow-glow-primary focus:outline-none transition-all"
             />
             {search && (
               <button
@@ -210,38 +243,55 @@ export function StudentDashboard(): JSX.Element {
   )
 }
 
+const CLUSTER_TINTS = [
+  { bg: 'var(--color-primary-light)',     fg: 'var(--color-primary)' },
+  { bg: 'var(--color-success-light)',     fg: 'var(--color-success)' },
+  { bg: 'var(--color-warning-light)',     fg: 'var(--color-warning)' },
+  { bg: 'var(--color-info-light)',        fg: 'var(--color-info)' },
+  { bg: 'color-mix(in srgb, var(--xp-gold) 14%, white)', fg: '#9A6B00' },
+]
+
 function ClusterGrid({ clusters }: { clusters: SkillCluster[] }): JSX.Element {
   return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-2">
-      {clusters.map((c) => (
-        <Link
-          key={c.id}
-          to={`/student/cluster/${c.id}`}
-          className="group block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <Card className="h-full transition-shadow hover:shadow-md">
-            <CardContent className="flex min-h-[72px] items-center gap-3 p-5">
-              <span
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  background: 'color-mix(in srgb, var(--primary) 12%, transparent)',
-                  color: 'var(--primary)',
-                }}
-              >
-                <BookOpen className="h-5 w-5" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-base font-semibold text-foreground">{c.name}</p>
-                <p className="text-xs text-muted">
-                  Klasse {c.class_level_min}
-                  {c.class_level_min !== c.class_level_max && ` – ${c.class_level_max}`}
-                </p>
+    <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      {clusters.map((c, idx) => {
+        const tint = CLUSTER_TINTS[idx % CLUSTER_TINTS.length]
+        return (
+          <Link
+            key={c.id}
+            to={`/student/cluster/${c.id}`}
+            className="group block rounded-[var(--radius-xl)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+          >
+            <div className="relative h-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-gradient-surface p-5 shadow-premium-sm transition-all duration-300 group-hover:shadow-premium-lg group-hover:-translate-y-0.5">
+              {/* Decorative blob */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-60 blur-2xl transition-opacity duration-300 group-hover:opacity-90"
+                style={{ background: tint.fg }}
+              />
+
+              <div className="relative flex items-start gap-4">
+                <span
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] shadow-premium-sm"
+                  style={{ background: tint.bg, color: tint.fg }}
+                >
+                  <BookOpen className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-base font-bold tracking-tight text-[var(--text-primary)]">
+                    {c.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+                    Klasse {c.class_level_min}
+                    {c.class_level_min !== c.class_level_max && ` – ${c.class_level_max}`}
+                  </p>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)]" />
               </div>
-              <ChevronRight className="h-5 w-5 shrink-0 text-muted transition-colors group-hover:text-primary" />
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
+            </div>
+          </Link>
+        )
+      })}
     </div>
   )
 }

@@ -91,11 +91,14 @@ export type AvatarProps = {
   className?: string
 }
 
-export type BadgeVariant = 'active' | 'done' | 'upcoming'
+export type BadgeVariant =
+  | 'active' | 'done' | 'upcoming'
+  | 'success' | 'warning' | 'error' | 'info' | 'accent' | 'celebration'
 
 export type BadgeProps = {
   variant: BadgeVariant
   className?: string
+  children?: import('react').ReactNode
 }
 
 // ── Supabase-Wrapper-Result ───────────────────────────────────────────────────
