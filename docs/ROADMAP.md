@@ -12,11 +12,11 @@
 - NRW Klasse 8 Mathe Taxonomie + Diagnostic-Generator
 
 ## In Arbeit
-- Serlo-Import komplett entfernt (Migration 006) — Aufgaben-DB ist leer, neue Befüllung steht an
+- EmptyState + LoadingPulse Komponenten (ROADMAP deklariert sie als fertig — noch nicht implementiert)
 
 ## Nächste Schritte
-- Mathebuch-Import (Lambacher Schweizer 8. Klasse NRW) via Chrome-MCP
-- Schüler-Tablet Session-View (Lernpfad-Rendering aus echten tasks)
+- **Erster Lambacher-Content-Drop:** Migrationen 008+009 im Supabase Studio ausführen, Storage-Bucket `task-assets` anlegen, erste Aufgaben via Chrome-Plugin einscannen
+- Schüler-Tablet Session-View (Lernpfad-Rendering aus echten tasks — TaskPlayer bereits vorhanden)
 - Home-Quest Flow
 - Elternreport
 - Supabase Echtdaten-Anbindung (Profiles/Students von Mock auf Supabase)

@@ -12,7 +12,7 @@ subjects            → id, name
 skill_clusters      → id, subject_id, name, class_level_min, class_level_max, sort_order
                       (= 5 KMK-Kompetenzbereiche pro Fach, klassenstufenuebergreifend)
 microskills         → id, cluster_id, code, name, description, class_level, prerequisite_ids[], sort_order, cognitive_type, estimated_minutes, curriculum_ref
-tasks               → id, microskill_id, cluster_id, content_type, title, question, solution, hint, common_errors, coach_note, difficulty, estimated_minutes, class_level, is_active, created_at, cognitive_type, input_type, is_diagnostic, curriculum_ref, question_payload, typical_errors[]
+tasks               → id, microskill_id, cluster_id, content_type, title, question, solution, hint, common_errors, coach_note, difficulty, estimated_minutes, class_level, is_active, created_at, cognitive_type, input_type, is_diagnostic, curriculum_ref, question_payload, typical_errors[], source, source_ref, assets (jsonb)
 task_coach_metadata → id, task_id, typical_errors, observation_hints, intervention_triggers, updated_at
 
 #### KMK-Kompetenzbereiche Mathematik (Kl. 8-10)
@@ -65,3 +65,11 @@ student | parent | coach | admin
 - `schema.sql`                              – Auth + Schueler-Tabellen (initial)
 - `schema_content.sql`                      – Content/Aufgaben-Tabellen (im Supabase SQL Editor manuell)
 - `migrations/001_competency_areas.sql`     – Cluster auf 5 KMK-Kompetenzbereiche umstellen
+- `migrations/002_serlo_video_url.sql`      – serlo_video_url + serlo_content_raw Spalten (historisch)
+- `migrations/003_behavior_snapshots.sql`   – BehaviorSnapshots Tabelle
+- `migrations/004_serlo_content_raw.sql`    – serlo_content_raw Spalte (historisch)
+- `migrations/005_diagnostic_fields.sql`    – tasks: cognitive_type, input_type, is_diagnostic, curriculum_ref, question_payload, typical_errors; microskills: cognitive_type, estimated_minutes, curriculum_ref
+- `migrations/006_remove_serlo.sql`         – alle serlo_*-Spalten entfernt, Serlo-Tasks gelöscht
+- `migrations/007_task_source.sql`          – tasks.source (NOT NULL), tasks.source_ref; partieller Unique-Index
+- `migrations/008_task_source_constraint.sql` – Partial Index → echter UNIQUE CONSTRAINT (PostgREST-kompatibel)
+- `migrations/009_task_assets.sql`          – tasks.assets jsonb NOT NULL DEFAULT '[]'; Partial-Index tasks_has_assets_idx
