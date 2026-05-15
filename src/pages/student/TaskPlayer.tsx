@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent, type JSX, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type JSX, type KeyboardEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Lightbulb, PenLine, Type } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { DrawCanvas } from '@/components/edvance/DrawCanvas'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { MathToolbar } from '@/components/edvance/MathToolbar'
+import { TaskAnswerArea } from '@/components/edvance/tasks/TaskAnswerArea'
 import { useAuth } from '@/hooks/useAuth'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
 import {
@@ -16,8 +15,6 @@ import {
 import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
 import { MathContent } from '@/lib/render/MathContent'
 import type { SkillCluster, Task } from '@/types'
-
-type AnswerMode = 'type' | 'draw'
 
 type ContentType = Task['content_type']
 
@@ -47,16 +44,11 @@ export function TaskPlayer(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Exercise-spezifischer State (nur fuer content_type === 'exercise').
-  const [answer, setAnswer] = useState<string>('')
   const [hintShown, setHintShown] = useState<boolean>(false)
   const [submitted, setSubmitted] = useState<boolean>(false)
-  const [mode, setMode] = useState<AnswerMode>('type')
-  const [drawingDataUrl, setDrawingDataUrl] = useState<string | null>(null)
 
   const tracker = useBehaviorTracker()
   const startedTaskRef = useRef<string | null>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { user } = useAuth()
 
   // Task + Cluster + Siblings laden bei taskId-Aenderung.
@@ -68,11 +60,8 @@ export function TaskPlayer(): JSX.Element {
     setTask(null)
     setCluster(null)
     setSiblings([])
-    setAnswer('')
     setHintShown(false)
     setSubmitted(false)
-    setMode('type')
-    setDrawingDataUrl(null)
 
     void (async () => {
       const taskResult = await getTaskById(taskId)
@@ -139,59 +128,20 @@ export function TaskPlayer(): JSX.Element {
     tracker.onHintRequested()
   }
 
-  const effectiveAnswer = (): string =>
-    mode === 'type' ? answer : (drawingDataUrl ?? '')
-
-  const hasAnswer = (): boolean =>
-    mode === 'type' ? answer.trim().length > 0 : drawingDataUrl !== null
-
-  const handleSubmit = async (e: FormEvent): Promise<void> => {
-    e.preventDefault()
-    if (!task || task.content_type !== 'exercise') return
-    if (!hasAnswer()) return
+  const handleAnswerSubmit = async (answer: string): Promise<void> => {
+    if (!task) return
     tracker.onLastKeystroke()
-    const finalAnswer = effectiveAnswer()
-    const snapshot = tracker.getSnapshot(task.id, finalAnswer)
+    const snapshot = tracker.getSnapshot(task.id, answer)
     setSubmitted(true)
     if (user) {
-      const { error: persistError } = await persistBehaviorSnapshot(task.id, user.id, snapshot)
-      if (persistError) {
-        console.error('[TaskPlayer] BehaviorSnapshot persist failed:', persistError, snapshot)
-      }
-    } else {
-      console.warn('[TaskPlayer] kein User – Snapshot nur lokal:', snapshot)
+      const { error } = await persistBehaviorSnapshot(task.id, user.id, snapshot)
+      if (error) console.error('[TaskPlayer] BehaviorSnapshot persist failed:', error, snapshot)
     }
   }
 
-  const handleAnswerChange = (value: string): void => {
-    setAnswer(value)
-    tracker.onChange(value)
-  }
-
-  const handleAnswerKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => {
-    tracker.onKeyDown(e)
-  }
-
-  const insertSymbol = (symbol: string): void => {
-    const ta = textareaRef.current
-    if (!ta) {
-      handleAnswerChange(answer + symbol)
-      return
-    }
-    const start = ta.selectionStart
-    const end = ta.selectionEnd
-    const next = answer.slice(0, start) + symbol + answer.slice(end)
-    handleAnswerChange(next)
-    requestAnimationFrame(() => {
-      ta.focus()
-      const pos = start + symbol.length
-      ta.setSelectionRange(pos, pos)
-    })
-  }
-
-  const handleAcknowledgeNonExercise = (): void => {
-    setSubmitted(true)
-  }
+  const handleTextChange = (v: string): void => { tracker.onChange(v) }
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => { tracker.onKeyDown(e) }
+  const handleAcknowledgeNonExercise = (): void => { setSubmitted(true) }
 
   if (loading) {
     return (
@@ -281,81 +231,15 @@ export function TaskPlayer(): JSX.Element {
         {!submitted && task.content_type === 'exercise' && (
           <Card className="mb-4">
             <CardContent className="pt-6">
-              <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    type="button"
-                    variant={mode === 'type' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setMode('type')}
-                  >
-                    <Type className="mr-1 h-4 w-4" /> Tippen
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={mode === 'draw' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setMode('draw')}
-                  >
-                    <PenLine className="mr-1 h-4 w-4" /> Zeichnen
-                  </Button>
-                  <span className="ml-auto text-xs font-semibold uppercase tracking-wider text-muted">
-                    Dein Loesungsweg
-                  </span>
-                </div>
-
-                {mode === 'type' ? (
-                  <>
-                    <textarea
-                      ref={textareaRef}
-                      id="answer"
-                      value={answer}
-                      onChange={(e) => handleAnswerChange(e.target.value)}
-                      onKeyDown={handleAnswerKeyDown}
-                      placeholder="Zeige deinen Loesungsweg …"
-                      rows={5}
-                      className="min-h-[120px] w-full resize-y rounded-xl border-2 border-border bg-card p-3 text-sm leading-relaxed focus:border-primary focus:outline-none"
-                    />
-                    <MathToolbar onInsert={insertSymbol} />
-                  </>
-                ) : (
-                  <DrawCanvas onChange={setDrawingDataUrl} />
-                )}
-
-                <div className="flex flex-wrap items-center gap-2">
-                  {task.hint && (
-                    <button
-                      type="button"
-                      onClick={handleHint}
-                      disabled={hintShown}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted hover:text-warning disabled:opacity-50"
-                    >
-                      <Lightbulb className="h-3.5 w-3.5" />
-                      {hintShown ? 'Hint angezeigt' : 'Hint anfordern'}
-                    </button>
-                  )}
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={!hasAnswer()}
-                    className="ml-auto"
-                  >
-                    Antwort einreichen
-                  </Button>
-                </div>
-                {hintShown && task.hint && (
-                  <div
-                    className="rounded-xl px-4 py-3 text-sm"
-                    style={{
-                      background: 'color-mix(in srgb, var(--warning) 10%, transparent)',
-                      border: '2px solid color-mix(in srgb, var(--warning) 30%, transparent)',
-                      color: 'var(--warning)',
-                    }}
-                  >
-                    💡 {task.hint}
-                  </div>
-                )}
-              </form>
+              <TaskAnswerArea
+                task={task}
+                onSubmit={handleAnswerSubmit}
+                onHintToggle={handleHint}
+                hintShown={hintShown}
+                disabled={submitted}
+                onTextChange={handleTextChange}
+                onKeyDown={handleKeyDown}
+              />
             </CardContent>
           </Card>
         )}
