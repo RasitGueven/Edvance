@@ -1,0 +1,73 @@
+@layer base {
+  :root {
+
+    /* ── PRIMÄR ──────────────────────────────────────────────────────────── */
+    --color-primary:              #334D7A;
+    --color-primary-hover:        #253D6A;
+    --color-primary-light:        #EEF2F8;
+
+    /* ── HINTERGRUND ─────────────────────────────────────────────────────── */
+    --color-bg-app:               #F7F7F5;
+    --color-bg-surface:           #FFFFFF;
+    --color-bg-subtle:            #EFEFED;
+    --color-border:               #E8E8E5;
+
+    /* ── TEXT ────────────────────────────────────────────────────────────── */
+    --color-text-primary:         #1A1A18;
+    --color-text-secondary:       #4A4A47;
+    --color-text-tertiary:        #888884;
+    --color-text-link:            #334D7A;
+
+    /* ── AKZENT ──────────────────────────────────────────────────────────── */
+    --color-accent:               #E8A020;
+    --color-accent-celebration:   #F5C842;
+
+    /* ── STATUS ──────────────────────────────────────────────────────────── */
+    --color-success:              #2A8A4A;
+    --color-success-light:        #EAF5EE;
+    --color-warning:              #C87E00;
+    --color-warning-light:        #FEF3E2;
+    --color-error:                #C83232;
+    --color-error-light:          #FDEEED;
+    --color-info:                 #334D7A;
+    --color-info-light:           #EEF2F8;
+
+    /* ── AKZENT — ON-FARBEN (Textkontrast auf Akzent-Hintergründen) ─────── */
+    /* Nie als Textfarbe auf weißem Hintergrund verwenden (WCAG nicht erfüllt) */
+    --color-accent-on:            #4A2E00;
+    --color-accent-celebration-on:#3A2000;
+
+    /* ── EMOTIONALE MOMENTE ──────────────────────────────────────────────── */
+    /* Nur in Animationen/Modals verwenden — max. 3 Sekunden sichtbar.       */
+    /* moment-bg ist Pflicht-Hintergrund für Celebration-Screens (Level-Up,  */
+    /* Boss-Challenge). Diese Events max. 1× pro Session triggern.           */
+    --color-moment-gold:          #F5C842;
+    --color-moment-green:         #1DB954;
+    --color-moment-red:           #E03535;
+    --color-moment-bg:            #1A2E4A;
+
+    /* ── PREMIUM-ERWEITERUNGEN ────────────────────────────────────────────── */
+    /* Tieferer Hero-Navy (Hero-Sections, Page-Headers, Premium-Cards)       */
+    --color-hero-navy:            #14213D;
+    --color-hero-navy-2:          #1F3157;
+
+    /* Premium-Gradients — auf großen Flächen einsetzen, nicht inflationär   */
+    --gradient-brand:             linear-gradient(135deg, #14213D 0%, #334D7A 100%);
+    --gradient-hero:              linear-gradient(135deg, #14213D 0%, #1F3157 45%, #334D7A 100%);
+    --gradient-primary-btn:       linear-gradient(180deg, #3B5A8C 0%, #334D7A 100%);
+    --gradient-gold:              linear-gradient(135deg, #F5C842 0%, #E8A020 100%);
+    --gradient-success:           linear-gradient(135deg, #34A35A 0%, #1F6F3A 100%);
+    --gradient-surface:           linear-gradient(180deg, #FFFFFF 0%, #FAFAF7 100%);
+    --gradient-celebration:       radial-gradient(ellipse at top, #2D4070 0%, #14213D 70%);
+
+    /* Brand-getönte Shadows — wirken refined, nicht grau                    */
+    --shadow-premium-sm:          0 1px 2px rgba(20, 33, 61, 0.06), 0 1px 1px rgba(20, 33, 61, 0.04);
+    --shadow-premium-md:          0 4px 12px rgba(20, 33, 61, 0.08), 0 2px 4px rgba(20, 33, 61, 0.04);
+    --shadow-premium-lg:          0 12px 32px rgba(20, 33, 61, 0.10), 0 4px 8px rgba(20, 33, 61, 0.06);
+    --shadow-premium-xl:          0 24px 64px rgba(20, 33, 61, 0.14), 0 8px 16px rgba(20, 33, 61, 0.08);
+    --shadow-glow-primary:        0 0 0 1px rgba(51, 77, 122, 0.08), 0 8px 32px rgba(51, 77, 122, 0.16);
+    --shadow-glow-gold:           0 0 40px rgba(245, 200, 66, 0.32);
+    --shadow-inset-card:          inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  }
+}
