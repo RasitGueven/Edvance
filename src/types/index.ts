@@ -174,6 +174,8 @@ export type StudentInput = {
   school_type?: SchoolKind | null
 }
 
+export type StudentWithName = Student & { full_name: string | null }
+
 export type IntakeStatus = 'draft' | 'final'
 
 export type IntakeSession = {

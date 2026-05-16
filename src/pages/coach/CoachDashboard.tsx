@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar } from '@/components/ui/avatar'
@@ -142,9 +143,17 @@ export function CoachDashboard(): JSX.Element {
       <EdvanceNavbar subtitle="Coach-Dashboard" sticky />
 
       <main className="mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Guten Tag 👋</h1>
-          <p className="mt-0.5 text-sm text-muted">{formatDateLongDe()}</p>
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Guten Tag 👋</h1>
+            <p className="mt-0.5 text-sm text-muted">{formatDateLongDe()}</p>
+          </div>
+          <Link
+            to="/coach/intake"
+            className="text-sm font-medium text-[var(--primary)]"
+          >
+            Erstgespräch-Protokoll
+          </Link>
         </div>
 
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">

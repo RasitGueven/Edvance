@@ -1,7 +1,12 @@
 // Schueler-bezogene Supabase-Operationen.
 
 import { supabase } from '@/lib/supabase/client'
-import type { Student, StudentInput, SupabaseResult } from '@/types'
+import type {
+  Student,
+  StudentInput,
+  StudentWithName,
+  SupabaseResult,
+} from '@/types'
 
 // Legt eine students-Reihe zu einem bestehenden profile_id an.
 export async function createStudent(
@@ -55,6 +60,41 @@ export async function listStudents(): Promise<SupabaseResult<Student[]>> {
     return { data: (data ?? []) as Student[], error: null }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Schueler konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// Schueler inkl. Name (Join auf profiles.full_name) – fuer Auswahllisten.
+export async function listStudentsWithName(): Promise<
+  SupabaseResult<StudentWithName[]>
+> {
+  try {
+    const { data, error } = await supabase
+      .from('students')
+      .select('id, profile_id, class_level, school_name, school_type, profiles(full_name)')
+      .order('class_level', { ascending: true, nullsFirst: false })
+    if (error) return { data: null, error: error.message }
+    type ProfileRel = { full_name: string | null }
+    type Row = Omit<StudentWithName, 'full_name'> & {
+      profiles: ProfileRel | ProfileRel[] | null
+    }
+    const mapped: StudentWithName[] = ((data ?? []) as unknown as Row[]).map(
+      (r) => {
+        const rel = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles
+        return {
+          id: r.id,
+          profile_id: r.profile_id,
+          class_level: r.class_level,
+          school_name: r.school_name,
+          school_type: r.school_type,
+          full_name: rel?.full_name ?? null,
+        }
+      },
+    )
+    return { data: mapped, error: null }
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Schueler konnten nicht geladen werden'
     return { data: null, error: message }
   }
 }

@@ -7,6 +7,7 @@ import { ParentDashboard } from '@/pages/parent/ParentDashboard'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { LambacherPreview } from '@/pages/admin/LambacherPreview'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
+import { IntakePage } from '@/pages/coach/IntakePage'
 import { ClusterView } from '@/pages/student/ClusterView'
 import { TaskPlayer } from '@/pages/student/TaskPlayer'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
@@ -52,6 +53,14 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['coach']}>
               <CoachDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/intake"
+          element={
+            <ProtectedRoute allowedRoles={['coach', 'admin']}>
+              <IntakePage />
             </ProtectedRoute>
           }
         />
