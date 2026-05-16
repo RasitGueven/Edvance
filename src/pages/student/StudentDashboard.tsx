@@ -7,7 +7,11 @@ import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { XPBar } from '@/components/edvance'
 import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
+import { getStudentByProfile } from '@/lib/supabase/students'
+import { getStudentProgress } from '@/lib/supabase/progress'
 import type { SkillCluster, Subject, Task } from '@/types'
+
+const XP_PER_LEVEL = 500
 
 type ContentType = Task['content_type']
 type TypeFilter = 'all' | ContentType
@@ -28,6 +32,27 @@ export function StudentDashboard(): JSX.Element {
   const [clusters, setClusters] = useState<SkillCluster[]>([])
   const [loadingClusters, setLoadingClusters] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+
+  const [xpTotal, setXpTotal] = useState<number>(0)
+  const [streakDays, setStreakDays] = useState<number>(0)
+  const [level, setLevel] = useState<number>(1)
+
+  useEffect(() => {
+    if (!user) return
+    let cancelled = false
+    void (async () => {
+      const { data: student } = await getStudentByProfile(user.id)
+      if (cancelled || !student) return
+      const { data: progress } = await getStudentProgress(student.id)
+      if (cancelled || !progress) return
+      setXpTotal(progress.xp_total)
+      setStreakDays(progress.streak_days)
+      setLevel(progress.level)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [user])
 
   const [search, setSearch] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -141,13 +166,18 @@ export function StudentDashboard(): JSX.Element {
 
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold">
               <Flame className="h-3.5 w-3.5 text-[var(--color-moment-gold)]" />
-              5 Tage Streak
+              {streakDays} Tage Streak
             </div>
           </div>
 
           {/* XP-Card mit Glass-Effekt */}
           <div className="glass-dark rounded-[var(--radius-xl)] p-5">
-            <XPBar current={340} max={500} level={4} levelName="Entdecker" />
+            <XPBar
+              current={xpTotal % XP_PER_LEVEL}
+              max={XP_PER_LEVEL}
+              level={level}
+              levelName={`Level ${level}`}
+            />
           </div>
         </div>
       </section>
