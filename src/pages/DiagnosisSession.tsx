@@ -2,8 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useDiagnosis } from '@/context/DiagnosisContext'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
-import { mockDiagnosisTasks } from '@/lib/diagnosisMockData'
+import { buildRunTasks } from '@/lib/screening/runtime'
 import { Button } from '@/components/ui/button'
+import type { OnboardingData } from '@/types'
 import { Lightbulb, Clock, Pencil, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react'
 
 // ── Header ────────────────────────────────────────────────────────────────────
@@ -64,7 +65,7 @@ function StudentView() {
   const [hintRequested, setHintRequested] = useState(false)
   const startedTaskRef = useRef<number | null>(null)
 
-  const task = mockDiagnosisTasks[state.currentIndex]
+  const task = state.tasks[state.currentIndex]
 
   // Start tracking exactly once per task — wenn die Aufgabe wechselt UND nicht gerade auf Coach gewartet wird
   useEffect(() => {
@@ -136,7 +137,7 @@ function StudentView() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <ProgressBar current={state.currentIndex} total={mockDiagnosisTasks.length} />
+      <ProgressBar current={state.currentIndex} total={state.tasks.length} />
 
       <div
         className="rounded-3xl bg-card p-8"
@@ -234,7 +235,7 @@ const RATINGS: { rating: 1 | 2 | 3 | 4; label: string; sub: string; color: strin
 function CoachView() {
   const { state, setCoachRating, resetSession } = useDiagnosis()
   const navigate = useNavigate()
-  const task = mockDiagnosisTasks[state.currentIndex]
+  const task = state.tasks[state.currentIndex]
   const currentSnapshot = state.snapshots[state.currentIndex]
 
   if (state.finished) {
@@ -252,7 +253,7 @@ function CoachView() {
         </div>
         <h1 className="text-3xl font-black text-foreground tracking-tight">Diagnose abgeschlossen</h1>
         <p className="mt-3 text-base font-semibold text-muted max-w-sm">
-          Alle 5 Aufgaben bewertet. Geh jetzt zur Auswertung.
+          Alle Aufgaben bewertet. Geh jetzt zur Auswertung.
         </p>
         <div className="mt-6 flex gap-3">
           <Button onClick={() => navigate('/diagnosis/result')} size="lg">
@@ -276,7 +277,7 @@ function CoachView() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <ProgressBar current={state.currentIndex} total={mockDiagnosisTasks.length} />
+      <ProgressBar current={state.currentIndex} total={state.tasks.length} />
 
       <div
         className="rounded-3xl bg-card p-6 mb-4"
@@ -448,9 +449,37 @@ function BehaviorBadge({ icon, label }: { icon?: React.ReactNode; label: string 
 
 // ── Setup screen (when session not started) ───────────────────────────────────
 
+const SUBJECT_OPTIONS: { label: string; code: OnboardingData['subject'] }[] = [
+  { label: 'Mathematik', code: 'MATH' },
+  { label: 'Deutsch', code: 'GERMAN' },
+  { label: 'Englisch', code: 'ENGLISH' },
+]
+const GRADES = Array.from({ length: 9 }, (_, i) => i + 5)
+
 function SetupScreen({ view }: { view: 'student' | 'coach' }) {
   const { startSession } = useDiagnosis()
   const [name, setName] = useState('')
+  const [subject, setSubject] = useState<OnboardingData['subject']>('MATH')
+  const [grade, setGrade] = useState<number>(8)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const start = async (): Promise<void> => {
+    setLoading(true)
+    setError(null)
+    const { tasks, warnings } = await buildRunTasks({ grade, subject })
+    setLoading(false)
+    if (tasks.length === 0) {
+      setError(
+        warnings[0] ??
+          'Keine diagnostischen Aufgaben in der Datenbank. Bitte Diagnostik-Content seeden.',
+      )
+      return
+    }
+    const label =
+      SUBJECT_OPTIONS.find(s => s.code === subject)?.label ?? 'Mathematik'
+    startSession({ studentName: name || 'Schüler', subject: label, tasks })
+  }
 
   if (view === 'coach') {
     return (
@@ -500,7 +529,7 @@ function SetupScreen({ view }: { view: 'student' | 'coach' }) {
           Bereit für die Diagnose?
         </h1>
         <p className="mt-2 text-center text-sm font-semibold text-muted">
-          5 Aufgaben aus Mathe Klasse 8. Du hast genug Zeit, Rechenweg ist erlaubt.
+          Du hast genug Zeit, Rechenweg ist erlaubt.
         </p>
 
         <label htmlFor="name" className="mt-6 block text-xs font-bold uppercase tracking-wider text-muted mb-1.5">
@@ -514,13 +543,54 @@ function SetupScreen({ view }: { view: 'student' | 'coach' }) {
           className="w-full h-12 rounded-xl border-2 border-border bg-card px-4 text-base font-semibold text-foreground focus:border-primary focus:outline-none"
         />
 
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="subject" className="block text-xs font-bold uppercase tracking-wider text-muted mb-1.5">
+              Fach
+            </label>
+            <select
+              id="subject"
+              value={subject}
+              onChange={e => setSubject(e.target.value as OnboardingData['subject'])}
+              className="w-full h-12 rounded-xl border-2 border-border bg-card px-3 text-base font-semibold text-foreground focus:border-primary focus:outline-none"
+            >
+              {SUBJECT_OPTIONS.map(s => (
+                <option key={s.code} value={s.code}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="grade" className="block text-xs font-bold uppercase tracking-wider text-muted mb-1.5">
+              Klasse
+            </label>
+            <select
+              id="grade"
+              value={grade}
+              onChange={e => setGrade(Number(e.target.value))}
+              className="w-full h-12 rounded-xl border-2 border-border bg-card px-3 text-base font-semibold text-foreground focus:border-primary focus:outline-none"
+            >
+              {GRADES.map(g => (
+                <option key={g} value={g}>
+                  {g}. Klasse
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {error && (
+          <p className="mt-4 text-sm font-semibold text-destructive">{error}</p>
+        )}
+
         <Button
-          onClick={() => startSession(name || 'Schüler', 'Mathematik')}
-          disabled={!name.trim()}
+          onClick={start}
+          disabled={!name.trim() || loading}
           size="lg"
           className="mt-5 w-full"
         >
-          Los geht's →
+          {loading ? 'Test wird erstellt …' : "Los geht's →"}
         </Button>
       </div>
     </main>

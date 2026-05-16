@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { BehaviorSnapshot } from '@/types/diagnosis'
-import { mockDiagnosisTasks } from '@/lib/diagnosisMockData'
+import type { RunTask } from '@/types'
 
 const STORAGE_KEY = 'edvance_diagnosis_state_v1'
 
@@ -13,9 +13,17 @@ export type DiagnosisState = {
   awaitingCoachRating: boolean
   // Array indexed by task position
   snapshots: BehaviorSnapshot[]
+  // echte Aufgaben (Generator + Content), ersetzt mockDiagnosisTasks
+  tasks: RunTask[]
   coachNote: string
   finished: boolean
   startedAt: string | null
+}
+
+type StartArgs = {
+  studentName: string
+  subject: string
+  tasks: RunTask[]
 }
 
 type DiagnosisContextValue = {
@@ -26,7 +34,7 @@ type DiagnosisContextValue = {
   setCoachRating: (rating: 1 | 2 | 3 | 4) => void
   setCoachNote: (note: string) => void
   // Setup
-  startSession: (studentName: string, subject: string) => void
+  startSession: (args: StartArgs) => void
   resetSession: () => void
 }
 
@@ -37,6 +45,7 @@ const initialState: DiagnosisState = {
   currentIndex: 0,
   awaitingCoachRating: false,
   snapshots: [],
+  tasks: [],
   coachNote: '',
   finished: false,
   startedAt: null,
@@ -46,7 +55,9 @@ function loadFromStorage(): DiagnosisState | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
-    return JSON.parse(raw) as DiagnosisState
+    const parsed = JSON.parse(raw) as Partial<DiagnosisState>
+    // Abwaertskompatibel: alte Stände ohne tasks
+    return { ...initialState, ...parsed, tasks: parsed.tasks ?? [] }
   } catch {
     return null
   }
@@ -103,7 +114,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       if (!cur) return prev
       updated[idx] = { ...cur, coach_rating: rating }
 
-      const isLast = idx >= mockDiagnosisTasks.length - 1
+      const isLast = idx >= prev.tasks.length - 1
       return {
         ...prev,
         snapshots: updated,
@@ -117,16 +128,21 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const setCoachNote: DiagnosisContextValue['setCoachNote'] = note =>
     setState(prev => ({ ...prev, coachNote: note }))
 
-  const startSession: DiagnosisContextValue['startSession'] = (studentName, subject) =>
+  const startSession: DiagnosisContextValue['startSession'] = ({
+    studentName,
+    subject,
+    tasks,
+  }) =>
     setState({
       ...initialState,
       studentName,
       subject,
+      tasks,
       date: new Date().toISOString(),
       startedAt: new Date().toISOString(),
     })
 
-  const resetSession = () => setState(initialState)
+  const resetSession = () => setState({ ...initialState, tasks: [] })
 
   return (
     <DiagnosisContext.Provider

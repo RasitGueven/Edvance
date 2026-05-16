@@ -176,6 +176,20 @@ export type StudentInput = {
 
 export type StudentWithName = Student & { full_name: string | null }
 
+// Laufzeit-Aufgabe der Screening-/Diagnose-Engine: Generator-Output
+// (DiagnosticTask) angereichert mit echtem tasks-Content. Feldnamen
+// spiegeln die fruehere Mock-Form, damit die Views minimal bleiben.
+export type RunTask = {
+  id: string
+  skill_id: string
+  skill_cluster: string
+  question: string
+  solution: string
+  common_errors: string
+  coach_hint: string
+  estimated_minutes: number
+}
+
 export type IntakeStatus = 'draft' | 'final'
 
 export type IntakeSession = {
