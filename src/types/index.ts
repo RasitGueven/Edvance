@@ -13,23 +13,6 @@ export type Role = UserRole | null
 export type AttendanceStatus = 'present' | 'absent' | 'unknown'
 export type SessionStatus = 'upcoming' | 'active' | 'done'
 
-export type MockStudent = {
-  id: string
-  name: string
-  classLevel: number
-  subjects: string[]
-  attendance: AttendanceStatus
-}
-
-export type MockSession = {
-  id: string
-  time: string
-  status: SessionStatus
-  room: string
-  coach: string
-  students: MockStudent[]
-}
-
 // ── Theme ─────────────────────────────────────────────────────────────────────
 
 export const THEMES = ['edvance', 'ocean', 'forest', 'sunset'] as const
