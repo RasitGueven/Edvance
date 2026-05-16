@@ -71,3 +71,66 @@ create policy "parents_see_own_children" on profiles
 
 -- Fächer vorbefüllen
 insert into subjects (name) values ('Mathematik'), ('Deutsch'), ('Englisch');
+
+-- ============================================================================
+-- Migration 011 – RLS-Fix students / student_subjects / parent_student
+-- (siehe migrations/011_students_rls_fix.sql – hier zur Doku des realen
+--  DB-Stands gespiegelt; Ausfuehrung manuell im Supabase SQL Editor)
+-- ============================================================================
+
+-- Security-Definer-Helper (nicht-rekursiv, programmweit genutzt)
+create or replace function public.get_my_student_id()
+returns uuid
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select id from students where profile_id = auth.uid() limit 1;
+$$;
+
+create or replace function public.is_parent_of_student(p_student_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from parent_student ps
+    join students s on s.profile_id = ps.student_id
+    where ps.parent_id = auth.uid()
+      and s.id = p_student_id
+  );
+$$;
+
+-- students: eigenes Profil, Eltern des Kindes, Coach/Admin alles
+create policy "students_select_own" on students
+  for select using (profile_id = auth.uid());
+create policy "students_parents_read" on students
+  for select using (public.is_parent_of_student(id));
+create policy "students_coach_admin_all" on students
+  for all
+  using (public.get_my_role() in ('coach', 'admin'))
+  with check (public.get_my_role() in ('coach', 'admin'));
+
+-- parent_student: Elternteil/Schueler sehen eigene Verknuepfung, Coach/Admin alles
+create policy "parent_student_parent_read" on parent_student
+  for select using (parent_id = auth.uid());
+create policy "parent_student_student_read" on parent_student
+  for select using (student_id = auth.uid());
+create policy "parent_student_coach_admin_all" on parent_student
+  for all
+  using (public.get_my_role() in ('coach', 'admin'))
+  with check (public.get_my_role() in ('coach', 'admin'));
+
+-- student_subjects: eigene, Eltern des Kindes, Coach/Admin alles
+create policy "student_subjects_select_own" on student_subjects
+  for select using (student_id = public.get_my_student_id());
+create policy "student_subjects_parents_read" on student_subjects
+  for select using (public.is_parent_of_student(student_id));
+create policy "student_subjects_coach_admin_all" on student_subjects
+  for all
+  using (public.get_my_role() in ('coach', 'admin'))
+  with check (public.get_my_role() in ('coach', 'admin'));

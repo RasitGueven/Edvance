@@ -53,6 +53,14 @@ student | parent | coach | admin
 - `subjects`, `skill_clusters`, `microskills`, `tasks`: Lesen fuer alle authentifizierten User
 - `task_coach_metadata`: nur fuer Coaches und Admins
 - Schreiben auf `tasks`: nur Admins
+- `students` / `parent_student` / `student_subjects`: explizite Policies seit
+  Migration 011 (vorher RLS aktiv, aber policy-los = default-deny)
+
+### Security-Definer-Helper (nicht-rekursiv, programmweit)
+
+- `public.get_my_role()` → Rolle des eingeloggten Users
+- `public.get_my_student_id()` → eigene `students.id` (Migration 011)
+- `public.is_parent_of_student(uuid)` → ist User Elternteil dieses Schuelers (Migration 011)
 
 ## Supabase-Regeln
 
@@ -65,3 +73,5 @@ student | parent | coach | admin
 - `schema.sql`                              – Auth + Schueler-Tabellen (initial)
 - `schema_content.sql`                      – Content/Aufgaben-Tabellen (im Supabase SQL Editor manuell)
 - `migrations/001_competency_areas.sql`     – Cluster auf 5 KMK-Kompetenzbereiche umstellen
+- `migrations/003_behavior_snapshots.sql`   – BehaviorSnapshots (append-only)
+- `migrations/011_students_rls_fix.sql`     – RLS-Policies students/parent_student/student_subjects + Security-Definer-Helper
