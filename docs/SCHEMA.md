@@ -120,3 +120,12 @@ student | parent | coach | admin
 - `migrations/017_coaching_sessions.sql`    – coaching_sessions + session_students (ersetzt MOCK_SESSIONS)
 - `migrations/019_gamification.sql`         – student_progress + xp_events (+ Trigger apply_xp_event)
 - `migrations/020_parent_reports.sql`       – Elternreport (draft/published)
+- `migrations/021_provision_student_fn.sql` – atomare Lead->Student-Conversion (nur service_role; via Edge Function provision_student)
+
+## Edge Functions
+
+- `supabase/functions/provision_student` – Lead->Student-Conversion: legt
+  auth-User (Schueler + optional Eltern-Invite) an und ruft die atomare
+  RPC `app_provision_student` (Migration 021). Deploy via
+  `supabase functions deploy provision_student`. Aufruf nur ueber
+  `src/lib/supabase/provision.ts` (nie direkt aus Komponenten).
