@@ -99,9 +99,10 @@ as $$
   select exists (
     select 1
     from parent_student ps
-    join students s on s.profile_id = ps.student_id
     where ps.parent_id = auth.uid()
-      and s.id = p_student_id
+      and ps.student_id in (
+        select profile_id from students where id = p_student_id
+      )
   );
 $$;
 

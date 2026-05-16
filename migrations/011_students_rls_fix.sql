@@ -29,7 +29,7 @@ as $$
   select id from students where profile_id = auth.uid() limit 1;
 $$;
 
--- Ist der eingeloggte User Elternteil des Schuelers (students.id)?
+-- Ist der eingeloggte User Elternteil dieses Schuelers (students-PK)?
 -- parent_student.student_id referenziert profiles(id); students.profile_id
 -- ist die Schueler-Profil-ID. Security-Definer umgeht RLS der inneren Joins.
 create or replace function public.is_parent_of_student(p_student_id uuid)
@@ -42,9 +42,10 @@ as $$
   select exists (
     select 1
     from parent_student ps
-    join students s on s.profile_id = ps.student_id
     where ps.parent_id = auth.uid()
-      and s.id = p_student_id
+      and ps.student_id in (
+        select profile_id from students where id = p_student_id
+      )
   );
 $$;
 
