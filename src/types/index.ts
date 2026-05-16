@@ -172,6 +172,67 @@ export type StudentInput = {
   school_type?: SchoolKind | null
 }
 
+export type IntakeStatus = 'draft' | 'final'
+
+export type IntakeSession = {
+  id: string
+  created_at: string
+  student_id: string
+  lead_id: string | null
+  coach_id: string | null
+  conducted_at: string | null
+  goals: string | null
+  motivation: string | null
+  learning_history: string | null
+  parent_expectations: string | null
+  known_weak_topics: string[]
+  agreed_next_steps: string | null
+  notes: string | null
+  status: IntakeStatus
+}
+
+export type IntakeInput = {
+  student_id: string
+  lead_id?: string | null
+  coach_id?: string | null
+  conducted_at?: string | null
+  goals?: string | null
+  motivation?: string | null
+  learning_history?: string | null
+  parent_expectations?: string | null
+  known_weak_topics?: string[]
+  agreed_next_steps?: string | null
+  notes?: string | null
+}
+
+export type Tier = {
+  id: string
+  name: string
+  price_cents: number
+  features: string[]
+  sort_order: number
+  active: boolean
+}
+
+export type SubscriptionStatus = 'active' | 'paused' | 'cancelled'
+
+export type StudentSubscription = {
+  id: string
+  created_at: string
+  student_id: string
+  tier_id: string
+  status: SubscriptionStatus
+  started_at: string | null
+  ended_at: string | null
+}
+
+export type StudentCoach = {
+  student_id: string
+  coach_id: string
+  assigned_at: string
+  active: boolean
+}
+
 // ── Content / Aufgaben-Schema ─────────────────────────────────────────────────
 
 export type ContentType = 'exercise' | 'exercise_group' | 'article' | 'video' | 'course'
