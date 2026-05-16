@@ -1,7 +1,8 @@
 -- ============================================================================
 -- Edvance Content Schema (Aufgaben / Cluster / Microskills)
 --
--- Stand: Migration 007 inklusive (Diagnostic-Felder, Serlo-Removal, source/source_ref).
+-- Stand: Migration 009 inklusive (Diagnostic-Felder, Serlo-Removal, source/source_ref,
+--        source_ref UNIQUE CONSTRAINT [008], Bilder/Abbildungen-Assets [009]).
 -- Diese Datei spiegelt den realen DB-Stand. Inkrementelle Aenderungen seit der
 -- Erstausfuehrung laufen ueber migrations/00X_*.sql.
 --
