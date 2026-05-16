@@ -40,6 +40,12 @@ screening_ratings   → id, created_at, behavior_snapshot_id, screening_test_id,
                       (APPEND-ONLY – Coach-Bewertung separat, haelt behavior_snapshots append-only)
 behavior_snapshots  → + screening_test_id (additive nullable FK, Migration 014)
 
+### Tarif / Zuordnung / Fortschritt (Migrationen 015,016,018)
+tiers                  → id, name, price_cents, features(jsonb), sort_order, active (Katalog, seed Basic/Standard/Premium)
+student_subscriptions  → id, created_at, student_id, tier_id, status, started_at, ended_at
+student_coach          → student_id, coach_id, assigned_at, active (PK student_id+coach_id)
+student_task_progress  → student_id, task_id, completed_at (PK student_id+task_id; ersetzt localStorage)
+
 ## Beziehungen
 
 - `subjects 1—n skill_clusters` (Fach → Themencluster)
@@ -71,6 +77,9 @@ student | parent | coach | admin
 - `screening_tests`: Schueler liest eigene; Eltern lesen eigenes Kind; Coach/Admin alles
 - `screening_ratings`: append-only; Insert Coach/Admin; Lesen eigener Schueler/Eltern/Coach/Admin
 - `behavior_snapshots`: weiterhin append-only (Migration 014 nur additive FK)
+- `tiers`: alle authentifizierten lesen; nur Admin schreibt
+- `student_subscriptions` / `student_task_progress`: Schueler eigene; Eltern/Coach/Admin lesen
+- `student_coach`: Zuweisung nur Admin; Coach liest eigene; Schueler/Eltern eigene
 
 ### Security-Definer-Helper (nicht-rekursiv, programmweit)
 
@@ -94,3 +103,6 @@ student | parent | coach | admin
 - `migrations/012_leads.sql`                – leads (Erstgespraech Stufe A)
 - `migrations/013_intake_sessions.sql`      – intake_sessions (Erstgespraech Stufe B)
 - `migrations/014_screening.sql`            – screening_tests + screening_ratings + behavior_snapshots.screening_test_id
+- `migrations/015_tiers_subscriptions.sql`  – tiers (Katalog) + student_subscriptions
+- `migrations/016_student_coach.sql`        – Schueler<->Coach-Zuordnung
+- `migrations/018_student_task_progress.sql`– Aufgaben-Fortschritt (ersetzt localStorage)
