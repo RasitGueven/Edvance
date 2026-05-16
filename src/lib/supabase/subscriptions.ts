@@ -1,8 +1,8 @@
 import { supabase } from '@/lib/supabase/client'
-import type { StudentSubscription, SupabaseResult, Tier } from '@/types'
+import type { StudentSubscription, SupabaseResult, TierPlan } from '@/types'
 
 // Aktiver Tarifkatalog, sortiert (ersetzt hardcodierte TIERS-Konstante).
-export async function listTiers(): Promise<SupabaseResult<Tier[]>> {
+export async function listTiers(): Promise<SupabaseResult<TierPlan[]>> {
   try {
     const { data, error } = await supabase
       .from('tiers')
@@ -10,7 +10,7 @@ export async function listTiers(): Promise<SupabaseResult<Tier[]>> {
       .eq('active', true)
       .order('sort_order', { ascending: true })
     if (error) return { data: null, error: error.message }
-    return { data: (data ?? []) as Tier[], error: null }
+    return { data: (data ?? []) as TierPlan[], error: null }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Tarife konnten nicht geladen werden'
     return { data: null, error: message }

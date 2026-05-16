@@ -60,6 +60,12 @@ export type StepProps = {
 
 export type SummaryStepProps = {
   data: OnboardingFormData
+  coaches: Coach[]
+}
+
+export type CoachStepProps = StepProps & {
+  coaches: Coach[]
+  loading?: boolean
 }
 
 export type StepIndicatorProps = {
@@ -73,10 +79,6 @@ export type TierOption = {
   features: string[]
 }
 
-export type CoachOption = {
-  id: string
-  name: string
-}
 
 // ── Komponenten-Props ─────────────────────────────────────────────────────────
 
@@ -205,7 +207,7 @@ export type IntakeInput = {
   notes?: string | null
 }
 
-export type Tier = {
+export type TierPlan = {
   id: string
   name: string
   price_cents: number

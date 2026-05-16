@@ -1,4 +1,4 @@
-import type { CoachOption, OnboardingFormData, SchoolType, TierOption } from '@/types'
+import type { OnboardingFormData, SchoolType, TierOption } from '@/types'
 
 export const SUBJECTS = ['Mathematik', 'Deutsch', 'Englisch'] as const
 
@@ -40,11 +40,6 @@ export const TIERS: TierOption[] = [
       'Fachwechsel flexibel',
     ],
   },
-]
-
-export const MOCK_COACHES: CoachOption[] = [
-  { id: 'c2', name: 'Frau Demir' },
-  { id: 'c3', name: 'Herr Kaya' },
 ]
 
 export const EMPTY_FORM: OnboardingFormData = {

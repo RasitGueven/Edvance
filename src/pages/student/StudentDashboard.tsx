@@ -4,7 +4,7 @@ import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Search, X, 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { EdvanceBadge, EdvanceCard, XPBar } from '@/components/edvance'
+import { XPBar } from '@/components/edvance'
 import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
 import type { SkillCluster, Subject, Task } from '@/types'
