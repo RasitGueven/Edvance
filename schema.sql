@@ -372,6 +372,7 @@ create policy "student_task_progress_coach_admin_read" on student_task_progress
 
 -- ============================================================================
 -- Migration 017 – coaching_sessions + session_students  (siehe migrations/017_*.sql)
+-- Beide Tabellen ZUERST, dann Policies (gegenseitige Subquery-Referenzen).
 -- ============================================================================
 create table coaching_sessions (
   id uuid primary key default gen_random_uuid(),
@@ -383,10 +384,22 @@ create table coaching_sessions (
     status in ('upcoming','active','done')
   )
 );
+create table session_students (
+  session_id uuid not null
+    references coaching_sessions (id) on delete cascade,
+  student_id uuid not null references students (id) on delete cascade,
+  attendance text not null default 'unknown' check (
+    attendance in ('present','absent','unknown')
+  ),
+  primary key (session_id, student_id)
+);
 create index coaching_sessions_coach_idx on coaching_sessions (coach_id);
 create index coaching_sessions_scheduled_idx
   on coaching_sessions (scheduled_at);
+create index session_students_student_idx
+  on session_students (student_id);
 alter table coaching_sessions enable row level security;
+alter table session_students enable row level security;
 create policy "coaching_sessions_coach_rw" on coaching_sessions
   for all
   using (coach_id = auth.uid())
@@ -402,19 +415,6 @@ create policy "coaching_sessions_student_read" on coaching_sessions
       where student_id = public.get_my_student_id()
     )
   );
-
-create table session_students (
-  session_id uuid not null
-    references coaching_sessions (id) on delete cascade,
-  student_id uuid not null references students (id) on delete cascade,
-  attendance text not null default 'unknown' check (
-    attendance in ('present','absent','unknown')
-  ),
-  primary key (session_id, student_id)
-);
-create index session_students_student_idx
-  on session_students (student_id);
-alter table session_students enable row level security;
 create policy "session_students_select_own" on session_students
   for select using (student_id = public.get_my_student_id());
 create policy "session_students_parent_read" on session_students

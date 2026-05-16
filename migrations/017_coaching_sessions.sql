@@ -7,6 +7,10 @@
 -- Ersetzt MOCK_SESSIONS (lib/mockData.ts) im CoachDashboard.
 -- Coach verwaltet eigene Sessions + Anwesenheit; Schueler/Eltern lesen
 -- die Sessions, in denen der Schueler eingetragen ist.
+--
+-- WICHTIG: Beide Tabellen werden ZUERST angelegt, dann die Policies –
+-- coaching_sessions_student_read referenziert session_students und
+-- session_students_coach_rw referenziert coaching_sessions.
 -- ============================================================================
 
 create table coaching_sessions (
@@ -20,11 +24,26 @@ create table coaching_sessions (
   )
 );
 
+create table session_students (
+  session_id uuid not null
+    references coaching_sessions (id) on delete cascade,
+  student_id uuid not null references students (id) on delete cascade,
+  attendance text not null default 'unknown' check (
+    attendance in ('present','absent','unknown')
+  ),
+  primary key (session_id, student_id)
+);
+
 create index coaching_sessions_coach_idx on coaching_sessions (coach_id);
 create index coaching_sessions_scheduled_idx
   on coaching_sessions (scheduled_at);
+create index session_students_student_idx
+  on session_students (student_id);
 
 alter table coaching_sessions enable row level security;
+alter table session_students enable row level security;
+
+-- ── coaching_sessions Policies ──────────────────────────────────────────────
 
 create policy "coaching_sessions_coach_rw" on coaching_sessions
   for all
@@ -44,20 +63,7 @@ create policy "coaching_sessions_student_read" on coaching_sessions
     )
   );
 
-create table session_students (
-  session_id uuid not null
-    references coaching_sessions (id) on delete cascade,
-  student_id uuid not null references students (id) on delete cascade,
-  attendance text not null default 'unknown' check (
-    attendance in ('present','absent','unknown')
-  ),
-  primary key (session_id, student_id)
-);
-
-create index session_students_student_idx
-  on session_students (student_id);
-
-alter table session_students enable row level security;
+-- ── session_students Policies ───────────────────────────────────────────────
 
 create policy "session_students_select_own" on session_students
   for select using (student_id = public.get_my_student_id());
