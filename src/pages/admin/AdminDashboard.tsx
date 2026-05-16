@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Check, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Check, ChevronRight, Inbox } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
@@ -119,6 +120,14 @@ export function AdminDashboard(): JSX.Element {
       <EdvanceNavbar subtitle="Admin-Dashboard" />
 
       <main className="mx-auto max-w-2xl px-4 py-10">
+        <div className="mb-4 flex justify-end">
+          <Link
+            to="/admin/leads"
+            className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]"
+          >
+            <Inbox className="h-4 w-4" /> Leads verwalten
+          </Link>
+        </div>
         {done ? (
           <SuccessState data={data} coaches={coaches} onReset={handleReset} />
         ) : (
