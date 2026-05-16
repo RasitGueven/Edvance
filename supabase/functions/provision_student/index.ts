@@ -71,31 +71,31 @@ Deno.serve(async (req: Request) => {
       : `student.${crypto.randomUUID()}@edvance.invalid`
 
   // 1. Schueler-auth-User
-  const studentRes = await admin.auth.admin.createUser({
+  const { data: studentData, error: studentErr } = await admin.auth.admin.createUser({
     email: studentEmail,
     password: randomPassword(),
     email_confirm: true,
   })
-  if (studentRes.error || !studentRes.data.user) {
+  if (studentErr || !studentData.user) {
     return json(502, {
-      error: `Schueler-Account: ${studentRes.error?.message ?? 'unbekannt'}`,
+      error: `Schueler-Account: ${studentErr?.message ?? 'unbekannt'}`,
     })
   }
-  const studentUid = studentRes.data.user.id
+  const { id: studentUid } = studentData.user
 
   // 2. optional Elternteil per Invite
   let parentUid: string | null = null
   if (body.parent_email && body.parent_email.trim() !== '') {
-    const parentRes = await admin.auth.admin.inviteUserByEmail(
-      body.parent_email.trim(),
-    )
-    if (parentRes.error || !parentRes.data.user) {
+    const { data: parentData, error: parentErr } =
+      await admin.auth.admin.inviteUserByEmail(body.parent_email.trim())
+    if (parentErr || !parentData.user) {
       await admin.auth.admin.deleteUser(studentUid)
       return json(502, {
-        error: `Eltern-Account: ${parentRes.error?.message ?? 'unbekannt'}`,
+        error: `Eltern-Account: ${parentErr?.message ?? 'unbekannt'}`,
       })
     }
-    parentUid = parentRes.data.user.id
+    const { id: parentIdValue } = parentData.user
+    parentUid = parentIdValue
   }
 
   // 3. atomarer DB-Teil
