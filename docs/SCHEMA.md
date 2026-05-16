@@ -46,6 +46,13 @@ student_subscriptions  → id, created_at, student_id, tier_id, status, started_
 student_coach          → student_id, coach_id, assigned_at, active (PK student_id+coach_id)
 student_task_progress  → student_id, task_id, completed_at (PK student_id+task_id; ersetzt localStorage)
 
+### Session-Betrieb / Gamification / Report (Migrationen 017,019,020)
+coaching_sessions      → id, created_at, coach_id, room, scheduled_at, status (ersetzt MOCK_SESSIONS)
+session_students       → session_id, student_id, attendance (PK session_id+student_id)
+student_progress       → student_id(PK), xp_total, streak_days, level, last_activity (nur via Trigger)
+xp_events              → id, created_at, student_id, task_id, xp, reason (APPEND-ONLY; speist student_progress)
+parent_reports         → id, created_at, student_id, period_start, period_end, summary(jsonb), coach_note, status, published_at
+
 ## Beziehungen
 
 - `subjects 1—n skill_clusters` (Fach → Themencluster)
@@ -80,6 +87,10 @@ student | parent | coach | admin
 - `tiers`: alle authentifizierten lesen; nur Admin schreibt
 - `student_subscriptions` / `student_task_progress`: Schueler eigene; Eltern/Coach/Admin lesen
 - `student_coach`: Zuweisung nur Admin; Coach liest eigene; Schueler/Eltern eigene
+- `coaching_sessions` / `session_students`: Coach r/w eigene; Admin alles; Schueler/Eltern lesen eigene
+- `student_progress`: read-only fuer Clients; Schreiben nur via Security-Definer-Trigger apply_xp_event
+- `xp_events`: append-only; Schueler insert/select eigene; Eltern/Coach/Admin lesen
+- `parent_reports`: Eltern/Schueler lesen nur 'published' eigenes Kind; Coach/Admin r/w
 
 ### Security-Definer-Helper (nicht-rekursiv, programmweit)
 
@@ -106,3 +117,6 @@ student | parent | coach | admin
 - `migrations/015_tiers_subscriptions.sql`  – tiers (Katalog) + student_subscriptions
 - `migrations/016_student_coach.sql`        – Schueler<->Coach-Zuordnung
 - `migrations/018_student_task_progress.sql`– Aufgaben-Fortschritt (ersetzt localStorage)
+- `migrations/017_coaching_sessions.sql`    – coaching_sessions + session_students (ersetzt MOCK_SESSIONS)
+- `migrations/019_gamification.sql`         – student_progress + xp_events (+ Trigger apply_xp_event)
+- `migrations/020_parent_reports.sql`       – Elternreport (draft/published)

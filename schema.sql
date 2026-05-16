@@ -369,3 +369,183 @@ create policy "student_task_progress_parent_read" on student_task_progress
   for select using (public.is_parent_of_student(student_id));
 create policy "student_task_progress_coach_admin_read" on student_task_progress
   for select using (public.get_my_role() in ('coach','admin'));
+
+-- ============================================================================
+-- Migration 017 – coaching_sessions + session_students  (siehe migrations/017_*.sql)
+-- ============================================================================
+create table coaching_sessions (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  coach_id uuid not null references profiles (id) on delete cascade,
+  room text,
+  scheduled_at timestamptz not null,
+  status text not null default 'upcoming' check (
+    status in ('upcoming','active','done')
+  )
+);
+create index coaching_sessions_coach_idx on coaching_sessions (coach_id);
+create index coaching_sessions_scheduled_idx
+  on coaching_sessions (scheduled_at);
+alter table coaching_sessions enable row level security;
+create policy "coaching_sessions_coach_rw" on coaching_sessions
+  for all
+  using (coach_id = auth.uid())
+  with check (coach_id = auth.uid());
+create policy "coaching_sessions_admin_all" on coaching_sessions
+  for all
+  using (public.get_my_role() = 'admin')
+  with check (public.get_my_role() = 'admin');
+create policy "coaching_sessions_student_read" on coaching_sessions
+  for select using (
+    id in (
+      select session_id from session_students
+      where student_id = public.get_my_student_id()
+    )
+  );
+
+create table session_students (
+  session_id uuid not null
+    references coaching_sessions (id) on delete cascade,
+  student_id uuid not null references students (id) on delete cascade,
+  attendance text not null default 'unknown' check (
+    attendance in ('present','absent','unknown')
+  ),
+  primary key (session_id, student_id)
+);
+create index session_students_student_idx
+  on session_students (student_id);
+alter table session_students enable row level security;
+create policy "session_students_select_own" on session_students
+  for select using (student_id = public.get_my_student_id());
+create policy "session_students_parent_read" on session_students
+  for select using (public.is_parent_of_student(student_id));
+create policy "session_students_coach_rw" on session_students
+  for all
+  using (
+    session_id in (
+      select id from coaching_sessions where coach_id = auth.uid()
+    )
+  )
+  with check (
+    session_id in (
+      select id from coaching_sessions where coach_id = auth.uid()
+    )
+  );
+create policy "session_students_admin_all" on session_students
+  for all
+  using (public.get_my_role() = 'admin')
+  with check (public.get_my_role() = 'admin');
+
+-- ============================================================================
+-- Migration 019 – student_progress + xp_events  (siehe migrations/019_*.sql)
+-- xp_events append-only; student_progress nur via Trigger apply_xp_event
+-- ============================================================================
+create table student_progress (
+  student_id uuid primary key references students (id) on delete cascade,
+  xp_total integer not null default 0,
+  streak_days integer not null default 0,
+  level integer not null default 1,
+  last_activity timestamptz
+);
+alter table student_progress enable row level security;
+create policy "student_progress_select_own" on student_progress
+  for select using (student_id = public.get_my_student_id());
+create policy "student_progress_parent_read" on student_progress
+  for select using (public.is_parent_of_student(student_id));
+create policy "student_progress_coach_admin_read" on student_progress
+  for select using (public.get_my_role() in ('coach','admin'));
+
+create table xp_events (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  student_id uuid not null references students (id) on delete cascade,
+  task_id uuid references tasks (id) on delete set null,
+  xp integer not null,
+  reason text
+);
+create index xp_events_student_idx on xp_events (student_id);
+alter table xp_events enable row level security;
+-- append-only: KEIN update-, KEIN delete-Policy
+create policy "xp_events_insert_own" on xp_events
+  for insert with check (student_id = public.get_my_student_id());
+create policy "xp_events_select_own" on xp_events
+  for select using (student_id = public.get_my_student_id());
+create policy "xp_events_parent_read" on xp_events
+  for select using (public.is_parent_of_student(student_id));
+create policy "xp_events_coach_admin_read" on xp_events
+  for select using (public.get_my_role() in ('coach','admin'));
+
+create or replace function public.apply_xp_event()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_last date;
+  v_today date := (now() at time zone 'utc')::date;
+  v_streak integer;
+begin
+  select (last_activity at time zone 'utc')::date, streak_days
+    into v_last, v_streak
+    from student_progress
+    where student_id = new.student_id;
+
+  if not found then
+    insert into student_progress
+      (student_id, xp_total, streak_days, level, last_activity)
+    values
+      (new.student_id, new.xp, 1, 1 + (new.xp / 500), now());
+    return new;
+  end if;
+
+  if v_last = v_today then
+    v_streak := v_streak;
+  elsif v_last = v_today - 1 then
+    v_streak := v_streak + 1;
+  else
+    v_streak := 1;
+  end if;
+
+  update student_progress
+     set xp_total = xp_total + new.xp,
+         level = 1 + ((xp_total + new.xp) / 500),
+         streak_days = v_streak,
+         last_activity = now()
+   where student_id = new.student_id;
+
+  return new;
+end;
+$$;
+create trigger xp_events_apply
+  after insert on xp_events
+  for each row execute function public.apply_xp_event();
+
+-- ============================================================================
+-- Migration 020 – parent_reports  (siehe migrations/020_parent_reports.sql)
+-- ============================================================================
+create table parent_reports (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  student_id uuid not null references students (id) on delete cascade,
+  period_start date not null,
+  period_end date not null,
+  summary jsonb,
+  coach_note text,
+  status text not null default 'draft' check (status in ('draft','published')),
+  published_at timestamptz
+);
+create index parent_reports_student_idx on parent_reports (student_id);
+alter table parent_reports enable row level security;
+create policy "parent_reports_parent_read" on parent_reports
+  for select using (
+    status = 'published' and public.is_parent_of_student(student_id)
+  );
+create policy "parent_reports_student_read" on parent_reports
+  for select using (
+    status = 'published' and student_id = public.get_my_student_id()
+  );
+create policy "parent_reports_coach_admin_all" on parent_reports
+  for all
+  using (public.get_my_role() in ('coach','admin'))
+  with check (public.get_my_role() in ('coach','admin'));
