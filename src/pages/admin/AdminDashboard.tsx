@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, ChevronRight, Inbox } from 'lucide-react'
+import { Check, ChevronRight, CreditCard, Inbox } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
@@ -13,7 +13,8 @@ import { SummaryStep } from '@/components/edvance/onboarding/SummaryStep'
 import { TierStep } from '@/components/edvance/onboarding/TierStep'
 import { canProceed } from '@/components/edvance/onboarding/validation'
 import { getCoaches } from '@/lib/supabase/profiles'
-import type { Coach, OnboardingFormData } from '@/types'
+import { listTiers } from '@/lib/supabase/subscriptions'
+import type { Coach, OnboardingFormData, TierPlan } from '@/types'
 
 const SHADOW_CARD = '0 4px 24px 0 rgba(0,0,0,0.08)'
 const SUCCESS_ICON_BG = 'color-mix(in srgb, var(--success) 15%, transparent)'
@@ -30,6 +31,8 @@ type StepRendererProps = {
   setData: (next: OnboardingFormData) => void
   coaches: Coach[]
   coachesLoading: boolean
+  tiers: TierPlan[]
+  tiersLoading: boolean
 }
 
 function StepRenderer({
@@ -38,10 +41,15 @@ function StepRenderer({
   setData,
   coaches,
   coachesLoading,
+  tiers,
+  tiersLoading,
 }: StepRendererProps): JSX.Element | null {
   if (step === STEP_DATA) return <StudentDataStep data={data} setData={setData} />
   if (step === STEP_SUBJECTS) return <SubjectsStep data={data} setData={setData} />
-  if (step === STEP_TIER) return <TierStep data={data} setData={setData} />
+  if (step === STEP_TIER)
+    return (
+      <TierStep data={data} setData={setData} tiers={tiers} loading={tiersLoading} />
+    )
   if (step === STEP_COACH)
     return (
       <CoachStep data={data} setData={setData} coaches={coaches} loading={coachesLoading} />
@@ -84,6 +92,8 @@ export function AdminDashboard(): JSX.Element {
   const [done, setDone] = useState<boolean>(false)
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [coachesLoading, setCoachesLoading] = useState<boolean>(true)
+  const [tiers, setTiers] = useState<TierPlan[]>([])
+  const [tiersLoading, setTiersLoading] = useState<boolean>(true)
 
   useEffect(() => {
     let active = true
@@ -91,6 +101,11 @@ export function AdminDashboard(): JSX.Element {
       if (!active) return
       setCoaches(list ?? [])
       setCoachesLoading(false)
+    })
+    listTiers().then(({ data: list }) => {
+      if (!active) return
+      setTiers(list ?? [])
+      setTiersLoading(false)
     })
     return () => {
       active = false
@@ -120,7 +135,13 @@ export function AdminDashboard(): JSX.Element {
       <EdvanceNavbar subtitle="Admin-Dashboard" />
 
       <main className="mx-auto max-w-2xl px-4 py-10">
-        <div className="mb-4 flex justify-end">
+        <div className="mb-4 flex justify-end gap-4">
+          <Link
+            to="/admin/tiers"
+            className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]"
+          >
+            <CreditCard className="h-4 w-4" /> Tarif-Verwaltung
+          </Link>
           <Link
             to="/admin/leads"
             className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]"
@@ -146,6 +167,8 @@ export function AdminDashboard(): JSX.Element {
                 setData={setData}
                 coaches={coaches}
                 coachesLoading={coachesLoading}
+                tiers={tiers}
+                tiersLoading={tiersLoading}
               />
 
               <div className="mt-8 flex items-center justify-between">

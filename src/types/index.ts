@@ -39,7 +39,6 @@ export type ThemeColors = { primary: string; light: string; dark: string }
 // ── Onboarding-Wizard ─────────────────────────────────────────────────────────
 
 export type SchoolType = 'Gymnasium' | 'Gesamtschule' | 'Realschule' | 'Hauptschule' | ''
-export type Tier = 'Basic' | 'Standard' | 'Premium' | ''
 
 export type OnboardingFormData = {
   firstName: string
@@ -49,7 +48,7 @@ export type OnboardingFormData = {
   schoolName: string
   schoolType: SchoolType
   subjects: string[]
-  tier: Tier
+  tier: string
   coachId: string
 }
 
@@ -71,14 +70,6 @@ export type CoachStepProps = StepProps & {
 export type StepIndicatorProps = {
   current: number
 }
-
-export type TierOption = {
-  id: Tier
-  label: string
-  price: string
-  features: string[]
-}
-
 
 // ── Komponenten-Props ─────────────────────────────────────────────────────────
 
@@ -230,6 +221,21 @@ export type TierPlan = {
   features: string[]
   sort_order: number
   active: boolean
+}
+
+export type TierInput = {
+  name: string
+  price_cents: number
+  features: string[]
+  sort_order?: number
+  active?: boolean
+}
+
+export type TierStepProps = {
+  data: OnboardingFormData
+  setData: (next: OnboardingFormData) => void
+  tiers: TierPlan[]
+  loading?: boolean
 }
 
 export type SubscriptionStatus = 'active' | 'paused' | 'cancelled'
