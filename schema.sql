@@ -135,3 +135,144 @@ create policy "student_subjects_coach_admin_all" on student_subjects
   for all
   using (public.get_my_role() in ('coach', 'admin'))
   with check (public.get_my_role() in ('coach', 'admin'));
+
+-- ============================================================================
+-- Migration 012 – leads  (siehe migrations/012_leads.sql)
+-- ============================================================================
+create table leads (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  full_name text not null,
+  contact_email text,
+  contact_phone text,
+  class_level integer check (class_level between 5 and 13),
+  school_type text check (
+    school_type in ('Gymnasium','Gesamtschule','Realschule','Hauptschule')
+  ),
+  school_name text,
+  subjects text[] default '{}',
+  goal text check (goal in ('IMPROVE_GRADES','CLOSE_GAPS','EXAM_PREP','GENERAL')),
+  known_weak_topics text[] default '{}',
+  source text,
+  status text not null default 'new' check (
+    status in ('new','contacted','onboarding_scheduled','converted','rejected')
+  ),
+  owner_id uuid references profiles (id) on delete set null,
+  notes text,
+  converted_student_id uuid references students (id) on delete set null,
+  contacted_at timestamptz,
+  onboarding_scheduled_at timestamptz
+);
+create index leads_status_idx on leads (status);
+create index leads_owner_idx on leads (owner_id);
+alter table leads enable row level security;
+create policy "leads_coach_admin_all" on leads
+  for all
+  using (public.get_my_role() in ('coach','admin'))
+  with check (public.get_my_role() in ('coach','admin'));
+
+-- ============================================================================
+-- Migration 013 – intake_sessions  (siehe migrations/013_intake_sessions.sql)
+-- ============================================================================
+create table intake_sessions (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  student_id uuid not null references students (id) on delete cascade,
+  lead_id uuid references leads (id) on delete set null,
+  coach_id uuid references profiles (id) on delete set null,
+  conducted_at timestamptz,
+  goals text,
+  motivation text,
+  learning_history text,
+  parent_expectations text,
+  known_weak_topics text[] default '{}',
+  agreed_next_steps text,
+  notes text,
+  status text not null default 'draft' check (status in ('draft','final'))
+);
+create index intake_sessions_student_idx on intake_sessions (student_id);
+alter table intake_sessions enable row level security;
+create policy "intake_sessions_coach_admin_all" on intake_sessions
+  for all
+  using (public.get_my_role() in ('coach','admin'))
+  with check (public.get_my_role() in ('coach','admin'));
+create policy "intake_sessions_parent_read" on intake_sessions
+  for select using (public.is_parent_of_student(student_id));
+
+-- ============================================================================
+-- Migration 014 – screening_tests + screening_ratings
+--                  + behavior_snapshots.screening_test_id
+-- (siehe migrations/014_screening.sql)
+-- ============================================================================
+create table screening_tests (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  student_id uuid not null references students (id) on delete cascade,
+  subject text not null,
+  status text not null default 'in_progress' check (
+    status in ('in_progress','completed','aborted')
+  ),
+  coach_id uuid references profiles (id) on delete set null,
+  coach_note text,
+  generated_test jsonb,
+  generated_test_version smallint not null default 1,
+  result_summary jsonb,
+  estimated_total_minutes integer,
+  started_at timestamptz,
+  completed_at timestamptz
+);
+create index screening_tests_student_idx on screening_tests (student_id);
+create index screening_tests_status_idx on screening_tests (status);
+create unique index screening_tests_active_unique
+  on screening_tests (student_id, subject)
+  where status = 'in_progress';
+alter table screening_tests enable row level security;
+create policy "screening_tests_select_own" on screening_tests
+  for select using (student_id = public.get_my_student_id());
+create policy "screening_tests_parent_read" on screening_tests
+  for select using (public.is_parent_of_student(student_id));
+create policy "screening_tests_coach_admin_all" on screening_tests
+  for all
+  using (public.get_my_role() in ('coach','admin'))
+  with check (public.get_my_role() in ('coach','admin'));
+
+create table screening_ratings (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  behavior_snapshot_id uuid not null
+    references behavior_snapshots (id) on delete cascade,
+  screening_test_id uuid not null
+    references screening_tests (id) on delete cascade,
+  rating smallint not null check (rating in (1,2,3,4)),
+  coach_id uuid references profiles (id) on delete set null
+);
+create index screening_ratings_snapshot_idx
+  on screening_ratings (behavior_snapshot_id);
+create index screening_ratings_test_idx
+  on screening_ratings (screening_test_id);
+alter table screening_ratings enable row level security;
+-- append-only: KEIN update-, KEIN delete-Policy
+create policy "screening_ratings_coach_insert" on screening_ratings
+  for insert with check (public.get_my_role() in ('coach','admin'));
+create policy "screening_ratings_coach_admin_read" on screening_ratings
+  for select using (public.get_my_role() in ('coach','admin'));
+create policy "screening_ratings_student_read" on screening_ratings
+  for select using (
+    screening_test_id in (
+      select id from screening_tests
+      where student_id = public.get_my_student_id()
+    )
+  );
+create policy "screening_ratings_parent_read" on screening_ratings
+  for select using (
+    screening_test_id in (
+      select id from screening_tests
+      where public.is_parent_of_student(student_id)
+    )
+  );
+
+alter table behavior_snapshots
+  add column screening_test_id uuid
+    references screening_tests (id) on delete cascade;
+create index behavior_snapshots_screening_idx
+  on behavior_snapshots (screening_test_id);

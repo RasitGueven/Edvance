@@ -29,6 +29,17 @@ sortiert.
 ### Schueler-Fach Verknuepfung
 student_subjects    → student_id, subject_id
 
+### Erstgespraech & Screening (Migrationen 012-014)
+leads               → id, created_at, full_name, contact_email, contact_phone, class_level, school_type, school_name, subjects[], goal, known_weak_topics[], source, status, owner_id, notes, converted_student_id, contacted_at, onboarding_scheduled_at
+                      (Stufe A: Lead/Erstkontakt vor Account – nur Coach/Admin, PII)
+intake_sessions     → id, created_at, student_id, lead_id, coach_id, conducted_at, goals, motivation, learning_history, parent_expectations, known_weak_topics[], agreed_next_steps, notes, status
+                      (Stufe B: strukturiertes Erstgespraech-Protokoll am Schueler)
+screening_tests     → id, created_at, student_id, subject, status, coach_id, coach_note, generated_test(jsonb), generated_test_version, result_summary(jsonb), estimated_total_minutes, started_at, completed_at
+                      (mutables Aggregat pro (Schueler,Fach); 1 aktiver Test je Paar)
+screening_ratings   → id, created_at, behavior_snapshot_id, screening_test_id, rating(1-4), coach_id
+                      (APPEND-ONLY – Coach-Bewertung separat, haelt behavior_snapshots append-only)
+behavior_snapshots  → + screening_test_id (additive nullable FK, Migration 014)
+
 ## Beziehungen
 
 - `subjects 1—n skill_clusters` (Fach → Themencluster)
@@ -55,6 +66,11 @@ student | parent | coach | admin
 - Schreiben auf `tasks`: nur Admins
 - `students` / `parent_student` / `student_subjects`: explizite Policies seit
   Migration 011 (vorher RLS aktiv, aber policy-los = default-deny)
+- `leads`: nur Coach/Admin (interne PII, kein anon-Zugriff)
+- `intake_sessions`: Coach/Admin Vollzugriff; Eltern lesen Protokoll eigenes Kind
+- `screening_tests`: Schueler liest eigene; Eltern lesen eigenes Kind; Coach/Admin alles
+- `screening_ratings`: append-only; Insert Coach/Admin; Lesen eigener Schueler/Eltern/Coach/Admin
+- `behavior_snapshots`: weiterhin append-only (Migration 014 nur additive FK)
 
 ### Security-Definer-Helper (nicht-rekursiv, programmweit)
 
@@ -75,3 +91,6 @@ student | parent | coach | admin
 - `migrations/001_competency_areas.sql`     – Cluster auf 5 KMK-Kompetenzbereiche umstellen
 - `migrations/003_behavior_snapshots.sql`   – BehaviorSnapshots (append-only)
 - `migrations/011_students_rls_fix.sql`     – RLS-Policies students/parent_student/student_subjects + Security-Definer-Helper
+- `migrations/012_leads.sql`                – leads (Erstgespraech Stufe A)
+- `migrations/013_intake_sessions.sql`      – intake_sessions (Erstgespraech Stufe B)
+- `migrations/014_screening.sql`            – screening_tests + screening_ratings + behavior_snapshots.screening_test_id
