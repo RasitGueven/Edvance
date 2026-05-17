@@ -39,7 +39,7 @@ export function AdminDashboard(): JSX.Element {
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle="Admin" />
 
-      <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:py-10">
+      <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10">
         <header className="flex flex-col gap-1 animate-fade-in">
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">
             Übersicht

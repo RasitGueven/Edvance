@@ -14,10 +14,12 @@ const ACCENT_VAR: Record<TileAccent, string> = {
   repair: 'var(--color-moment-repair)',
 }
 
+// Responsive Bento: Telefon = 2 Spalten, iPad hochkant (md) = 3-Spalten-
+// Bento, iPad quer / Desktop (lg) = 4-Spalten-Bento.
 const SIZE_CLASS: Record<TileSize, string> = {
-  sm: 'col-span-2 sm:col-span-1 lg:row-span-1',
-  wide: 'col-span-2 lg:row-span-1',
-  lg: 'col-span-2 lg:row-span-2',
+  sm: 'col-span-1',
+  wide: 'col-span-2 md:col-span-1 lg:col-span-2',
+  lg: 'col-span-2 md:row-span-2 lg:row-span-2',
 }
 
 // ─── KPI-Header-Widget (Hero) ─────────────────────────────────────────────────
@@ -163,7 +165,7 @@ export function AdminTile({
 
 export function AdminTileGrid({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <section className="grid grid-flow-dense grid-cols-2 gap-4 lg:auto-rows-[minmax(200px,auto)] lg:grid-cols-4">
+    <section className="grid grid-flow-dense grid-cols-2 gap-4 md:grid-cols-3 md:auto-rows-[minmax(200px,auto)] lg:grid-cols-4">
       {children}
     </section>
   )
