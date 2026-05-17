@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, ChevronRight, CreditCard, Inbox } from 'lucide-react'
+import { Check, ChevronRight, CreditCard, FlaskConical, Inbox } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
@@ -157,7 +157,13 @@ export function AdminDashboard(): JSX.Element {
       <EdvanceNavbar subtitle="Admin-Dashboard" />
 
       <main className="mx-auto max-w-2xl px-4 py-10">
-        <div className="mb-4 flex justify-end gap-4">
+        <div className="mb-4 flex flex-wrap justify-end gap-4">
+          <Link
+            to="/admin/diagnostics"
+            className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]"
+          >
+            <FlaskConical className="h-4 w-4" /> Diagnostik-Content
+          </Link>
           <Link
             to="/admin/tiers"
             className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]"
