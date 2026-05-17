@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { EdvanceAppIcon } from '@/components/brand/EdvanceLogo'
+import { EdvanceLogo } from '@/components/brand/EdvanceLogo'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
@@ -20,12 +20,11 @@ export function EdvanceNavbar({ subtitle, sticky = false }: EdvanceNavbarProps):
       )}
     >
       <div className="flex items-center gap-3">
-        <EdvanceAppIcon size={40} className="shadow-glow-primary" />
         <div>
-          <p className="text-sm font-bold tracking-tight text-[var(--text-primary)] leading-tight">
-            Edvance
+          <EdvanceLogo size={20} />
+          <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-tight">
+            {subtitle}
           </p>
-          <p className="text-xs text-[var(--text-muted)] leading-tight">{subtitle}</p>
         </div>
       </div>
       <div className="flex items-center gap-3">
