@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDiagnosis } from '@/context/DiagnosisContext'
 import {
@@ -7,6 +7,7 @@ import {
   recommendFocus,
 } from '@/lib/behaviorAnalysis'
 import { getClustersBySubject, getSubjects } from '@/lib/supabase/tasks'
+import { completeScreeningTest } from '@/lib/supabase/screening'
 import type { BehaviorAnalysis, BehaviorSnapshot } from '@/types/diagnosis'
 import type { RunTask } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -556,6 +557,36 @@ export function DiagnosisResult() {
 
   const { avgConfidence, avgEffort, avgFrustration } = averageMetrics(result.analyses)
   const focus = recommendFocus(result.skill_levels)
+
+  // U5c: Screening-Ergebnis genau einmal persistieren (DB-Modus, fertig).
+  const completedRef = useRef(false)
+  useEffect(() => {
+    if (completedRef.current) return
+    if (state.mode !== 'db' || !state.screeningTestId || !state.finished) return
+    completedRef.current = true
+    void completeScreeningTest(
+      state.screeningTestId,
+      {
+        skill_levels: result.skill_levels,
+        overall_behavior_flags: result.overall_behavior_flags,
+        averages: {
+          confidence: avgConfidence,
+          effort: avgEffort,
+          frustration: avgFrustration,
+        },
+      },
+      state.coachNote,
+    )
+  }, [
+    state.mode,
+    state.screeningTestId,
+    state.finished,
+    state.coachNote,
+    result,
+    avgConfidence,
+    avgEffort,
+    avgFrustration,
+  ])
 
   const completedSnaps = state.snapshots.filter((s): s is BehaviorSnapshot => s != null)
   const hasData = completedSnaps.length > 0

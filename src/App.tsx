@@ -110,10 +110,28 @@ export default function App(): JSX.Element {
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
         <Route path="/demo/design" element={<DesignDemo />} />
 
-        {/* Diagnose-Engine: zugänglich ohne Login (Tablet-Sicht für Schüler).
+        {/* Diagnose-Engine (lokal, ohne Login – Tablet-Sicht).
             Coach erreicht den Coach-View über ?view=coach. */}
         <Route path="/diagnosis" element={<DiagnosisSession />} />
         <Route path="/diagnosis/result" element={<DiagnosisResult />} />
+
+        {/* Screening: produktisierter, DB-gestützter Lauf (eingeloggt). */}
+        <Route
+          path="/screening"
+          element={
+            <ProtectedRoute allowedRoles={['student', 'coach', 'admin']}>
+              <DiagnosisSession screening />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/screening/result"
+          element={
+            <ProtectedRoute allowedRoles={['student', 'coach', 'admin']}>
+              <DiagnosisResult />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />

@@ -4,20 +4,24 @@ import type { RunTask } from '@/types'
 
 const STORAGE_KEY = 'edvance_diagnosis_state_v1'
 
+export type DiagnosisMode = 'local' | 'db'
+
 export type DiagnosisState = {
   studentName: string
   subject: string
   date: string
   currentIndex: number
-  // pro Task: wartet das System auf Coach-Bewertung?
   awaitingCoachRating: boolean
-  // Array indexed by task position
   snapshots: BehaviorSnapshot[]
-  // echte Aufgaben (Generator + Content), ersetzt mockDiagnosisTasks
   tasks: RunTask[]
   coachNote: string
   finished: boolean
   startedAt: string | null
+  // U5c: DB-Modus (Screening) – persistierter Lauf statt localStorage
+  mode: DiagnosisMode
+  screeningTestId: string | null
+  // pro Task-Index die behavior_snapshots.id (fuer screening_ratings)
+  snapshotIds: (string | null)[]
 }
 
 type StartArgs = {
@@ -28,13 +32,14 @@ type StartArgs = {
 
 type DiagnosisContextValue = {
   state: DiagnosisState
-  // Student-Aktionen
   submitAnswer: (snapshot: Omit<BehaviorSnapshot, 'coach_rating'>) => void
-  // Coach-Aktionen
   setCoachRating: (rating: 1 | 2 | 3 | 4) => void
   setCoachNote: (note: string) => void
-  // Setup
   startSession: (args: StartArgs) => void
+  // U5c: DB-gestuetzter Screening-Lauf
+  startScreening: (args: StartArgs & { screeningTestId: string }) => void
+  recordSnapshotId: (index: number, id: string) => void
+  hydrate: (next: DiagnosisState) => void
   resetSession: () => void
 }
 
@@ -49,6 +54,9 @@ const initialState: DiagnosisState = {
   coachNote: '',
   finished: false,
   startedAt: null,
+  mode: 'local',
+  screeningTestId: null,
+  snapshotIds: [],
 }
 
 function loadFromStorage(): DiagnosisState | null {
@@ -56,14 +64,21 @@ function loadFromStorage(): DiagnosisState | null {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as Partial<DiagnosisState>
-    // Abwaertskompatibel: alte Stände ohne tasks
-    return { ...initialState, ...parsed, tasks: parsed.tasks ?? [] }
+    return {
+      ...initialState,
+      ...parsed,
+      tasks: parsed.tasks ?? [],
+      mode: 'local',
+      snapshotIds: parsed.snapshotIds ?? [],
+    }
   } catch {
     return null
   }
 }
 
 function saveToStorage(state: DiagnosisState) {
+  // DB-Modus (Screening) wird in Supabase persistiert, NICHT in localStorage.
+  if (state.mode === 'db') return
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch {
@@ -76,12 +91,13 @@ const DiagnosisContext = createContext<DiagnosisContextValue | undefined>(undefi
 export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DiagnosisState>(() => loadFromStorage() ?? initialState)
 
-  // Cross-Tab-Sync: lausche auf storage-Events von anderen Tabs
   useEffect(() => {
     const handler = (e: StorageEvent) => {
       if (e.key !== STORAGE_KEY || !e.newValue) return
       try {
-        setState(JSON.parse(e.newValue) as DiagnosisState)
+        const next = JSON.parse(e.newValue) as DiagnosisState
+        // Cross-Tab nur fuer lokale Sessions; DB-Laeufe nicht ueberschreiben
+        setState(prev => (prev.mode === 'db' ? prev : next))
       } catch {
         /* ignore */
       }
@@ -90,7 +106,6 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('storage', handler)
   }, [])
 
-  // Persistiere bei jedem Update
   useEffect(() => {
     saveToStorage(state)
   }, [state])
@@ -113,7 +128,6 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       const cur = updated[idx]
       if (!cur) return prev
       updated[idx] = { ...cur, coach_rating: rating }
-
       const isLast = idx >= prev.tasks.length - 1
       return {
         ...prev,
@@ -140,13 +154,51 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       tasks,
       date: new Date().toISOString(),
       startedAt: new Date().toISOString(),
+      mode: 'local',
     })
 
-  const resetSession = () => setState({ ...initialState, tasks: [] })
+  const startScreening: DiagnosisContextValue['startScreening'] = ({
+    studentName,
+    subject,
+    tasks,
+    screeningTestId,
+  }) =>
+    setState({
+      ...initialState,
+      studentName,
+      subject,
+      tasks,
+      date: new Date().toISOString(),
+      startedAt: new Date().toISOString(),
+      mode: 'db',
+      screeningTestId,
+      snapshotIds: [],
+    })
+
+  const recordSnapshotId: DiagnosisContextValue['recordSnapshotId'] = (index, id) =>
+    setState(prev => {
+      const ids = [...prev.snapshotIds]
+      ids[index] = id
+      return { ...prev, snapshotIds: ids }
+    })
+
+  const hydrate: DiagnosisContextValue['hydrate'] = next => setState(next)
+
+  const resetSession = () => setState({ ...initialState })
 
   return (
     <DiagnosisContext.Provider
-      value={{ state, submitAnswer, setCoachRating, setCoachNote, startSession, resetSession }}
+      value={{
+        state,
+        submitAnswer,
+        setCoachRating,
+        setCoachNote,
+        startSession,
+        startScreening,
+        recordSnapshotId,
+        hydrate,
+        resetSession,
+      }}
     >
       {children}
     </DiagnosisContext.Provider>

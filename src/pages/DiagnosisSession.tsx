@@ -1,10 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { useDiagnosis } from '@/context/DiagnosisContext'
+import { useDiagnosis, type DiagnosisState } from '@/context/DiagnosisContext'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
-import { buildRunTasks } from '@/lib/screening/runtime'
+import { buildRunTasks, rebuildRunTasks } from '@/lib/screening/runtime'
+import { useAuth } from '@/hooks/useAuth'
+import { getStudentByProfile } from '@/lib/supabase/students'
+import {
+  createScreeningTest,
+  getActiveScreeningTest,
+  getScreeningSnapshots,
+} from '@/lib/supabase/screening'
+import {
+  createScreeningRating,
+  getRatingsForTest,
+} from '@/lib/supabase/screeningRatings'
+import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
 import { Button } from '@/components/ui/button'
 import type { OnboardingData } from '@/types'
+import type { BehaviorSnapshot } from '@/types/diagnosis'
 import { Lightbulb, Clock, Pencil, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react'
 
 // ── Header ────────────────────────────────────────────────────────────────────
@@ -59,7 +72,8 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 // ── Student View ──────────────────────────────────────────────────────────────
 
 function StudentView() {
-  const { state, submitAnswer } = useDiagnosis()
+  const { state, submitAnswer, recordSnapshotId } = useDiagnosis()
+  const { user } = useAuth()
   const tracker = useBehaviorTracker()
   const [answer, setAnswer] = useState('')
   const [hintRequested, setHintRequested] = useState(false)
@@ -128,11 +142,22 @@ function StudentView() {
     tracker.onHintRequested()
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (answer.trim().length === 0) return
     tracker.onLastKeystroke()
     const snapshot = tracker.getSnapshot(task.id, answer)
+    const idx = state.currentIndex
     submitAnswer(snapshot)
+    // DB-Modus (Screening): Snapshot sofort persistieren (append-only)
+    if (state.mode === 'db' && state.screeningTestId && user) {
+      const { data } = await persistBehaviorSnapshot(
+        task.id,
+        user.id,
+        snapshot,
+        state.screeningTestId,
+      )
+      if (data) recordSnapshotId(idx, data.id)
+    }
   }
 
   return (
@@ -234,9 +259,24 @@ const RATINGS: { rating: 1 | 2 | 3 | 4; label: string; sub: string; color: strin
 
 function CoachView() {
   const { state, setCoachRating, resetSession } = useDiagnosis()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const task = state.tasks[state.currentIndex]
   const currentSnapshot = state.snapshots[state.currentIndex]
+
+  const rate = (rating: 1 | 2 | 3 | 4): void => {
+    const idx = state.currentIndex
+    const snapId = state.snapshotIds[idx]
+    setCoachRating(rating)
+    if (state.mode === 'db' && state.screeningTestId && snapId) {
+      void createScreeningRating(
+        snapId,
+        state.screeningTestId,
+        rating,
+        user?.id ?? null,
+      )
+    }
+  }
 
   if (state.finished) {
     return (
@@ -376,7 +416,7 @@ function CoachView() {
               key={r.rating}
               type="button"
               disabled={!currentSnapshot}
-              onClick={() => setCoachRating(r.rating)}
+              onClick={() => rate(r.rating)}
               className="flex items-center justify-between rounded-2xl px-4 py-3 text-left text-white font-bold transition-all active:translate-y-[2px] disabled:opacity-40 disabled:pointer-events-none"
               style={{
                 background: r.color,
@@ -456,29 +496,126 @@ const SUBJECT_OPTIONS: { label: string; code: OnboardingData['subject'] }[] = [
 ]
 const GRADES = Array.from({ length: 9 }, (_, i) => i + 5)
 
-function SetupScreen({ view }: { view: 'student' | 'coach' }) {
-  const { startSession } = useDiagnosis()
+function SetupScreen({
+  view,
+  screening = false,
+}: {
+  view: 'student' | 'coach'
+  screening?: boolean
+}) {
+  const { startSession, startScreening, hydrate } = useDiagnosis()
+  const { user } = useAuth()
   const [name, setName] = useState('')
   const [subject, setSubject] = useState<OnboardingData['subject']>('MATH')
   const [grade, setGrade] = useState<number>(8)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const NO_TASKS_MSG =
+    'Keine diagnostischen Aufgaben in der Datenbank. Bitte Diagnostik-Content seeden.'
+
   const start = async (): Promise<void> => {
     setLoading(true)
     setError(null)
-    const { tasks, warnings } = await buildRunTasks({ grade, subject })
-    setLoading(false)
-    if (tasks.length === 0) {
-      setError(
-        warnings[0] ??
-          'Keine diagnostischen Aufgaben in der Datenbank. Bitte Diagnostik-Content seeden.',
-      )
-      return
-    }
     const label =
       SUBJECT_OPTIONS.find(s => s.code === subject)?.label ?? 'Mathematik'
-    startSession({ studentName: name || 'Schüler', subject: label, tasks })
+
+    if (!screening) {
+      const { tasks, warnings } = await buildRunTasks({ grade, subject })
+      setLoading(false)
+      if (tasks.length === 0) {
+        setError(warnings[0] ?? NO_TASKS_MSG)
+        return
+      }
+      startSession({ studentName: name || 'Schüler', subject: label, tasks })
+      return
+    }
+
+    // ── Screening (DB-Modus) ──────────────────────────────────
+    if (!user) {
+      setLoading(false)
+      setError('Nicht eingeloggt.')
+      return
+    }
+    const { data: student } = await getStudentByProfile(user.id)
+    if (!student) {
+      setLoading(false)
+      setError('Kein Schülerprofil gefunden.')
+      return
+    }
+
+    // Resume: laufenden Test fortsetzen
+    const { data: active } = await getActiveScreeningTest(student.id, label)
+    if (active && active.generated_test) {
+      const tasks = await rebuildRunTasks(active.generated_test)
+      const { data: snaps } = await getScreeningSnapshots(active.id)
+      const { data: ratings } = await getRatingsForTest(active.id)
+      setLoading(false)
+      if (tasks.length === 0) {
+        setError('Screening hat keine Aufgaben.')
+        return
+      }
+      const ratingBySnap = new Map(
+        (ratings ?? []).map(r => [r.behavior_snapshot_id, r.rating]),
+      )
+      const snapshots: BehaviorSnapshot[] = []
+      const snapshotIds: (string | null)[] = []
+      ;(snaps ?? []).forEach((s, i) => {
+        snapshots[i] = {
+          ...(s as Omit<BehaviorSnapshot, 'coach_rating'>),
+          coach_rating:
+            (ratingBySnap.get(s.id) ?? null) as BehaviorSnapshot['coach_rating'],
+        }
+        snapshotIds[i] = s.id
+      })
+      const ratedCount = snapshots.filter(s => s.coach_rating != null).length
+      const isFinished = ratedCount >= tasks.length
+      const next: DiagnosisState = {
+        studentName: name || 'Schüler',
+        subject: label,
+        date: active.created_at,
+        currentIndex: isFinished ? tasks.length - 1 : ratedCount,
+        awaitingCoachRating: snapshots.length > ratedCount && !isFinished,
+        snapshots,
+        tasks,
+        coachNote: active.coach_note ?? '',
+        finished: isFinished,
+        startedAt: active.started_at,
+        mode: 'db',
+        screeningTestId: active.id,
+        snapshotIds,
+      }
+      hydrate(next)
+      return
+    }
+
+    // Neuer Lauf
+    const { tasks, test, warnings } = await buildRunTasks({
+      grade: student.class_level ?? grade,
+      subject,
+    })
+    if (tasks.length === 0 || !test) {
+      setLoading(false)
+      setError(warnings[0] ?? NO_TASKS_MSG)
+      return
+    }
+    const { data: created, error: cErr } = await createScreeningTest({
+      student_id: student.id,
+      subject: label,
+      generated_test: test,
+      estimated_total_minutes: test.estimated_total_minutes,
+    })
+    setLoading(false)
+    if (cErr || !created) {
+      setError(cErr ?? 'Screening konnte nicht gestartet werden.')
+      return
+    }
+    startScreening({
+      studentName: name || 'Schüler',
+      subject: label,
+      tasks,
+      screeningTestId: created.id,
+    })
   }
 
   if (view === 'coach') {
@@ -599,19 +736,29 @@ function SetupScreen({ view }: { view: 'student' | 'coach' }) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function DiagnosisSession() {
+export function DiagnosisSession({ screening = false }: { screening?: boolean }) {
   const [params] = useSearchParams()
   const { state } = useDiagnosis()
   const view = (params.get('view') === 'coach' ? 'coach' : 'student') as 'student' | 'coach'
 
-  const subtitle = useMemo(() => (view === 'coach' ? 'Diagnose · Coach-Sicht' : 'Diagnose'), [view])
+  const base = screening ? 'Screening' : 'Diagnose'
+  const subtitle = useMemo(
+    () => (view === 'coach' ? `${base} · Coach-Sicht` : base),
+    [view, base],
+  )
 
   const sessionStarted = state.startedAt !== null
 
   return (
     <div className="min-h-screen bg-background">
       <MinimalHeader subtitle={subtitle} />
-      {!sessionStarted ? <SetupScreen view={view} /> : view === 'coach' ? <CoachView /> : <StudentView />}
+      {!sessionStarted ? (
+        <SetupScreen view={view} screening={screening} />
+      ) : view === 'coach' ? (
+        <CoachView />
+      ) : (
+        <StudentView />
+      )}
     </div>
   )
 }
