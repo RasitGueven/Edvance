@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "agent",
+            "if": "Edit(src/)|Write(src/)",
+            "prompt": "Du bist der Refactor-Agent für Edvance. Eine Quelldatei wurde soeben geändert.\n\nDie Eingabe ($ARGUMENTS) enthält den Dateipfad. Gehe wie folgt vor:\n\n1. Lese die geänderte Datei und prüfe nur TypeScript/TSX-Dateien (brich ab bei anderen Typen)\n2. Prüfe auf CLAUDE.md-Verstöße:\n   - Datei >400 Zeilen → Logik in src/lib/ oder Sub-Komponenten auslagern\n   - Inline-Styles mit statischen Werten (style={{color: '#...'}}) → Tailwind-Klassen\n   - Hardcodierte Hex-Farben → CSS-Variablen aus src/styles/globals.css\n   - Rohes <div> als Card → EdvanceCard-Komponente aus src/components/edvance/\n   - Ladezustände ohne LoadingPulse → LoadingPulse verwenden\n   - Leere Zustände ohne EmptyState → EmptyState verwenden\n   - Direkte Supabase-Aufrufe in Komponenten/Pages → nach src/lib/ auslagern\n3. Bereinige toten Code: ungenutzte Imports, Variablen, auskommentierte Blöcke\n4. Nach allen Änderungen: `npx tsc --noEmit` ausführen und grünes Ergebnis bestätigen\n\nHard Rules:\n- Verhaltensgleichheit ist Pflicht — kein Feature-Creep, kein Bug-Fixing nebenbei\n- Keine Schema- oder Auth/RLS-Änderungen\n- Max. 50 Zeilen Diff pro Refactor-Durchlauf\n- Kein Committen oder Pushen — das macht der deployer-Agent\n\nWenn nichts zu tun ist, antworte kurz mit 'Keine CLAUDE.md-Verstöße gefunden.'",
+            "model": "claude-sonnet-4-6",
+            "statusMessage": "Refactor-Agent prüft geänderte Datei...",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
