@@ -15,8 +15,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { ZAHL_RECHNEN_ITEMS, type SeedItem } from './screening-items/zahl-rechnen'
 import { ALGEBRA_FUNKTIONEN_ITEMS } from './screening-items/algebra-funktionen'
+import { GEOMETRIE_MESSEN_ITEMS } from './screening-items/geometrie-messen'
 
-const ALL_ITEMS: SeedItem[] = [...ZAHL_RECHNEN_ITEMS, ...ALGEBRA_FUNKTIONEN_ITEMS]
+const ALL_ITEMS: SeedItem[] = [
+  ...ZAHL_RECHNEN_ITEMS,
+  ...ALGEBRA_FUNKTIONEN_ITEMS,
+  ...GEOMETRIE_MESSEN_ITEMS,
+]
 
 async function main(): Promise<void> {
   const write = process.argv.includes('--write')
