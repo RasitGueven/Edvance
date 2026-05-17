@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { EdvanceCard } from '@/components/edvance'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { CoachStep } from '@/components/edvance/onboarding/CoachStep'
 import { EMPTY_FORM, STEP_LABELS } from '@/components/edvance/onboarding/constants'
@@ -17,7 +17,6 @@ import { listTiers } from '@/lib/supabase/subscriptions'
 import { provisionStudent } from '@/lib/supabase/provision'
 import type { Coach, OnboardingFormData, SchoolKind, TierPlan } from '@/types'
 
-const SHADOW_CARD = '0 4px 24px 0 rgba(0,0,0,0.08)'
 const SUCCESS_ICON_BG = 'color-mix(in srgb, var(--success) 15%, transparent)'
 
 const STEP_DATA = 0
@@ -48,13 +47,9 @@ function StepRenderer({
   if (step === STEP_DATA) return <StudentDataStep data={data} setData={setData} />
   if (step === STEP_SUBJECTS) return <SubjectsStep data={data} setData={setData} />
   if (step === STEP_TIER)
-    return (
-      <TierStep data={data} setData={setData} tiers={tiers} loading={tiersLoading} />
-    )
+    return <TierStep data={data} setData={setData} tiers={tiers} loading={tiersLoading} />
   if (step === STEP_COACH)
-    return (
-      <CoachStep data={data} setData={setData} coaches={coaches} loading={coachesLoading} />
-    )
+    return <CoachStep data={data} setData={setData} coaches={coaches} loading={coachesLoading} />
   if (step === STEP_SUMMARY) return <SummaryStep data={data} coaches={coaches} />
   return null
 }
@@ -68,22 +63,29 @@ type SuccessStateProps = {
 function SuccessState({ data, coaches, onReset }: SuccessStateProps): JSX.Element {
   const coachName = coaches.find((entry) => entry.id === data.coachId)?.full_name
   return (
-    <Card style={{ boxShadow: SHADOW_CARD }}>
-      <CardContent className="flex flex-col items-center gap-4 py-14 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full" style={{ background: SUCCESS_ICON_BG }}>
-          <Check className="h-8 w-8 text-success" />
+    <EdvanceCard variant="hero">
+      <div className="flex flex-col items-center gap-5 py-6 text-center">
+        <div
+          className="flex h-20 w-20 items-center justify-center rounded-full"
+          style={{ background: SUCCESS_ICON_BG }}
+        >
+          <Check className="h-10 w-10 text-white" />
         </div>
-        <div>
-          <p className="text-xl font-bold text-foreground">Schüler angelegt</p>
-          <p className="mt-1 text-sm text-muted">
-            {data.firstName} {data.lastName} wurde erfolgreich im System eingetragen und {coachName} zugewiesen.
+        <div className="flex flex-col gap-2">
+          <p className="text-2xl font-bold">Schüler angelegt!</p>
+          <p className="text-sm opacity-80">
+            {data.firstName} {data.lastName} wurde eingetragen
+            {coachName ? ` und ${coachName} zugewiesen` : ''}.
           </p>
         </div>
-        <Button onClick={onReset} className="mt-2">
+        <Button
+          onClick={onReset}
+          className="mt-2 border-0 bg-white/20 text-white hover:bg-white/30"
+        >
           Weiteren Schüler anlegen
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </EdvanceCard>
   )
 }
 
@@ -153,27 +155,67 @@ export function OnboardingPage(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
       <EdvanceNavbar subtitle="Admin · Schüler-Onboarding" />
 
-      <main className="mx-auto max-w-2xl px-4 py-10">
+      {/* Ambient background blobs */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full opacity-[0.07] blur-3xl"
+        style={{ background: 'var(--xp-gold)' }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-16 bottom-1/3 h-64 w-64 rounded-full opacity-[0.06] blur-3xl"
+        style={{ background: 'var(--color-primary)' }}
+      />
+
+      {/* Hero header band */}
+      <div className="bg-gradient-hero noise-overlay">
+        <div className="mx-auto max-w-2xl px-4 py-6 text-white">
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-70">
+            Admin · Schüler-Onboarding
+          </p>
+          <h1 className="mt-1 text-2xl font-bold">
+            {done ? 'Schüler angelegt ✓' : STEP_LABELS[step]}
+          </h1>
+          {!done && (
+            <p className="mt-1 text-sm opacity-70">
+              Schritt {step + 1} von {STEP_LABELS.length}
+            </p>
+          )}
+        </div>
+      </div>
+      <div
+        aria-hidden="true"
+        className="h-6 bg-gradient-to-b from-[var(--color-primary)] to-[var(--background)] opacity-20"
+      />
+
+      <main className="mx-auto max-w-2xl px-4 pb-12 pt-4">
         <Link
           to="/admin"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] hover:underline"
         >
           <ChevronLeft className="h-4 w-4" /> Zurück zum Dashboard
         </Link>
+
         {done ? (
           <SuccessState data={data} coaches={coaches} onReset={handleReset} />
         ) : (
-          <Card style={{ boxShadow: SHADOW_CARD }}>
-            <CardHeader className="pb-2">
-              <h1 className="text-xl font-bold text-foreground">Schüler-Onboarding</h1>
-              <p className="text-sm text-muted">
-                {STEP_LABELS[step]} – Schritt {step + 1} von {STEP_LABELS.length}
+          <EdvanceCard className="overflow-hidden p-0">
+            {/* Colored card header accent */}
+            <div
+              className="px-6 py-4 text-white"
+              style={{
+                background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--primary) 100%)',
+              }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-widest opacity-70">
+                Schritt {step + 1} · {STEP_LABELS[step]}
               </p>
-            </CardHeader>
-            <CardContent className="pt-4">
+            </div>
+
+            <div className="px-6 pb-6 pt-5">
               <StepIndicator current={step} />
               <StepRenderer
                 step={step}
@@ -202,11 +244,7 @@ export function OnboardingPage(): JSX.Element {
                   disabled={!canProceed(step, data) || submitting}
                 >
                   {isLast ? (
-                    submitting ? (
-                      'Legt an …'
-                    ) : (
-                      'Jetzt anlegen'
-                    )
+                    submitting ? 'Legt an …' : 'Jetzt anlegen'
                   ) : (
                     <span className="flex items-center gap-1.5">
                       Weiter <ChevronRight className="h-4 w-4" />
@@ -214,8 +252,8 @@ export function OnboardingPage(): JSX.Element {
                   )}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </EdvanceCard>
         )}
       </main>
     </div>
