@@ -1,6 +1,7 @@
 import type { JSX, ReactNode } from 'react'
 import { Brain, Clock, Layers, TestTube2, Type } from 'lucide-react'
 import { EdvanceBadge } from '@/components/edvance'
+import { cognitiveTypeLabel, inputTypeLabel } from '@/lib/taskLabels'
 import type { Task } from '@/types'
 
 function difficultyColor(value: number): string {
@@ -54,13 +55,13 @@ export function TaskMetaRow({ task }: { task: Task }): JSX.Element {
       {task.cognitive_type && (
         <EdvanceBadge variant="primary">
           <Brain className="h-3 w-3" />
-          {task.cognitive_type}
+          {cognitiveTypeLabel(task.cognitive_type)}
         </EdvanceBadge>
       )}
       {task.input_type && (
         <EdvanceBadge variant="muted">
           <Type className="h-3 w-3" />
-          {task.input_type}
+          {inputTypeLabel(task.input_type)}
         </EdvanceBadge>
       )}
       {task.is_diagnostic && (
