@@ -163,7 +163,7 @@ export function AdminTile({
 
 export function AdminTileGrid({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <section className="grid grid-flow-dense grid-cols-2 gap-4 lg:auto-rows-[150px] lg:grid-cols-4">
+    <section className="grid grid-flow-dense grid-cols-2 gap-4 lg:auto-rows-[minmax(200px,auto)] lg:grid-cols-4">
       {children}
     </section>
   )
