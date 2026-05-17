@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 
 interface EdvanceCardProps {
   children: React.ReactNode
-  variant?: 'default' | 'raised' | 'navy' | 'blue-pale'
+  variant?: 'default' | 'raised' | 'navy' | 'blue-pale' | 'hero' | 'glass' | 'premium'
   accent?: 'none' | 'left-primary' | 'left-success' | 'left-warning' | 'left-destructive'
   className?: string
   onClick?: () => void
@@ -19,10 +19,13 @@ export function EdvanceCard({
   onClick,
 }: EdvanceCardProps) {
   const variantStyles: Record<string, string> = {
-    default:    'bg-[var(--surface)] border border-[var(--border)]',
-    raised:     'bg-[var(--surface-raised)] border border-[var(--border)]',
-    navy:       'bg-[var(--brand-navy)] text-[var(--text-inverse)] border border-[var(--brand-navy)]',
-    'blue-pale': 'bg-[var(--primary-pale)] border border-[var(--primary-light)]',
+    default:    'bg-[var(--surface)] border border-[var(--border)] shadow-premium-sm',
+    raised:     'bg-[var(--surface-raised)] border border-[var(--border)] shadow-premium-md',
+    navy:       'bg-[var(--brand-navy)] text-[var(--text-inverse)] border border-[var(--brand-navy)] shadow-premium-md',
+    'blue-pale':'bg-[var(--primary-pale)] border border-[var(--primary-light)]',
+    hero:       'bg-gradient-hero text-white border-0 shadow-premium-xl noise-overlay',
+    glass:      'glass-light shadow-premium-md',
+    premium:    'bg-gradient-surface border border-[var(--border)] shadow-premium-md',
   }
 
   const accentStyles: Record<string, string> = {
@@ -34,15 +37,16 @@ export function EdvanceCard({
   }
 
   const isInteractive = !!onClick
+  const isDark = variant === 'navy' || variant === 'hero'
 
   return (
     <div
       className={cn(
-        'rounded-[var(--radius-xl)] p-6 shadow-card',
+        'rounded-[var(--radius-xl)] p-6',
         variantStyles[variant],
         accentStyles[accent],
-        variant !== 'navy' && 'transition-shadow duration-200 hover:shadow-elevation-md',
-        isInteractive && 'cursor-pointer active:scale-[0.99] transition-transform',
+        !isDark && 'transition-all duration-300 hover:shadow-premium-lg',
+        isInteractive && 'cursor-pointer hover-lift',
         className,
       )}
       onClick={onClick}

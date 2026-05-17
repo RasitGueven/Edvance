@@ -1,10 +1,12 @@
 import { supabase } from '@/lib/supabase/client'
 import type {
+  DiagnosticTaskInput,
   Microskill,
   SkillCluster,
   Subject,
   SupabaseResult,
   Task,
+  TaskAsset,
   TaskCoachMetadata,
 } from '@/types'
 
@@ -97,6 +99,24 @@ export async function getMicroskillsByCluster(
       .select('*')
       .eq('cluster_id', clusterId)
       .order('sort_order', { ascending: true })
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as Microskill[], error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Microskills konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// Microskills nach Liste von IDs (z.B. zum Auflösen der Namen aus tasks.microskill_id).
+export async function getMicroskillsByIds(
+  ids: string[],
+): Promise<SupabaseResult<Microskill[]>> {
+  if (ids.length === 0) return { data: [], error: null }
+  try {
+    const { data, error } = await supabase
+      .from('microskills')
+      .select('*')
+      .in('id', ids)
     if (error) return { data: null, error: error.message }
     return { data: (data ?? []) as Microskill[], error: null }
   } catch (err) {
@@ -223,6 +243,27 @@ export async function getUnmappedTasks(): Promise<SupabaseResult<Task[]>> {
   }
 }
 
+// tasks.assets ueberschreiben (z.B. nach Bild-Upload oder Asset-Remove).
+// Gibt die aktualisierte Task-Reihe zurueck.
+export async function updateTaskAssets(
+  taskId: string,
+  assets: TaskAsset[],
+): Promise<SupabaseResult<Task>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .update({ assets })
+      .eq('id', taskId)
+      .select('*')
+      .single()
+    if (error) return { data: null, error: error.message }
+    return { data: data as Task, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Aufgabe konnte nicht aktualisiert werden'
+    return { data: null, error: message }
+  }
+}
+
 // Coach-Metadaten zu einer Aufgabe (kann fehlen → null).
 export async function getTaskCoachMetadata(
   taskId: string,
@@ -237,6 +278,65 @@ export async function getTaskCoachMetadata(
     return { data: (data as TaskCoachMetadata | null) ?? null, error: null }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Coach-Metadaten konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
+// Diagnostik-relevante Felder einer Aufgabe setzen (Admin-Seeding).
+// RLS: admin_write_tasks (nur Admin).
+type TaskDiagnosticPatch = Partial<
+  Pick<Task, 'is_diagnostic' | 'difficulty' | 'input_type' | 'cognitive_type' | 'is_active'>
+>
+
+export async function updateTaskDiagnostic(
+  taskId: string,
+  patch: TaskDiagnosticPatch,
+): Promise<SupabaseResult<Task>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(patch)
+      .eq('id', taskId)
+      .select('*')
+      .single()
+    if (error) return { data: null, error: error.message }
+    return { data: data as Task, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Aufgabe konnte nicht aktualisiert werden'
+    return { data: null, error: message }
+  }
+}
+
+// Neue Diagnose-Aufgabe manuell anlegen (Admin-Seeding).
+export async function createDiagnosticTask(
+  input: DiagnosticTaskInput,
+): Promise<SupabaseResult<Task>> {
+  try {
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert({
+        content_type: 'exercise',
+        is_diagnostic: true,
+        is_active: true,
+        source: 'manual',
+        microskill_id: input.microskill_id ?? null,
+        cluster_id: input.cluster_id ?? null,
+        class_level: input.class_level ?? null,
+        question: input.question,
+        solution: input.solution ?? null,
+        common_errors: input.common_errors ?? null,
+        coach_note: input.coach_note ?? null,
+        difficulty: input.difficulty ?? null,
+        input_type: input.input_type ?? null,
+        cognitive_type: input.cognitive_type ?? null,
+        estimated_minutes: input.estimated_minutes ?? 3,
+      })
+      .select('*')
+      .single()
+    if (error) return { data: null, error: error.message }
+    return { data: data as Task, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Aufgabe konnte nicht angelegt werden'
     return { data: null, error: message }
   }
 }
