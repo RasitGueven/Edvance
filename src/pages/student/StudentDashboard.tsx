@@ -182,8 +182,13 @@ export function StudentDashboard(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
       <EdvanceNavbar subtitle="Mein Lernplan" />
+
+      {/* Ambient background blobs */}
+      <div aria-hidden="true" className="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-[0.07] blur-3xl" style={{ background: 'var(--xp-gold)' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute -left-24 bottom-1/4 h-80 w-80 rounded-full opacity-[0.08] blur-3xl" style={{ background: 'var(--color-levelup)' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute right-1/4 top-2/3 h-64 w-64 rounded-full opacity-[0.06] blur-3xl" style={{ background: 'var(--color-primary)' }} />
 
       {/* Hero-Section */}
       <section className="relative overflow-hidden bg-gradient-hero noise-overlay">
@@ -221,6 +226,9 @@ export function StudentDashboard(): JSX.Element {
           </div>
         </div>
       </section>
+
+      {/* Seam: soften the hard edge between hero and body */}
+      <div aria-hidden="true" className="h-8 bg-gradient-to-b from-[var(--color-primary)] to-[var(--background)] opacity-20" />
 
       <main className="mx-auto max-w-3xl px-4 py-8">
         {error && (
