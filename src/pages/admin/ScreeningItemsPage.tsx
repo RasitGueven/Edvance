@@ -222,22 +222,29 @@ export function ScreeningItemsPage(): JSX.Element {
     getClustersBySubject(subjectId).then(({ data }) => {
       setClusters(data ?? [])
       setClusterId('')
-      setItems([])
     })
   }, [subjectId])
 
-  const load = (cid: string): void => {
-    setClusterId(cid)
-    if (!cid) {
-      setItems([])
-      return
-    }
+  // Items immer laden — ohne Cluster = alle (über alle Cluster/Fächer),
+  // mit Cluster = gefiltert. So sind geseedete Items sofort sichtbar.
+  useEffect(() => {
     setLoading(true)
-    listScreeningItems({ clusterId: cid }).then(({ data, error: err }) => {
-      setItems(data ?? [])
-      setError(err)
-      setLoading(false)
-    })
+    listScreeningItems(clusterId ? { clusterId } : {}).then(
+      ({ data, error: err }) => {
+        setItems(data ?? [])
+        setError(err)
+        setLoading(false)
+      },
+    )
+  }, [clusterId])
+
+  const reload = (): void => {
+    listScreeningItems(clusterId ? { clusterId } : {}).then(
+      ({ data, error: err }) => {
+        setItems(data ?? [])
+        setError(err)
+      },
+    )
   }
 
   const shown = items.filter((i) =>
@@ -278,9 +285,9 @@ export function ScreeningItemsPage(): JSX.Element {
           <select
             className={SELECT_CLASS}
             value={clusterId}
-            onChange={(e) => load(e.target.value)}
+            onChange={(e) => setClusterId(e.target.value)}
           >
-            <option value="">– Cluster wählen –</option>
+            <option value="">Alle Cluster</option>
             {clusters.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -300,24 +307,29 @@ export function ScreeningItemsPage(): JSX.Element {
 
         {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
 
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          {shown.length} von {items.length} Items
+          {clusterId ? ' (Cluster gefiltert)' : ' (alle Cluster)'}
+        </p>
+
         {loading ? (
           <LoadingPulse type="list" lines={4} />
-        ) : !clusterId ? (
+        ) : items.length === 0 ? (
           <EmptyState
-            icon="🧮"
-            title="Cluster wählen"
-            description="Wähle ein Cluster, um dessen Screening-Items zu reviewen."
+            icon="📭"
+            title="Noch keine Items in der Datenbank"
+            description="Seeder ausführen: npm run seed:screening-items -- --write — danach erscheinen die Entwürfe hier (inaktiv)."
           />
         ) : shown.length === 0 ? (
           <EmptyState
-            icon="📭"
-            title="Keine Items"
-            description="Für diesen Cluster/Filter gibt es noch keine Items."
+            icon="🔎"
+            title="Keine Items für diesen Filter"
+            description="Setze den Status-Filter auf „Alle“ oder wähle ein anderes Cluster."
           />
         ) : (
           <div className="flex flex-col gap-4">
             {shown.map((it) => (
-              <ItemCard key={it.id} item={it} onChanged={() => load(clusterId)} />
+              <ItemCard key={it.id} item={it} onChanged={reload} />
             ))}
           </div>
         )}
