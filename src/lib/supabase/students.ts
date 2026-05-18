@@ -71,7 +71,11 @@ export async function listStudentsWithName(): Promise<
   try {
     const { data, error } = await supabase
       .from('students')
-      .select('id, profile_id, class_level, school_name, school_type, profiles(full_name)')
+      // FK-Hint nötig: student_coach erzeugt eine zweite students↔profiles
+      // Beziehung → Embed muss explizit profile_id wählen (PostgREST).
+      .select(
+        'id, profile_id, class_level, school_name, school_type, profiles!profile_id(full_name)',
+      )
       .order('class_level', { ascending: true, nullsFirst: false })
     if (error) return { data: null, error: error.message }
     type ProfileRel = { full_name: string | null }
