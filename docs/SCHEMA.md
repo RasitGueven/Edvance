@@ -87,7 +87,7 @@ student | parent | coach | admin
   Migration 011 (vorher RLS aktiv, aber policy-los = default-deny)
 - `leads`: nur Coach/Admin (interne PII, kein anon-Zugriff)
 - `intake_sessions`: Coach/Admin Vollzugriff; Eltern lesen Protokoll eigenes Kind
-- `screening_tests`: Schueler liest eigene; Eltern lesen eigenes Kind; Coach/Admin alles
+- `screening_tests`: Schueler liest+schreibt eigene (Migration 023: insert/update für stillen /screening-Lauf); Eltern lesen eigenes Kind; Coach/Admin alles
 - `screening_ratings`: append-only; Insert Coach/Admin; Lesen eigener Schueler/Eltern/Coach/Admin
 - `behavior_snapshots`: weiterhin append-only (Migration 014 nur additive FK)
 - `screening_items`: Schueler/Coach sehen nur `active=true`; Admin r/w alles (Review/Aktivierung)
@@ -130,6 +130,7 @@ student | parent | coach | admin
 - `migrations/020_parent_reports.sql`       – Elternreport (draft/published)
 - `migrations/021_provision_student_fn.sql` – atomare Lead->Student-Conversion (nur service_role; via Edge Function provision_student)
 - `migrations/022_screening_items.sql`      – adaptive Screening-Item-Bank + Auto-Grade-Ergebnisse
+- `migrations/023_screening_tests_student_write.sql` – RLS: Schüler insert/update eigene screening_tests (stiller /screening-Lauf)
 
 ## Edge Functions
 

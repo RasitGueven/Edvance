@@ -235,6 +235,14 @@ create policy "screening_tests_coach_admin_all" on screening_tests
   for all
   using (public.get_my_role() in ('coach','admin'))
   with check (public.get_my_role() in ('coach','admin'));
+-- Migration 023 – Schüler-Self-Service-Write (stiller /screening-Lauf)
+create policy "screening_tests_student_insert" on screening_tests
+  for insert
+  with check (student_id = public.get_my_student_id());
+create policy "screening_tests_student_update" on screening_tests
+  for update
+  using (student_id = public.get_my_student_id())
+  with check (student_id = public.get_my_student_id());
 
 create table screening_ratings (
   id uuid primary key default gen_random_uuid(),
