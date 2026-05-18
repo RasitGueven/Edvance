@@ -5,10 +5,10 @@ import type { Task } from '@/types'
 
 type Accent = 'primary' | 'success' | 'warning'
 
-const ACCENT_STYLES: Record<Accent, { bg: string; text: string }> = {
-  primary: { bg: 'var(--primary-pale)', text: 'var(--primary)' },
-  success: { bg: 'var(--success-light)', text: 'var(--success)' },
-  warning: { bg: 'var(--warning-light)', text: 'var(--warning)' },
+const ACCENT_CLS: Record<Accent, { bg: string; text: string }> = {
+  primary: { bg: 'bg-[var(--primary-pale)]', text: 'text-[var(--primary)]' },
+  success: { bg: 'bg-[var(--success-light)]', text: 'text-[var(--success)]' },
+  warning: { bg: 'bg-[var(--warning-light)]', text: 'text-[var(--warning)]' },
 }
 
 function Section({
@@ -25,28 +25,21 @@ function Section({
   children: ReactNode
 }): JSX.Element {
   const [open, setOpen] = useState(defaultOpen)
-  const a = ACCENT_STYLES[accent]
+  const a = ACCENT_CLS[accent]
   return (
     <div className="rounded-[var(--radius-md)] border border-[var(--border)] overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 transition-colors"
-        style={{ backgroundColor: open ? a.bg : 'var(--surface)' }}
+        className={['flex w-full items-center justify-between gap-3 px-4 py-3 transition-colors', open ? a.bg : 'bg-[var(--surface)]'].join(' ')}
         aria-expanded={open}
       >
         <span className="inline-flex items-center gap-2">
-          <span style={{ color: a.text }}>{icon}</span>
-          <span className="text-sm font-semibold" style={{ color: a.text }}>
-            {title}
-          </span>
+          <span className={a.text}>{icon}</span>
+          <span className={`text-sm font-semibold ${a.text}`}>{title}</span>
         </span>
         <ChevronRight
-          className="h-4 w-4 transition-transform"
-          style={{
-            color: a.text,
-            transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
-          }}
+          className={`h-4 w-4 transition-transform ${a.text} ${open ? 'rotate-90' : 'rotate-0'}`}
         />
       </button>
       {open && (
