@@ -6,6 +6,27 @@ import type {
 } from '@/types'
 import type { BehaviorSnapshot } from '@/types/diagnosis'
 
+// Abgeschlossene Screening-Tests eines Schülers (neueste zuerst) — für
+// die Coach-Ergebnis-Sicht.
+export async function listCompletedScreeningTests(
+  studentId: string,
+): Promise<SupabaseResult<ScreeningTest[]>> {
+  try {
+    const { data, error } = await supabase
+      .from('screening_tests')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('status', 'completed')
+      .order('completed_at', { ascending: false })
+    if (error) return { data: null, error: error.message }
+    return { data: (data ?? []) as ScreeningTest[], error: null }
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Screening-Ergebnisse konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Startet einen Screening-Lauf (Aggregat). status defaultet DB-seitig
 // 'in_progress'; partial-unique-Index verhindert doppelte aktive Tests
 // pro (Schueler, Fach).
