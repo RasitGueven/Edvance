@@ -215,13 +215,12 @@ function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.Element {
                 key={subject}
                 type="button"
                 onClick={() => toggleSubject(subject)}
-                className="rounded-xl border px-4 py-2 text-sm transition-all"
-                style={{
-                  borderColor: active ? 'var(--primary)' : 'var(--border)',
-                  background: active
-                    ? 'color-mix(in srgb, var(--primary) 8%, transparent)'
-                    : 'var(--card)',
-                }}
+                className={[
+                  'rounded-xl border px-4 py-2 text-sm transition-all',
+                  active
+                    ? 'border-[var(--primary)] bg-[color-mix(in_srgb,var(--primary)_8%,transparent)]'
+                    : 'border-[var(--border)] bg-card',
+                ].join(' ')}
               >
                 {subject}
               </button>
