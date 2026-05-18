@@ -629,20 +629,13 @@ export function DiagnosisResult() {
           }}
         >
           {/* Decorative circles */}
-          <div
-            className="absolute -top-12 -right-12 h-48 w-48 rounded-full opacity-10"
-            style={{ background: 'white' }}
-          />
-          <div
-            className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full opacity-5"
-            style={{ background: 'white' }}
-          />
+          <div className="absolute -top-12 -right-12 h-48 w-48 rounded-full opacity-10 bg-white" />
+          <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full opacity-5 bg-white" />
 
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-5">
               <div
-                className="flex h-20 w-20 items-center justify-center rounded-3xl text-3xl font-black text-primary shrink-0"
-                style={{ background: 'white', borderBottom: '4px solid color-mix(in srgb, white 80%, black)' }}
+                className="flex h-20 w-20 items-center justify-center rounded-3xl text-3xl font-black text-primary shrink-0 bg-white border-b-4 border-white/80"
               >
                 {getInitials(result.student_name)}
               </div>
