@@ -89,14 +89,7 @@ function StudentView() {
   if (state.finished) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-16 flex flex-col items-center text-center">
-        <div
-          className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl text-5xl"
-          style={{
-            background: 'color-mix(in srgb, var(--success) 12%, transparent)',
-            border: '2px solid var(--border)',
-            borderBottomWidth: '4px',
-          }}
-        >
+        <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl text-5xl bg-[color-mix(in_srgb,var(--success)_12%,transparent)] border-2 border-border border-b-4">
           🎉
         </div>
         <h1 className="text-4xl font-black text-foreground tracking-tight">Du hast es geschafft!</h1>
@@ -113,14 +106,7 @@ function StudentView() {
   if (state.awaitingCoachRating) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-20 flex flex-col items-center text-center">
-        <div
-          className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl text-4xl animate-pulse"
-          style={{
-            background: 'color-mix(in srgb, var(--primary) 10%, transparent)',
-            border: '2px solid var(--border)',
-            borderBottomWidth: '4px',
-          }}
-        >
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl text-4xl animate-pulse bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] border-2 border-border border-b-4">
           ⏳
         </div>
         <h2 className="text-2xl font-black text-foreground tracking-tight">Danke!</h2>
@@ -158,8 +144,7 @@ function StudentView() {
       <ProgressBar current={state.currentIndex} total={state.tasks.length} />
 
       <div
-        className="rounded-3xl bg-card p-8"
-        style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+        className="rounded-3xl bg-card p-8 border-2 border-border border-b-4"
       >
         <p className="text-xs font-bold uppercase tracking-wider text-muted mb-3">{task.skill_cluster}</p>
         <h1 className="text-2xl font-black text-foreground tracking-tight leading-snug">
@@ -180,20 +165,12 @@ function StudentView() {
             onKeyDown={e => tracker.onKeyDown(e)}
             placeholder="Schreib hier deinen Rechenweg auf …"
             rows={6}
-            className="w-full rounded-2xl border-2 border-border bg-card p-4 text-base font-medium text-foreground focus:border-primary focus:outline-none resize-none"
-            style={{ borderBottomWidth: '4px', borderBottomColor: 'var(--border-strong)' }}
+            className="w-full rounded-2xl border-2 border-border border-b-4 border-b-[var(--border-strong)] bg-card p-4 text-base font-medium text-foreground focus:border-primary focus:outline-none resize-none"
           />
         </div>
 
         {hintRequested && (
-          <div
-            className="mt-4 rounded-2xl px-4 py-3 text-sm font-medium"
-            style={{
-              background: 'color-mix(in srgb, var(--warning) 10%, transparent)',
-              border: '2px solid color-mix(in srgb, var(--warning) 30%, transparent)',
-              color: 'var(--warning-dark)',
-            }}
-          >
+          <div className="mt-4 rounded-2xl px-4 py-3 text-sm font-medium bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] border-2 border-[color-mix(in_srgb,var(--warning)_30%,transparent)] text-[var(--warning-dark)]">
             💡 Lies die Aufgabe nochmal in Ruhe durch. Schreib auf, was du schon weißt.
           </div>
         )}
@@ -274,14 +251,7 @@ function CoachView() {
   if (state.finished) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-16 flex flex-col items-center text-center">
-        <div
-          className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl text-5xl"
-          style={{
-            background: 'color-mix(in srgb, var(--success) 12%, transparent)',
-            border: '2px solid var(--border)',
-            borderBottomWidth: '4px',
-          }}
-        >
+        <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl text-5xl bg-[color-mix(in_srgb,var(--success)_12%,transparent)] border-2 border-border border-b-4">
           ✅
         </div>
         <h1 className="text-3xl font-black text-foreground tracking-tight">Diagnose abgeschlossen</h1>
@@ -313,8 +283,7 @@ function CoachView() {
       <ProgressBar current={state.currentIndex} total={state.tasks.length} />
 
       <div
-        className="rounded-3xl bg-card p-6 mb-4"
-        style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+        className="rounded-3xl bg-card p-6 mb-4 border-2 border-border border-b-4"
       >
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs font-bold uppercase tracking-wider text-muted">
@@ -354,15 +323,13 @@ function CoachView() {
 
       {/* Schülerantwort */}
       <div
-        className="rounded-3xl bg-card p-6 mb-4"
-        style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+        className="rounded-3xl bg-card p-6 mb-4 border-2 border-border border-b-4"
       >
         <p className="text-xs font-bold uppercase tracking-wider text-muted mb-2">Antwort des Schülers</p>
         {currentSnapshot ? (
           <>
             <pre
-              className="whitespace-pre-wrap font-mono text-sm font-medium text-foreground bg-background rounded-xl p-4"
-              style={{ border: '2px solid var(--border)' }}
+              className="whitespace-pre-wrap font-mono text-sm font-medium text-foreground bg-background rounded-xl p-4 border-2 border-border"
             >
               {currentSnapshot.answer_text}
             </pre>
@@ -391,7 +358,7 @@ function CoachView() {
             </div>
           </>
         ) : (
-          <div className="rounded-xl bg-background p-6 text-center" style={{ border: '2px dashed var(--border)' }}>
+          <div className="rounded-xl bg-background p-6 text-center border-2 border-dashed border-border">
             <p className="text-sm font-semibold text-muted">Schüler arbeitet noch …</p>
           </div>
         )}
@@ -399,8 +366,7 @@ function CoachView() {
 
       {/* Bewertung */}
       <div
-        className="rounded-3xl bg-card p-6"
-        style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+        className="rounded-3xl bg-card p-6 border-2 border-border border-b-4"
       >
         <p className="text-xs font-bold uppercase tracking-wider text-muted mb-3">Bewertung</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -608,8 +574,7 @@ function SetupScreen({
     return (
       <main className="mx-auto max-w-md px-4 py-16">
         <div
-          className="rounded-3xl bg-card p-8"
-          style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+          className="rounded-3xl bg-card p-8 border-2 border-border border-b-4"
         >
           <h1 className="text-2xl font-black text-foreground tracking-tight">Diagnose-Session</h1>
           <p className="mt-2 text-sm font-semibold text-muted">
@@ -626,18 +591,10 @@ function SetupScreen({
   return (
     <main className="mx-auto max-w-md px-4 py-16">
       <div
-        className="rounded-3xl bg-card p-8"
-        style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+        className="rounded-3xl bg-card p-8 border-2 border-border border-b-4"
       >
         <div className="flex justify-center mb-4">
-          <div
-            className="flex h-16 w-16 items-center justify-center rounded-3xl text-3xl"
-            style={{
-              background: 'color-mix(in srgb, var(--primary) 12%, transparent)',
-              border: '2px solid var(--border)',
-              borderBottomWidth: '4px',
-            }}
-          >
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl text-3xl bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] border-2 border-border border-b-4">
             🎯
           </div>
         </div>
