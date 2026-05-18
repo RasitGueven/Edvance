@@ -1,9 +1,6 @@
 import type { Coach, OnboardingFormData, SummaryStepProps } from '@/types'
 
 const PLACEHOLDER_DASH = '–'
-const SUCCESS_BG = 'color-mix(in srgb, var(--success) 10%, transparent)'
-const SUCCESS_BORDER = '1px solid color-mix(in srgb, var(--success) 30%, transparent)'
-const ROW_ALT_BG = 'color-mix(in srgb, var(--muted) 5%, transparent)'
 
 function buildRows(data: OnboardingFormData, coaches: Coach[]): Array<[string, string]> {
   const coach = coaches.find((entry) => entry.id === data.coachId)
@@ -24,7 +21,7 @@ export function SummaryStep({ data, coaches }: SummaryStepProps): JSX.Element {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl p-4 text-sm" style={{ background: SUCCESS_BG, border: SUCCESS_BORDER }}>
+      <div className="rounded-xl p-4 text-sm bg-[color-mix(in_srgb,var(--success)_10%,transparent)] border border-[color-mix(in_srgb,var(--success)_30%,transparent)]">
         <p className="font-semibold text-success">Alles bereit zum Anlegen</p>
         <p className="mt-0.5 text-muted">Bitte prüfe die Angaben und bestätige das Onboarding.</p>
       </div>
@@ -32,8 +29,10 @@ export function SummaryStep({ data, coaches }: SummaryStepProps): JSX.Element {
         {rows.map(([label, value], index) => (
           <div
             key={label}
-            className="flex items-center justify-between px-4 py-3 text-sm"
-            style={{ background: index % 2 === 0 ? 'var(--card)' : ROW_ALT_BG }}
+            className={[
+              'flex items-center justify-between px-4 py-3 text-sm',
+              index % 2 === 0 ? 'bg-card' : 'bg-[color-mix(in_srgb,var(--text-muted)_5%,transparent)]',
+            ].join(' ')}
           >
             <span className="text-muted font-medium w-28 shrink-0">{label}</span>
             <span className="text-foreground font-semibold text-right">{value}</span>
