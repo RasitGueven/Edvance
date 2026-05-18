@@ -4,7 +4,7 @@ import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Search, X, 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { XPBar } from '@/components/edvance'
+import { EmptyState, LoadingPulse, XPBar } from '@/components/edvance'
 import { DashboardTiles } from '@/components/edvance/DashboardTiles'
 import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
@@ -282,13 +282,13 @@ export function StudentDashboard(): JSX.Element {
             clusterNameById={clusterNameById}
           />
         ) : loadingClusters ? (
-          <p className="mt-6 text-sm text-muted">Lade Themen …</p>
+          <div className="mt-6"><LoadingPulse type="list" lines={4} /></div>
         ) : clusters.length === 0 ? (
-          <Card className="mt-6">
-            <CardContent className="pt-6 text-center text-sm text-muted">
-              Noch keine Themen verfuegbar. Frag deinen Coach.
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon="📚"
+            title="Noch keine Themen verfügbar"
+            description="Frag deinen Coach, er richtet deinen Lernplan ein."
+          />
         ) : (
           <ClusterGrid clusters={clusters} />
         )}
@@ -360,15 +360,15 @@ function FilterResults({
   clusterNameById: Record<string, string>
 }): JSX.Element {
   if (loading) {
-    return <p className="mt-6 text-sm text-muted">Suche …</p>
+    return <div className="mt-6"><LoadingPulse type="list" lines={3} /></div>
   }
   if (tasks.length === 0) {
     return (
-      <Card className="mt-6">
-        <CardContent className="pt-6 text-center text-sm text-muted">
-          Keine Treffer.
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon="🔍"
+        title="Keine Treffer"
+        description="Versuch einen anderen Suchbegriff oder entferne den Filter."
+      />
     )
   }
   return (
