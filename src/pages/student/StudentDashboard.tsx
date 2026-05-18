@@ -3,7 +3,7 @@ import { Search, X, Flame } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { XPBar, EmptyState, LoadingPulse } from '@/components/edvance'
+import { XPBar, EmptyState, LoadingPulse, EdvanceCard, EdvanceBadge } from '@/components/edvance'
 import { StudentBentoGrid } from '@/components/edvance/StudentWidgetGrid'
 import { ClusterGrid, FilterResults, type ClusterProgress } from '@/pages/student/ClusterGrid'
 import { useAuth } from '@/hooks/useAuth'
@@ -11,8 +11,10 @@ import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supa
 import { getStudentByProfile } from '@/lib/supabase/students'
 import { getStudentProgress } from '@/lib/supabase/progress'
 import { getCompletedTaskIds } from '@/lib/supabase/taskProgress'
+import { listUpcomingSessionsForStudent } from '@/lib/supabase/sessions'
+import { formatSessionDate } from '@/lib/datetime'
 import { getLastCluster, saveLastCluster, type LastCluster } from '@/lib/lastCluster'
-import type { SkillCluster, Student, Subject, Task } from '@/types'
+import type { CoachingSession, SkillCluster, Student, Subject, Task } from '@/types'
 
 const XP_PER_LEVEL = 500
 
@@ -43,6 +45,8 @@ export function StudentDashboard(): JSX.Element {
   const [streakDays, setStreakDays] = useState<number>(0)
   const [level, setLevel] = useState<number>(1)
   const [lastCluster, setLastCluster] = useState<LastCluster | null>(getLastCluster)
+  const [nextSession, setNextSession] = useState<CoachingSession | null>(null)
+  const [sessionLoading, setSessionLoading] = useState<boolean>(true)
 
   // Student + progress
   useEffect(() => {
@@ -62,6 +66,21 @@ export function StudentDashboard(): JSX.Element {
       cancelled = true
     }
   }, [user])
+
+  // Naechste Session laden, sobald student bekannt.
+  useEffect(() => {
+    if (!student) return
+    let cancelled = false
+    setSessionLoading(true)
+    void listUpcomingSessionsForStudent(student.id).then(({ data }) => {
+      if (cancelled) return
+      setNextSession(data && data.length > 0 ? data[0] : null)
+      setSessionLoading(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [student])
 
   const [search, setSearch] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -246,6 +265,36 @@ export function StudentDashboard(): JSX.Element {
             lastCluster={lastCluster}
             loading={!student}
           />
+        </div>
+
+        {/* Nächste Session */}
+        <div className="mb-8 flex flex-col gap-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            Nächste Session
+          </p>
+          {sessionLoading ? (
+            <LoadingPulse type="card" />
+          ) : nextSession ? (
+            <EdvanceCard className="flex flex-wrap items-center justify-between gap-3 p-6">
+              <div className="flex flex-col gap-1">
+                <span className="text-base font-semibold text-[var(--text-primary)]">
+                  {formatSessionDate(nextSession.scheduled_at)} Uhr
+                </span>
+                {nextSession.room && (
+                  <span className="text-sm text-[var(--text-secondary)]">
+                    Raum {nextSession.room}
+                  </span>
+                )}
+              </div>
+              <EdvanceBadge variant="primary">Geplant</EdvanceBadge>
+            </EdvanceCard>
+          ) : (
+            <EmptyState
+              icon="📅"
+              title="Noch keine Session geplant"
+              description="Dein Coach trägt deinen nächsten Termin bald hier ein."
+            />
+          )}
         </div>
 
         {/* Search + Filters */}

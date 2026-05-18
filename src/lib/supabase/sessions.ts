@@ -82,6 +82,38 @@ export async function addStudentToSession(
   }
 }
 
+// Kommende Sessions eines Schuelers (ab jetzt), naechste zuerst.
+// RLS filtert automatisch: Schueler via get_my_student_id,
+// Eltern via coaching_sessions_parent_read (Migration 024).
+export async function listUpcomingSessionsForStudent(
+  studentId: string,
+): Promise<SupabaseResult<CoachingSession[]>> {
+  try {
+    const { data, error } = await supabase
+      .from('session_students')
+      .select('coaching_sessions(*)')
+      .eq('student_id', studentId)
+    if (error) return { data: null, error: error.message }
+    const nowMs = Date.now()
+    const rows = (data ?? []) as unknown as {
+      coaching_sessions: CoachingSession | null
+    }[]
+    const upcoming = rows
+      .map((r) => r.coaching_sessions)
+      .filter((s): s is CoachingSession => s !== null)
+      .filter((s) => new Date(s.scheduled_at).getTime() >= nowMs)
+      .sort(
+        (a, b) =>
+          new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime(),
+      )
+    return { data: upcoming, error: null }
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Sessions konnten nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Anwesenheit setzen (present/absent/unknown).
 export async function setAttendance(
   sessionId: string,

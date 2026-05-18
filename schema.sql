@@ -727,3 +727,17 @@ create policy "screening_item_results_parent_read" on screening_item_results
   );
 create policy "screening_item_results_coach_admin_read" on screening_item_results
   for select using (public.get_my_role() in ('coach','admin'));
+
+-- ============================================================================
+-- Migration 024 – coaching_sessions Eltern-Read  (siehe migrations/024_*.sql)
+-- Schliesst RLS-Luecke aus 017: Eltern duerfen coaching_sessions der eigenen
+-- Kinder lesen (spiegelbildlich zu coaching_sessions_student_read).
+-- ============================================================================
+create policy "coaching_sessions_parent_read" on coaching_sessions
+  for select using (
+    id in (
+      select ss.session_id
+      from session_students ss
+      where public.is_parent_of_student(ss.student_id)
+    )
+  );

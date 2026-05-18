@@ -7,12 +7,20 @@ import { useAuth } from '@/hooks/useAuth'
 import { listStudentsWithName } from '@/lib/supabase/students'
 import { getStudentProgress } from '@/lib/supabase/progress'
 import { listReportsForStudent } from '@/lib/supabase/parentReports'
-import type { ParentReport, StudentProgress, StudentWithName } from '@/types'
+import { listUpcomingSessionsForStudent } from '@/lib/supabase/sessions'
+import { formatSessionDate } from '@/lib/datetime'
+import type {
+  CoachingSession,
+  ParentReport,
+  StudentProgress,
+  StudentWithName,
+} from '@/types'
 
 type ChildVM = {
   student: StudentWithName
   progress: StudentProgress | null
   reports: ParentReport[]
+  nextSession: CoachingSession | null
 }
 
 export function ParentDashboard(): JSX.Element {
@@ -35,11 +43,18 @@ export function ParentDashboard(): JSX.Element {
       }
       const vms: ChildVM[] = []
       for (const student of students ?? []) {
-        const [{ data: progress }, { data: reports }] = await Promise.all([
-          getStudentProgress(student.id),
-          listReportsForStudent(student.id),
-        ])
-        vms.push({ student, progress, reports: reports ?? [] })
+        const [{ data: progress }, { data: reports }, { data: sessions }] =
+          await Promise.all([
+            getStudentProgress(student.id),
+            listReportsForStudent(student.id),
+            listUpcomingSessionsForStudent(student.id),
+          ])
+        vms.push({
+          student,
+          progress,
+          reports: reports ?? [],
+          nextSession: sessions && sessions.length > 0 ? sessions[0] : null,
+        })
       }
       if (!cancelled) {
         setChildren(vms)
@@ -85,7 +100,7 @@ export function ParentDashboard(): JSX.Element {
                 />
               </>
             )}
-            {children.map(({ student, progress, reports }) => (
+            {children.map(({ student, progress, reports, nextSession }) => (
             <div
               key={student.id}
               id={`child-${student.id}`}
@@ -105,6 +120,22 @@ export function ParentDashboard(): JSX.Element {
               <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm text-[var(--text-secondary)]">
                 <span>{progress?.xp_total ?? 0} XP</span>
                 <span>{progress?.streak_days ?? 0} Tage Streak</span>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                  Nächste Session
+                </p>
+                {nextSession ? (
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    {formatSessionDate(nextSession.scheduled_at)} Uhr
+                    {nextSession.room ? ` · Raum ${nextSession.room}` : ''}
+                  </p>
+                ) : (
+                  <p className="text-sm text-[var(--text-muted)]">
+                    Noch kein Termin geplant.
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
