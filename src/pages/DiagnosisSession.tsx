@@ -27,11 +27,7 @@ function MinimalHeader({ subtitle }: { subtitle: string }) {
     <nav className="flex items-center justify-between bg-card px-6 py-4 border-b-2 border-border">
       <div className="flex items-center gap-3">
         <div
-          className="flex h-10 w-10 items-center justify-center rounded-2xl text-base font-black text-white"
-          style={{
-            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-            boxShadow: '0 3px 0 0 var(--primary-shadow)',
-          }}
+          className="flex h-10 w-10 items-center justify-center rounded-2xl text-base font-black text-white bg-gradient-brand shadow-premium-sm"
         >
           E
         </div>
@@ -58,11 +54,8 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
       </div>
       <div className="h-3 w-full rounded-full bg-border overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-300"
-          style={{
-            width: `${pct}%`,
-            background: 'linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%)',
-          }}
+          className="h-full rounded-full transition-all duration-300 bg-gradient-primary-btn"
+          style={{ width: `${pct}%` }}
         />
       </div>
     </div>
@@ -473,14 +466,7 @@ function CoachInfoBox({
 
 function BehaviorBadge({ icon, label }: { icon?: React.ReactNode; label: string }) {
   return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
-      style={{
-        background: 'var(--background)',
-        border: '1px solid var(--border)',
-        color: 'var(--foreground)',
-      }}
-    >
+    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold bg-background border border-border text-foreground">
       {icon}
       {label}
     </span>
@@ -629,14 +615,7 @@ function SetupScreen({
           <p className="mt-2 text-sm font-semibold text-muted">
             Warte bis der Schüler die Diagnose startet. Dann erscheint die erste Aufgabe hier.
           </p>
-          <div
-            className="mt-6 rounded-2xl px-4 py-3 text-sm font-medium"
-            style={{
-              background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
-              border: '2px solid color-mix(in srgb, var(--primary) 25%, transparent)',
-              color: 'var(--primary)',
-            }}
-          >
+          <div className="mt-6 rounded-2xl px-4 py-3 text-sm font-medium bg-[color-mix(in_srgb,var(--primary)_8%,transparent)] border-2 border-[color-mix(in_srgb,var(--primary)_25%,transparent)] text-[var(--primary)]">
             💡 Tipp: Schüler-Tablet öffnet <code>/diagnosis?view=student</code>
           </div>
         </div>
