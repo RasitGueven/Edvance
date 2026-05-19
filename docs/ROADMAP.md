@@ -72,7 +72,7 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
 | Tages-/Wochenplan (Filter über bestehende Liste) | ⚠️ | UI |
 | Schüler-Kurzprofil pro Session | ⚠️ | BE+ (Daten komponieren) |
 | Elternreport schreiben & freigeben | ⚠️ | UI (Schema da) |
-| Eingriff-Tracking (Eingegriffen → Dauer → Gelöst) | ❌ | BE+ (1 Tabelle) |
+| Eingriff-Tracking (Eingegriffen → Dauer → Gelöst) | ✅ | Migration 025 nötig |
 | Home-Quest, Badge/XP-Verwaltung, OCR, Übergabe | ❌ | NEU |
 
 ## Schüler
@@ -112,10 +112,12 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
   (`/admin/schedule`) · Coach-Tagesplan-Filter (`/coach`).
   Offen: Migration 024 (`coaching_sessions_parent_read`, Auth/RLS →
   Rasit-Freigabe + SQL-Ausführung) — bis dahin sehen Eltern keine Sessions.
-- **Welle 1B gestartet:** Coach anlegen via `/admin/coaches` +
-  Edge-Function `provision_coach` (Admin-only, Admin setzt Passwort).
-  Offen: `supabase functions deploy provision_coach`.
+- **Welle 1B:** Coach anlegen via `/admin/coaches` + Edge-Function
+  `provision_coach` (deployt). Eingriff-Tracking: Tabelle `interventions`
+  (Migration 025), Lib + „Eingegriffen/Gelöst" pro Schüler im
+  Coach-Dashboard (SessionCard ausgelagert).
+  Offen: Migration 025 im SQL Editor (Auth/RLS, freigegeben).
 
 ## Aktiver Slice
-- **Welle 1B · weiter:** Eingriff-Tracking (neue Tabelle + RLS + Coach-UI),
-  danach Schüler-Kurzprofil pro Session.
+- **Welle 1B · letzter Schritt:** Schüler-Kurzprofil pro Session
+  (Stärken, aktuelle Baustellen, Klausurtermine, Modus).

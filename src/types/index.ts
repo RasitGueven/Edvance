@@ -359,6 +359,17 @@ export type SessionStudent = {
   attendance: AttendanceStatus
 }
 
+export type Intervention = {
+  id: string
+  created_at: string
+  session_id: string
+  student_id: string
+  coach_id: string
+  started_at: string
+  resolved_at: string | null
+  note: string | null
+}
+
 export type StudentTaskProgress = {
   student_id: string
   task_id: string
