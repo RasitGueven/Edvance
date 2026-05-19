@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Avatar } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { EmptyState, LoadingPulse } from '@/components/edvance'
 import { DashboardTiles } from '@/components/edvance/DashboardTiles'
@@ -12,47 +10,26 @@ import {
   listSessionsForCoach,
   setAttendance,
 } from '@/lib/supabase/sessions'
+import {
+  listInterventionsForSession,
+  resolveIntervention,
+  startIntervention,
+} from '@/lib/supabase/interventions'
 import { listStudentsWithName } from '@/lib/supabase/students'
-import { formatDateLongDe, getInitials } from '@/lib/utils'
+import { formatDateLongDe } from '@/lib/utils'
 import { CalendarDays, Users, Clock, ClipboardList, FlaskConical, Inbox } from 'lucide-react'
-import type {
-  AttendanceStatus,
-  CoachingSession,
-  SessionStatus,
-} from '@/types'
+import {
+  SessionCard,
+  sessionTime,
+  PLACEHOLDER_DASH,
+  type SessionVM,
+} from '@/pages/coach/SessionCard'
+import type { AttendanceStatus, Intervention } from '@/types'
 
-const PLACEHOLDER_DASH = '–'
 const SHADOW_CARD = '0 1px 6px 0 rgba(0,0,0,0.07)'
-const SHADOW_ACTIVE = '0 2px 12px 0 rgba(15,110,86,0.10)'
 const ICON_BG_PRIMARY = 'color-mix(in srgb, var(--primary) 12%, transparent)'
 const ICON_BG_SUCCESS = 'color-mix(in srgb, var(--success) 12%, transparent)'
 const ICON_BG_WARNING = 'color-mix(in srgb, var(--warning) 12%, transparent)'
-
-const STATUS_BORDER_COLOR: Record<SessionStatus, string> = {
-  active: 'border-l-success',
-  done: 'border-l-border',
-  upcoming: 'border-l-primary',
-}
-const STATUS_BG: Record<SessionStatus, string> = {
-  active: 'bg-success/5',
-  done: 'bg-card',
-  upcoming: 'bg-card',
-}
-
-type StudentVM = {
-  student_id: string
-  name: string
-  classLevel: number | null
-  attendance: AttendanceStatus
-}
-type SessionVM = { session: CoachingSession; students: StudentVM[] }
-
-function sessionTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('de-DE', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 type RangeFilter = 'today' | 'week' | 'all'
 
@@ -143,80 +120,12 @@ function StatCard({
   )
 }
 
-function SessionCard({
-  vm,
-  onAttendance,
-}: {
-  vm: SessionVM
-  onAttendance: (studentId: string, a: AttendanceStatus) => void
-}): JSX.Element {
-  const { session, students } = vm
-  return (
-    <Card
-      className={`border-l-4 ${STATUS_BORDER_COLOR[session.status]} ${STATUS_BG[session.status]}`}
-      style={{ boxShadow: session.status === 'active' ? SHADOW_ACTIVE : SHADOW_CARD }}
-    >
-      <CardHeader className="pb-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-bold text-foreground">
-              {sessionTime(session.scheduled_at)} Uhr
-            </span>
-            <Badge variant={session.status} />
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted">
-            <span>{session.room ?? PLACEHOLDER_DASH}</span>
-            <span>·</span>
-            <span>{students.length} Schüler</span>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {students.length === 0 ? (
-          <p className="mb-2 text-sm text-muted">Keine Teilnehmer eingetragen.</p>
-        ) : (
-          <div className="mb-5 flex flex-col gap-3">
-            {students.map((s) => (
-              <div key={s.student_id} className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Avatar initials={getInitials(s.name)} attendance={s.attendance} />
-                  <div>
-                    <p className="text-sm font-medium text-foreground leading-tight">
-                      {s.name.split(' ')[0]}
-                    </p>
-                    <p className="text-xs text-muted leading-tight">
-                      Kl. {s.classLevel ?? PLACEHOLDER_DASH}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-1.5">
-                  <Button
-                    size="sm"
-                    variant={s.attendance === 'present' ? 'default' : 'outline'}
-                    onClick={() => onAttendance(s.student_id, 'present')}
-                  >
-                    Da
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={s.attendance === 'absent' ? 'default' : 'outline'}
-                    onClick={() => onAttendance(s.student_id, 'absent')}
-                  >
-                    Fehlt
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
 export function CoachDashboard(): JSX.Element {
   const { user } = useAuth()
   const [vms, setVms] = useState<SessionVM[]>([])
+  const [intervBySession, setIntervBySession] = useState<
+    Record<string, Intervention[]>
+  >({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [range, setRange] = useState<RangeFilter>('today')
@@ -249,8 +158,12 @@ export function CoachDashboard(): JSX.Element {
         ]),
       )
       const built: SessionVM[] = []
+      const interv: Record<string, Intervention[]> = {}
       for (const session of sessions ?? []) {
-        const { data: links } = await getSessionStudents(session.id)
+        const [{ data: links }, { data: ivs }] = await Promise.all([
+          getSessionStudents(session.id),
+          listInterventionsForSession(session.id),
+        ])
         built.push({
           session,
           students: (links ?? []).map((l) => ({
@@ -260,8 +173,10 @@ export function CoachDashboard(): JSX.Element {
             attendance: l.attendance,
           })),
         })
+        interv[session.id] = ivs ?? []
       }
       setVms(built)
+      setIntervBySession(interv)
       setLoading(false)
     })()
   }
@@ -274,6 +189,28 @@ export function CoachDashboard(): JSX.Element {
     a: AttendanceStatus,
   ): Promise<void> => {
     const { error: err } = await setAttendance(sessionId, studentId, a)
+    if (err) {
+      setError(err)
+      return
+    }
+    load()
+  }
+
+  const onIntervene = async (
+    sessionId: string,
+    studentId: string,
+  ): Promise<void> => {
+    if (!user) return
+    const { error: err } = await startIntervention(sessionId, studentId, user.id)
+    if (err) {
+      setError(err)
+      return
+    }
+    load()
+  }
+
+  const onResolve = async (interventionId: string): Promise<void> => {
+    const { error: err } = await resolveIntervention(interventionId)
     if (err) {
       setError(err)
       return
@@ -382,6 +319,9 @@ export function CoachDashboard(): JSX.Element {
                 key={vm.session.id}
                 vm={vm}
                 onAttendance={(sid, a) => onAttendance(vm.session.id, sid, a)}
+                interventions={intervBySession[vm.session.id] ?? []}
+                onIntervene={(sid) => onIntervene(vm.session.id, sid)}
+                onResolve={onResolve}
               />
             ))}
           </div>
