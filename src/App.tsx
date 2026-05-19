@@ -23,7 +23,6 @@ import { TaskPlayer } from '@/pages/student/TaskPlayer'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
 import { ThemePanel } from '@/components/edvance/ThemePanel'
 import { DiagnosisProvider } from '@/context/DiagnosisContext'
-import { DiagnosisSession } from '@/pages/DiagnosisSession'
 import { DiagnosisResult } from '@/pages/DiagnosisResult'
 import { ScreeningSession } from '@/pages/ScreeningSession'
 import { TaskWidgetDemo } from '@/pages/student/TaskWidgetDemo'
@@ -193,11 +192,6 @@ export default function App(): JSX.Element {
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
         <Route path="/demo/design" element={<DesignDemo />} />
         <Route path="/demo/graph" element={<GraphDemo />} />
-
-        {/* Diagnose-Engine (lokal, ohne Login – Tablet-Sicht).
-            Coach erreicht den Coach-View über ?view=coach. */}
-        <Route path="/diagnosis" element={<DiagnosisSession />} />
-        <Route path="/diagnosis/result" element={<DiagnosisResult />} />
 
         {/* Screening: stiller, adaptiver, auto-bewerteter Lauf (eingeloggt).
             Coach = Beobachter (kein Rating in diesem Flow). */}
