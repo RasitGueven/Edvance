@@ -84,6 +84,82 @@ const REPORT_SCHEMA = {
   ],
 }
 
+// Screening-Aufbereitung: rohes result_summary (UUID-clusterId + nackte
+// Zahlen) → benannte, interpretierte Struktur fuer den LLM. Level/Label-
+// Mapping gespiegelt aus src/lib/screening/screeningResult.ts — Edge ist
+// isoliertes Deno, kann das Frontend-Modul nicht importieren.
+type RawClusterSummary = {
+  clusterId?: unknown
+  answered?: unknown
+  correct?: unknown
+  estimatedLevel?: unknown
+  mastery?: unknown
+}
+
+function num(v: unknown): number {
+  return typeof v === 'number' && Number.isFinite(v) ? v : 0
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, v))
+}
+
+function masteryLabel(estimatedLevel: number, mastery: number): string {
+  const displayLevel = clamp(
+    Math.round(estimatedLevel * 2.5 + mastery * 2.5),
+    1,
+    10,
+  )
+  if (displayLevel <= 3) return 'Lücke'
+  if (displayLevel <= 6) return 'Erkennbar'
+  return 'Sicher'
+}
+
+function buildScreeningFacts(
+  row:
+    | { subject?: string; result_summary?: unknown; completed_at?: string }
+    | undefined,
+  clusterNames: Map<string, string>,
+) {
+  if (!row) return null
+  const rs = row.result_summary as
+    | { kind?: unknown; answered?: unknown; clusters?: unknown }
+    | null
+  if (!rs || rs.kind !== 'adaptive' || !Array.isArray(rs.clusters)) {
+    return {
+      fach: row.subject ?? null,
+      abgeschlossen_am: row.completed_at ?? null,
+      hinweis:
+        'Älterer oder unvollständiger Screening-Lauf — keine Cluster-Auswertung verfügbar.',
+    }
+  }
+  const cluster = (rs.clusters as RawClusterSummary[])
+    .filter((c) => typeof c?.clusterId === 'string' && c.clusterId !== '')
+    .map((c) => {
+      const estimatedLevel = clamp(Math.round(num(c.estimatedLevel)), 0, 3)
+      const mastery = clamp(num(c.mastery), 0, 1)
+      return {
+        thema: clusterNames.get(c.clusterId as string) ?? 'Unbekanntes Thema',
+        stufe: estimatedLevel,
+        einschaetzung: masteryLabel(estimatedLevel, mastery),
+        beantwortet: Math.max(0, Math.round(num(c.answered))),
+        richtig: Math.max(0, Math.round(num(c.correct))),
+      }
+    })
+  const beantwortetGesamt = cluster.reduce((s, c) => s + c.beantwortet, 0)
+  const richtigGesamt = cluster.reduce((s, c) => s + c.richtig, 0)
+  return {
+    fach: row.subject ?? null,
+    abgeschlossen_am: row.completed_at ?? null,
+    antworten_gesamt: num(rs.answered) || beantwortetGesamt,
+    quote_prozent:
+      beantwortetGesamt === 0
+        ? 0
+        : Math.round((richtigGesamt / beantwortetGesamt) * 100),
+    cluster,
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json(405, { error: 'Method not allowed' })
@@ -218,7 +294,7 @@ Deno.serve(async (req: Request) => {
   }
 
   // ── Daten sammeln (service-role) ──────────────────────────────────────────
-  const [stuRes, progRes, scrRes, attRes, ivRes] = await Promise.all([
+  const [stuRes, progRes, scrRes, attRes, ivRes, clRes] = await Promise.all([
     admin
       .from('students')
       .select('class_level, profiles!profile_id(full_name)')
@@ -248,8 +324,15 @@ Deno.serve(async (req: Request) => {
       .eq('student_id', sId)
       .gte('started_at', body.period_start)
       .lte('started_at', body.period_end),
+    admin.from('clusters').select('id, name'),
   ])
 
+  const clusterNames = new Map<string, string>(
+    ((clRes.data ?? []) as { id: string; name: string }[]).map((c) => [
+      c.id,
+      c.name,
+    ]),
+  )
   const attendance = (attRes.data ?? []) as { attendance: string }[]
   const facts = {
     schueler: {
@@ -260,7 +343,12 @@ Deno.serve(async (req: Request) => {
     },
     zeitraum: { von: body.period_start, bis: body.period_end },
     fortschritt: progRes.data ?? null,
-    letztes_screening: scrRes.data?.[0] ?? null,
+    letztes_screening: buildScreeningFacts(
+      scrRes.data?.[0] as
+        | { subject?: string; result_summary?: unknown; completed_at?: string }
+        | undefined,
+      clusterNames,
+    ),
     anwesenheit: {
       gesamt: attendance.length,
       anwesend: attendance.filter((a) => a.attendance === 'present').length,
