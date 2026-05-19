@@ -70,7 +70,7 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
 | Screening-Ergebnisse einsehen | ✅ | — |
 | Erstgespräch/Intake-Protokoll | ✅ | — |
 | Tages-/Wochenplan (Filter über bestehende Liste) | ⚠️ | UI |
-| Schüler-Kurzprofil pro Session | ⚠️ | BE+ (Daten komponieren) |
+| Schüler-Kurzprofil pro Session | ✅ | Fortschritt; Klausur/Modus später (Welle 2) |
 | Elternreport schreiben & freigeben | ⚠️ | UI (Schema da) |
 | Eingriff-Tracking (Eingegriffen → Dauer → Gelöst) | ✅ | Migration 025 nötig |
 | Home-Quest, Badge/XP-Verwaltung, OCR, Übergabe | ❌ | NEU |
@@ -118,6 +118,12 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
   Coach-Dashboard (SessionCard ausgelagert).
   Offen: Migration 025 im SQL Editor (Auth/RLS, freigegeben).
 
+- **Welle 1B komplett:** Schüler-Kurzprofil als inline ausklappbares
+  Panel pro Schüler in der SessionCard (Level/XP/Streak + Klasse/Schule,
+  lazy geladen). Klausurtermine + Modus zurückgestellt (Welle 2 / eigener
+  1B-Mittel-Punkt — kein Schema dafür vorhanden).
+
 ## Aktiver Slice
-- **Welle 1B · letzter Schritt:** Schüler-Kurzprofil pro Session
-  (Stärken, aktuelle Baustellen, Klausurtermine, Modus).
+- **Welle 1 (1A+1B) abgeschlossen.** Nächster Block: Welle 2 (Elternreport
+  KI-gestützt + Freigabe → Home-Quest → Klausurkalender → KI-Erklärartikel
+  → Eskalations-Trigger) — mit Rasit priorisieren.

@@ -154,7 +154,12 @@ export function CoachDashboard(): JSX.Element {
       const nameMap = new Map(
         (students ?? []).map((st) => [
           st.id,
-          { name: st.full_name ?? 'Unbenannt', classLevel: st.class_level },
+          {
+            name: st.full_name ?? 'Unbenannt',
+            classLevel: st.class_level,
+            schoolName: st.school_name,
+            schoolType: st.school_type,
+          },
         ]),
       )
       const built: SessionVM[] = []
@@ -170,6 +175,8 @@ export function CoachDashboard(): JSX.Element {
             student_id: l.student_id,
             name: nameMap.get(l.student_id)?.name ?? 'Unbenannt',
             classLevel: nameMap.get(l.student_id)?.classLevel ?? null,
+            schoolName: nameMap.get(l.student_id)?.schoolName ?? null,
+            schoolType: nameMap.get(l.student_id)?.schoolType ?? null,
             attendance: l.attendance,
           })),
         })
