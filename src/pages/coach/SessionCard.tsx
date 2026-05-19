@@ -1,14 +1,17 @@
-import type { JSX } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { LoadingPulse } from '@/components/edvance'
+import { getStudentProgress } from '@/lib/supabase/progress'
 import { getInitials } from '@/lib/utils'
 import type {
   AttendanceStatus,
   CoachingSession,
   Intervention,
   SessionStatus,
+  StudentProgress,
 } from '@/types'
 
 export const PLACEHOLDER_DASH = '–'
@@ -30,9 +33,50 @@ export type StudentVM = {
   student_id: string
   name: string
   classLevel: number | null
+  schoolName: string | null
+  schoolType: string | null
   attendance: AttendanceStatus
 }
 export type SessionVM = { session: CoachingSession; students: StudentVM[] }
+
+function StudentProfilePanel({ s }: { s: StudentVM }): JSX.Element {
+  const [progress, setProgress] = useState<StudentProgress | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    void getStudentProgress(s.student_id).then(({ data }) => {
+      if (cancelled) return
+      setProgress(data)
+      setLoading(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [s.student_id])
+
+  return (
+    <div className="mt-1 flex flex-col gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        Kurzprofil
+      </p>
+      {loading ? (
+        <LoadingPulse type="list" lines={2} />
+      ) : (
+        <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--text-secondary)]">
+          <span>Level {progress?.level ?? 1}</span>
+          <span>{progress?.xp_total ?? 0} XP</span>
+          <span>{progress?.streak_days ?? 0} Tage Streak</span>
+          <span>
+            Kl. {s.classLevel ?? PLACEHOLDER_DASH}
+            {s.schoolType ? ` · ${s.schoolType}` : ''}
+          </span>
+          {s.schoolName && <span>{s.schoolName}</span>}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export function sessionTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('de-DE', {
@@ -56,6 +100,7 @@ export function SessionCard({
   onResolve: (interventionId: string) => void
 }): JSX.Element {
   const { session, students } = vm
+  const [openProfile, setOpenProfile] = useState<string | null>(null)
   const openFor = (studentId: string): Intervention | undefined =>
     interventions.find(
       (i) => i.student_id === studentId && i.resolved_at === null,
@@ -88,11 +133,10 @@ export function SessionCard({
           <div className="mb-5 flex flex-col gap-3">
             {students.map((s) => {
               const open = openFor(s.student_id)
+              const profileOpen = openProfile === s.student_id
               return (
-                <div
-                  key={s.student_id}
-                  className="flex flex-wrap items-center justify-between gap-2"
-                >
+                <div key={s.student_id} className="flex flex-col gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Avatar initials={getInitials(s.name)} attendance={s.attendance} />
                     <div>
@@ -105,6 +149,15 @@ export function SessionCard({
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
+                    <Button
+                      size="sm"
+                      variant={profileOpen ? 'default' : 'outline'}
+                      onClick={() =>
+                        setOpenProfile(profileOpen ? null : s.student_id)
+                      }
+                    >
+                      Profil
+                    </Button>
                     <Button
                       size="sm"
                       variant={s.attendance === 'present' ? 'default' : 'outline'}
@@ -142,6 +195,8 @@ export function SessionCard({
                       </Button>
                     )}
                   </div>
+                </div>
+                {profileOpen && <StudentProfilePanel s={s} />}
                 </div>
               )
             })}
