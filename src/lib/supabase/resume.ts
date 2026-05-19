@@ -26,9 +26,10 @@ export async function getResumePoint(
     if (error) return { data: null, error: error.message }
 
     const row = (data ?? [])[0] as
-      | { tasks: { cluster_id: string } | null }
+      | { tasks: { cluster_id: string } | { cluster_id: string }[] | null }
       | undefined
-    const clusterId = row?.tasks?.cluster_id
+    const rel = row?.tasks
+    const clusterId = Array.isArray(rel) ? rel[0]?.cluster_id : rel?.cluster_id
     if (!clusterId) return { data: null, error: null }
 
     const { data: cluster } = await getClusterById(clusterId)
