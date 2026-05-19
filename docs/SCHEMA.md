@@ -133,6 +133,9 @@ student | parent | coach | admin
 - `migrations/021_provision_student_fn.sql` – atomare Lead->Student-Conversion (nur service_role; via Edge Function provision_student)
 - `migrations/022_screening_items.sql`      – adaptive Screening-Item-Bank + Auto-Grade-Ergebnisse
 - `migrations/023_screening_tests_student_write.sql` – RLS: Schüler insert/update eigene screening_tests (stiller /screening-Lauf)
+- `migrations/024_coaching_sessions_parent_read.sql` – RLS: Eltern lesen Sessions des eigenen Kindes
+- `migrations/025_interventions.sql`        – Eingriff-Tracking (Coach r/w eigene Sessions, Eltern read)
+- `migrations/026_xp_completion.sql`        – `xp_rules` + RPC `complete_task` (atomarer XP-/Task-Abschluss)
 - `migrations/027_parent_report_generations.sql` – append-only Log + RLS: Kosten-Guardrail KI-Elternreport
 
 ## Edge Functions

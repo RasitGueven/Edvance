@@ -110,13 +110,13 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
 ## Fortschritt
 - **Welle 1A komplett:** Nächste Session (S+E) · Admin-Stundenplan
   (`/admin/schedule`) · Coach-Tagesplan-Filter (`/coach`).
-  Offen: Migration 024 (`coaching_sessions_parent_read`, Auth/RLS →
-  Rasit-Freigabe + SQL-Ausführung) — bis dahin sehen Eltern keine Sessions.
+  Migration 024 (`coaching_sessions_parent_read`) ausgeführt ✅ — Eltern
+  sehen Sessions.
 - **Welle 1B:** Coach anlegen via `/admin/coaches` + Edge-Function
   `provision_coach` (deployt). Eingriff-Tracking: Tabelle `interventions`
   (Migration 025), Lib + „Eingegriffen/Gelöst" pro Schüler im
   Coach-Dashboard (SessionCard ausgelagert).
-  Offen: Migration 025 im SQL Editor (Auth/RLS, freigegeben).
+  Migration 025 (`interventions`) ausgeführt ✅.
 
 - **Welle 1B komplett:** Schüler-Kurzprofil als inline ausklappbares
   Panel pro Schüler in der SessionCard (Level/XP/Streak + Klasse/Schule,
@@ -129,8 +129,7 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
   Anwesenheit/Eingriffe → Entwurf. Coach editiert in `/coach/reports` und
   gibt frei; Eltern sehen die Abschnitte. Kein Schema-Change (nutzt
   vorhandenes `parent_reports`).
-  Offen: `supabase functions deploy generate_parent_report` +
-  `supabase secrets set ANTHROPIC_API_KEY=…`.
+  Deployt + `ANTHROPIC_API_KEY` als Edge-Secret gesetzt ✅.
 - **Coach↔Schüler-Zuordnung:** `/admin/assignments` — Schüler einem Coach
   zuweisen/umhängen/entfernen (`setStudentCoach`, ein aktiver Coach pro
   Schüler). Nutzt vorhandenes `student_coach` + RLS `student_coach_admin_all`,
@@ -140,8 +139,7 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
   → Trigger rechnet `student_progress` fort; positiver XP-Toast. XP-Gewichtung
   pro Inhaltstyp/Schwierigkeit admin-konfigurierbar (`/admin/xp-rules`,
   Tabelle `xp_rules`).
-  **Offen: Migration `026_xp_completion.sql` von Rasit im Supabase SQL-Editor
-  ausführen** (legt `xp_rules` + `complete_task` an).
+  Migration 026 (`xp_completion`, `xp_rules` + `complete_task`) ausgeführt ✅.
 
 - **Kleine ⚠️-Lücken geschlossen + Matrix entstaubt:**
   - Elternreport-Übersicht: `/coach/reports` listet bestehende Reports des
@@ -160,8 +158,8 @@ Aufwand: `UI` reine Oberfläche auf fertigem Schema · `BE+` kleine Backend-Arbe
   global; Anrechnung nur bei Erfolg). Append-only Log `parent_report_generations`
   (Migration 027). Branch von `dev` (main bewusst nicht angefasst — der große
   dev→main-Release bleibt eigener Milestone mit Rasit).
-  **Offen: Migration `027_parent_report_generations.sql` von Rasit im
-  Supabase SQL-Editor ausführen** + Function neu deployen.
+  Migration 027 ausgeführt + verifiziert (RLS/Policy/Indizes) + Function
+  deployt ✅.
 
 ## Aktiver Slice
 - **Welle 2 · weiter:** Home-Quest-Übersicht → Klausurkalender →
