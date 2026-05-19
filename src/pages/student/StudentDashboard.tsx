@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { XPBar, EmptyState, LoadingPulse, EdvanceCard, EdvanceBadge } from '@/components/edvance'
 import { StudentBentoGrid } from '@/components/edvance/StudentWidgetGrid'
-import { ClusterGrid, FilterResults, type ClusterProgress } from '@/pages/student/ClusterGrid'
+import { ClusterGrid, FilterResults, RecommendationBanner, type ClusterProgress } from '@/pages/student/ClusterGrid'
 import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
 import { getStudentByProfile } from '@/lib/supabase/students'
@@ -14,6 +14,7 @@ import { getCompletedTaskIds } from '@/lib/supabase/taskProgress'
 import { listUpcomingSessionsForStudent } from '@/lib/supabase/sessions'
 import { formatSessionDate } from '@/lib/datetime'
 import { getResumePoint, type ResumePoint } from '@/lib/supabase/resume'
+import { useScreeningRecommendation } from '@/pages/student/useScreeningRecommendation'
 import type { CoachingSession, SkillCluster, Student, Subject, Task } from '@/types'
 
 const XP_PER_LEVEL = 500
@@ -181,6 +182,18 @@ export function StudentDashboard(): JSX.Element {
     for (const c of clusters) m[c.id] = c.name
     return m
   }, [clusters])
+
+  const {
+    clusterStatusById,
+    recommendedClusterId,
+    orderedClusters,
+    showRecommendation,
+  } = useScreeningRecommendation(
+    student?.id ?? null,
+    clusters,
+    clusterProgress,
+    resume,
+  )
 
   const filteredTasks = useMemo(() => {
     if (!allTasks) return []
@@ -374,10 +387,22 @@ export function StudentDashboard(): JSX.Element {
             description="Frag deinen Coach – er richtet deinen Lernpfad ein."
           />
         ) : (
-          <ClusterGrid
-            clusters={clusters}
-            clusterProgress={clusterProgress}
-          />
+          <>
+            {showRecommendation && recommendedClusterId && (
+              <RecommendationBanner
+                clusterId={recommendedClusterId}
+                clusterName={
+                  clusterNameById[recommendedClusterId] ?? 'Dein Lernpfad'
+                }
+              />
+            )}
+            <ClusterGrid
+              clusters={orderedClusters}
+              clusterProgress={clusterProgress}
+              clusterStatusById={clusterStatusById}
+              recommendedClusterId={recommendedClusterId}
+            />
+          </>
         )}
       </main>
     </div>

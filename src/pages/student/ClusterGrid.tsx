@@ -1,8 +1,22 @@
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle } from 'lucide-react'
-import { EmptyState } from '@/components/edvance'
+import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Sparkles } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { EmptyState, EdvanceBadge, EdvanceCard, MasteryBar } from '@/components/edvance'
+import type {
+  ClusterStatus,
+  ClusterStatusLabel,
+} from '@/lib/screening/recommendation'
 import type { SkillCluster, Task } from '@/types'
+
+const STATUS_VARIANT: Record<
+  ClusterStatusLabel,
+  'success' | 'warning' | 'destructive'
+> = {
+  Sicher: 'success',
+  Erkennbar: 'warning',
+  Lücke: 'destructive',
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -88,21 +102,68 @@ export function FilterResults({
   )
 }
 
+// ─── RecommendationBanner ─────────────────────────────────────────────────────
+
+export function RecommendationBanner({
+  clusterId,
+  clusterName,
+}: {
+  clusterId: string
+  clusterName: string
+}): JSX.Element {
+  return (
+    <EdvanceCard className="mt-6 flex flex-wrap items-center justify-between gap-4 p-6">
+      <div className="flex items-start gap-3">
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-lg)]"
+          style={{
+            background: 'var(--color-primary-light)',
+            color: 'var(--color-primary)',
+          }}
+        >
+          <Sparkles className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            Empfohlener Start
+          </p>
+          <p className="mt-0.5 text-base font-semibold text-[var(--text-primary)]">
+            {clusterName}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+            Aus deinem Lernstand-Check – hier macht Üben gerade den größten
+            Unterschied.
+          </p>
+        </div>
+      </div>
+      <Link to={`/student/cluster/${clusterId}`}>
+        <Button size="lg">Loslegen</Button>
+      </Link>
+    </EdvanceCard>
+  )
+}
+
 // ─── ClusterGrid ──────────────────────────────────────────────────────────────
 
 type ClusterGridProps = {
   clusters: SkillCluster[]
   clusterProgress: ClusterProgress
+  clusterStatusById?: Record<string, ClusterStatus>
+  recommendedClusterId?: string | null
 }
 
 export function ClusterGrid({
   clusters,
   clusterProgress,
+  clusterStatusById,
+  recommendedClusterId,
 }: ClusterGridProps): JSX.Element {
   return (
     <div className="mt-6 grid gap-4 sm:grid-cols-2">
       {clusters.map((c, idx) => {
         const tint = CLUSTER_TINTS[idx % CLUSTER_TINTS.length]
+        const status = clusterStatusById?.[c.id]
+        const isRecommended = recommendedClusterId === c.id
         const prog = clusterProgress[c.id] ?? { completed: 0, total: 0 }
         const blobStyle: CSSProperties = { background: tint.fg }
         const iconStyle: CSSProperties = { background: tint.bg, color: tint.fg }
@@ -117,7 +178,13 @@ export function ClusterGrid({
             to={`/student/cluster/${c.id}`}
             className="group block rounded-[var(--radius-xl)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
           >
-            <div className="relative h-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-gradient-surface p-5 shadow-premium-sm transition-all duration-300 group-hover:shadow-premium-lg group-hover:-translate-y-0.5 min-h-[140px] flex flex-col justify-between">
+            <div
+              className={`relative h-full overflow-hidden rounded-[var(--radius-xl)] border bg-gradient-surface p-5 shadow-premium-sm transition-all duration-300 group-hover:shadow-premium-lg group-hover:-translate-y-0.5 min-h-[140px] flex flex-col justify-between ${
+                isRecommended
+                  ? 'border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]'
+                  : 'border-[var(--border)]'
+              }`}
+            >
               {/* Decorative blob */}
               <div
                 aria-hidden="true"
@@ -141,12 +208,32 @@ export function ClusterGrid({
                     Klasse {c.class_level_min}
                     {c.class_level_min !== c.class_level_max && ` – ${c.class_level_max}`}
                   </p>
+                  {(isRecommended || status) && (
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {isRecommended && (
+                        <EdvanceBadge variant="primary">Empfohlen</EdvanceBadge>
+                      )}
+                      {status && (
+                        <EdvanceBadge variant={STATUS_VARIANT[status.label]}>
+                          {status.label}
+                        </EdvanceBadge>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <ChevronRight className="h-5 w-5 shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)]" />
               </div>
 
-              {/* Bottom: progress bar */}
-              <div className="mt-4">
+              {/* Bottom: Screening-Lernstand + Fortschritt */}
+              <div className="mt-4 flex flex-col gap-3">
+                {status && (
+                  <div>
+                    <p className="mb-1.5 text-xs text-[var(--text-muted)]">
+                      Lernstand-Check
+                    </p>
+                    <MasteryBar level={status.displayLevel} />
+                  </div>
+                )}
                 {prog.total > 0 && (
                   <>
                     <p className="mb-1.5 text-xs text-[var(--text-muted)]">
