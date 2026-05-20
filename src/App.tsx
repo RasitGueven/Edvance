@@ -4,6 +4,7 @@ import { DesignShowcase } from '@/pages/DesignShowcase'
 import { StudentDashboard } from '@/pages/student/StudentDashboard'
 import { CoachDashboard } from '@/pages/coach/CoachDashboard'
 import { ParentDashboard } from '@/pages/parent/ParentDashboard'
+import { ScreeningReportPage as ParentScreeningReportPage } from '@/pages/parent/ScreeningReportPage'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { OnboardingPage } from '@/pages/admin/OnboardingPage'
 import { LambacherPreview } from '@/pages/admin/LambacherPreview'
@@ -97,6 +98,14 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['parent']}>
               <ParentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/parent/screening"
+          element={
+            <ProtectedRoute allowedRoles={['parent']}>
+              <ParentScreeningReportPage />
             </ProtectedRoute>
           }
         />
