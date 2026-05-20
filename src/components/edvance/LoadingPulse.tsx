@@ -1,4 +1,4 @@
-import React from 'react'
+import type { CSSProperties } from 'react'
 import { cn } from '@/lib/utils'
 
 interface LoadingPulseProps {
@@ -6,7 +6,7 @@ interface LoadingPulseProps {
   type?: 'card' | 'list' | 'stat'
 }
 
-function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function SkeletonBlock({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
     <div
       className={cn('rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton', className)}
@@ -54,7 +54,7 @@ export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
           <div className="flex-1 flex flex-col gap-1.5">
             <SkeletonBlock
               className="h-3.5"
-              style={{ width: `${70 + (i % 3) * 10}%` } as React.CSSProperties}
+              style={{ width: `${70 + (i % 3) * 10}%` } as CSSProperties}
             />
             <SkeletonBlock className="h-3 w-1/2" />
           </div>

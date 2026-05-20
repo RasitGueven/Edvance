@@ -1,8 +1,8 @@
-import React from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface EdvanceBadgeProps {
-  children: React.ReactNode
+  children: ReactNode
   variant?:
     | 'primary'
     | 'success'

@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Clock, Pencil, Lightbulb, Sparkles } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { Clock, Pencil, Lightbulb } from 'lucide-react'
 import type { BehaviorAnalysis, BehaviorSnapshot } from '@/types/diagnosis'
 import type { RunTask } from '@/types'
 
@@ -75,7 +74,7 @@ export function RadialGauge({
 export function GaugeCard({
   icon, label, value, color, inverted = false, caption,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string
   value: number
   color: string
@@ -109,7 +108,7 @@ export function GaugeCard({
 export function KpiCard({
   icon, label, value, sub, color, bg,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string
   value: string
   sub?: string
@@ -224,7 +223,7 @@ export function MiniMetric({
 
 // ── SmallBadge ────────────────────────────────────────────────────────────────
 
-export function SmallBadge({ icon, text }: { icon?: React.ReactNode; text: string }) {
+export function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
   return (
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-muted"
@@ -255,7 +254,7 @@ export function KV({ k, v }: { k: string; v: string }) {
 export function SectionHeader({
   icon, label, description,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string
   description?: string
 }) {

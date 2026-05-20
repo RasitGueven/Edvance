@@ -1,4 +1,4 @@
-import React from 'react'
+import { Fragment } from 'react'
 import { cn } from '@/lib/utils'
 
 interface ProgressStepProps {
@@ -15,7 +15,7 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
         const isLast   = idx === steps.length - 1
 
         return (
-          <React.Fragment key={idx}>
+          <Fragment key={idx}>
             <div className="flex flex-col items-center gap-1.5 min-w-0">
               <div
                 className={cn(
@@ -47,7 +47,7 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
                 )}
               />
             )}
-          </React.Fragment>
+          </Fragment>
         )
       })}
     </div>

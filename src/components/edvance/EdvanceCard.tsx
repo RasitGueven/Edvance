@@ -1,8 +1,8 @@
-import React from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface EdvanceCardProps {
-  children: React.ReactNode
+  children: ReactNode
   variant?: 'default' | 'raised' | 'navy' | 'blue-pale' | 'hero' | 'glass' | 'premium'
   accent?: 'none' | 'left-primary' | 'left-success' | 'left-warning' | 'left-destructive'
   className?: string
