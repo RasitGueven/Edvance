@@ -14,7 +14,10 @@ import {
   LoadingPulse,
   MasteryBar,
   StatCard,
+  CompetencyRadar,
+  type RadarAxis,
 } from '@/components/edvance'
+import { PendingRatingsInbox } from '@/components/edvance/screening/PendingRatingsInbox'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { Label } from '@/components/ui/label'
 import { listStudentsWithName } from '@/lib/supabase/students'
@@ -285,6 +288,21 @@ export function ScreeningResultsPage(): JSX.Element {
                         description="Der Lauf enthält keine auswertbaren Cluster."
                       />
                     ) : (
+                      <EdvanceCard className="flex flex-col items-center gap-2 p-6">
+                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                          Kompetenz-Profil
+                        </h2>
+                        <CompetencyRadar
+                          axes={parsed.clusters.map<RadarAxis>((c) => ({
+                            label: clusterNames.get(c.clusterId) ?? c.clusterId,
+                            value: c.displayLevel,
+                          }))}
+                          max={10}
+                        />
+                      </EdvanceCard>
+                    )}
+
+                    {parsed.clusters.length > 0 && (
                       <div className="flex flex-col gap-4">
                         <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
                           Kompetenzbereiche
@@ -325,6 +343,13 @@ export function ScreeningResultsPage(): JSX.Element {
                           )
                         })}
                       </div>
+                    )}
+
+                    {!resultsBusy && (
+                      <PendingRatingsInbox
+                        results={results}
+                        clusterNames={clusterNames}
+                      />
                     )}
                   </>
                 )}
