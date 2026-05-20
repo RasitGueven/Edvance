@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Login } from '@/pages/Login'
 import { DesignShowcase } from '@/pages/DesignShowcase'
+import { MockIndex } from '@/pages/mock/MockIndex'
+import { MockScreeningCoach } from '@/pages/mock/MockScreeningCoach'
+import { MockScreeningParent } from '@/pages/mock/MockScreeningParent'
 import { StudentDashboard } from '@/pages/student/StudentDashboard'
 import { CoachDashboard } from '@/pages/coach/CoachDashboard'
 import { ParentDashboard } from '@/pages/parent/ParentDashboard'
@@ -207,6 +210,9 @@ export default function App(): JSX.Element {
         />
 
         <Route path="/showcase" element={<DesignShowcase />} />
+        <Route path="/mock" element={<MockIndex />} />
+        <Route path="/mock/screening-coach" element={<MockScreeningCoach />} />
+        <Route path="/mock/screening-parent" element={<MockScreeningParent />} />
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
         <Route path="/demo/design" element={<DesignDemo />} />
         <Route path="/demo/graph" element={<GraphDemo />} />
