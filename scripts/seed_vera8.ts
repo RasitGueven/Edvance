@@ -43,7 +43,7 @@ type Vera8Item = {
   akzeptierte_antworten?: string[]
   kodierung?: string | null
   kommentar_highlights?: {
-    typische_fehler?: string
+    typische_fehler?: string | string[]
     didaktischer_hinweis?: string
     schwierigkeit_einschaetzung?: string
   } | null
@@ -101,12 +101,14 @@ function afbToLevel(v: Vera8Item['afb_ki']): 1 | 2 | 3 | null {
   return null
 }
 
-function splitTypischeFehler(s: string | undefined): string[] {
+function splitTypischeFehler(s: unknown): string[] {
   if (!s) return []
-  return s
-    .split(/;\s*|\n+/)
-    .map((p) => p.replace(/^\d+\)\s*/, '').trim())
-    .filter(Boolean)
+  const parts = Array.isArray(s)
+    ? s.flatMap((v) => (typeof v === 'string' ? v.split(/;\s*|\n+/) : []))
+    : typeof s === 'string'
+      ? s.split(/;\s*|\n+/)
+      : []
+  return parts.map((p) => p.replace(/^\d+\)\s*/, '').trim()).filter(Boolean)
 }
 
 function mapItem(item: Vera8Item): ScreeningItemRow {
