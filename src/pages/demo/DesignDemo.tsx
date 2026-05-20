@@ -5,8 +5,9 @@ import { ScenarioCoach } from './ScenarioCoach'
 import { ScenarioCelebration } from './ScenarioCelebration'
 import { ScenarioSessionEnd } from './ScenarioSessionEnd'
 import { ScenarioUIKit } from './ScenarioUIKit'
+import { ScenarioV2 } from './v2/ScenarioV2'
 
-type TabId = 'student' | 'coach' | 'celebration' | 'session' | 'uikit'
+type TabId = 'student' | 'coach' | 'celebration' | 'session' | 'uikit' | 'v2'
 
 type Tab = {
   id: TabId
@@ -21,6 +22,7 @@ const TABS: Tab[] = [
   { id: 'celebration', label: 'C',      sublabel: 'Level-Up',      component: ScenarioCelebration },
   { id: 'session',     label: 'D',      sublabel: 'Session-Ende',  component: ScenarioSessionEnd  },
   { id: 'uikit',       label: 'UI-Kit', sublabel: 'Komponenten',   component: ScenarioUIKit       },
+  { id: 'v2',          label: 'v2',     sublabel: 'Design v2',     component: ScenarioV2          },
 ]
 
 function TabBar({
@@ -77,6 +79,7 @@ export function DesignDemo(): JSX.Element {
     celebration: 'Szenario C — Level-Up-Moment (max. 1× pro Session, moment-bg)',
     session:     'Szenario D — Session-Abschluss mit Fortschritt-Rückblick',
     uikit:       'Alle Basis-Komponenten auf einen Blick — Button, Badge, Card, Tokens',
+    v2:          'Design-System v2 — Tokens scoped via [data-design="v2"], Schueler/Eltern/UI-Kit',
   }
 
   return (
