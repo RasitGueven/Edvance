@@ -245,7 +245,7 @@ export function ScreeningItemsPage(): JSX.Element {
           <EmptyState
             icon="🔎"
             title="Keine Items für diesen Filter"
-            description="Setze den Status- oder v2-Filter auf „Alle"."
+            description={'Setze den Status- oder v2-Filter auf „Alle".'}
           />
         ) : (
           <div className="flex flex-col gap-4">
