@@ -103,6 +103,18 @@ export function gradeScreeningAnswer(args: {
       const a = isObj(answer) ? norm(answer.value) : norm(answer)
       return c !== null && c === a
     }
+    case 'slot_map': {
+      // canonical: { slots: { slotId: chipId } }, answer: dito.
+      // Exakte Schlüssel- und Wertgleichheit — Distraktoren im Pool sind
+      // erlaubt, müssen aber nicht zugeordnet werden.
+      const c = isObj(canonical) && isObj(canonical.slots) ? canonical.slots : null
+      const a = isObj(answer) && isObj(answer.slots) ? answer.slots : null
+      if (!c || !a) return false
+      const ck = Object.keys(c)
+      if (ck.length !== Object.keys(a).length) return false
+      for (const k of ck) if (a[k] !== c[k]) return false
+      return true
+    }
     case 'manual': {
       // Hybrid: Treffer in akzeptierten Antworten → true; sonst Coach entscheidet.
       const accepted =

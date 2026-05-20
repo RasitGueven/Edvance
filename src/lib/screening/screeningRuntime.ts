@@ -66,6 +66,7 @@ export type RawAnswer =
   | { kind: 'numeric'; value: string }
   | { kind: 'open'; text: string }
   | { kind: 'multistep'; steps: Record<string, string> }
+  | { kind: 'slotmap'; slots: Record<string, string | null> }
 
 // Rohwert aus der UI → Antwort-Objekt für gradeScreeningAnswer / DB.
 // Shape pro input_type:
@@ -80,6 +81,11 @@ export function buildScreeningAnswer(item: ScreeningItem, raw: RawAnswer): unkno
     const steps: Record<string, string> = {}
     for (const [k, v] of Object.entries(raw.steps)) steps[k] = v.trim()
     return { steps }
+  }
+  if (raw.kind === 'slotmap') {
+    const slots: Record<string, string> = {}
+    for (const [k, v] of Object.entries(raw.slots)) if (v) slots[k] = v
+    return { slots }
   }
   // open: für check_type 'numeric'/'normalized' nimmt der Grader value, für
   // 'manual' bevorzugt er text — wir liefern beides, damit beides passt.

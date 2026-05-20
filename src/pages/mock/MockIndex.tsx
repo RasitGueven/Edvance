@@ -25,6 +25,13 @@ const ENTRIES: MockEntry[] = [
       'Kuratierte Sicht für Eltern: Radar, Stärken & Entwicklungsfelder als qualitative Labels, Coach-Notiz.',
     badge: 'Eltern',
   },
+  {
+    href: '/mock/dnd-widgets',
+    title: 'Drag-and-Drop-Widgets',
+    description:
+      'Lückentext mit Wort-Pool und Tabellen-Beschriftung. Maus, Touch und Tap-Fallback für Drag-faule Geräte.',
+    badge: 'Widgets',
+  },
 ]
 
 export function MockIndex(): JSX.Element {
