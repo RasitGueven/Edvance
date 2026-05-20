@@ -143,6 +143,74 @@
   --color-foreground:                 var(--color-text-primary);
   --color-card:                       var(--color-bg-surface);
   --color-ring:                       var(--color-primary);
+
+  /* ── Design-System v2 — Utility-Aliase (Demo-Scope) ────────────────
+     Diese Namen erzeugen Tailwind-Utilities (bg-*, text-*, border-*,
+     shadow-*, rounded-*, duration-*). Die zugrunde liegenden Variablen
+     sind nur unter [data-design="v2"] (tokens-demo.css) definiert —
+     ausserhalb des Scopes resolven die Utilities zu nichts. */
+
+  /* Gold-Familie */
+  --color-gold-altgold:               var(--color-gold-altgold);
+  --color-gold-champagner:            var(--color-gold-champagner);
+  --color-gold-warning:               var(--color-gold-warning);
+  --color-gold-warning-light:         var(--color-gold-warning-light);
+
+  /* Gruen-Familie */
+  --color-success-eltern:             var(--color-success-eltern);
+  --color-success-eltern-light:       var(--color-success-eltern-light);
+  --color-success-answer:             var(--color-success-answer);
+  --color-success-answer-light:       var(--color-success-answer-light);
+  --color-success-grow:               var(--color-success-grow);
+  --color-success-celebration:        var(--color-success-celebration);
+  --color-success-skilltree:          var(--color-success-skilltree);
+  --color-success-skilltree-light:    var(--color-success-skilltree-light);
+
+  /* Rot-Familie */
+  --color-error-gap:                  var(--color-error-gap);
+  --color-error-gap-light:            var(--color-error-gap-light);
+  --color-error-answer:               var(--color-error-answer);
+  --color-error-answer-light:         var(--color-error-answer-light);
+  --color-error-exam:                 var(--color-error-exam);
+  --color-error-exam-light:           var(--color-error-exam-light);
+  --color-error-streak:               var(--color-error-streak);
+  --color-error-coach:                var(--color-error-coach);
+  --color-error-coach-light:          var(--color-error-coach-light);
+
+  /* Lila — Streak Repair */
+  --color-repair:                     var(--color-repair);
+  --color-repair-light:               var(--color-repair-light);
+  --color-repair-surface:             var(--color-repair-surface);
+
+  /* Neutral */
+  --color-neutral-inactive:           var(--color-neutral-inactive);
+  --color-neutral-disabled:           var(--color-neutral-disabled);
+  --color-neutral-unknown:            var(--color-neutral-unknown);
+
+  /* Emotionale Momente */
+  --color-moment-levelup-bg:          var(--color-moment-levelup-bg);
+  --color-moment-levelup-crown:       var(--color-moment-levelup-crown);
+  --color-moment-levelup-xp:          var(--color-moment-levelup-xp);
+  --color-moment-boss-green:          var(--color-moment-boss-green);
+  --color-moment-boss-bg-start:       var(--color-moment-boss-bg-start);
+  --color-moment-boss-bg-end:         var(--color-moment-boss-bg-end);
+  --color-moment-streak-red:          var(--color-moment-streak-red);
+  --color-moment-repair-purple:       var(--color-moment-repair-purple);
+
+  /* Akzent-Streak (gleicher Wert wie accent, eigener Alias) */
+  --color-accent-streak:              var(--color-accent-streak);
+
+  /* Shadows v2 (blau getoent) — Demo-Scope ueberschreibt --shadow-* */
+  --shadow-xs:                        var(--shadow-xs);
+
+  /* Timing */
+  --duration-instant:                 var(--duration-instant);
+  --duration-fast:                    var(--duration-fast);
+  --duration-base:                    var(--duration-base);
+  --duration-slow:                    var(--duration-slow);
+  --duration-celebration:             var(--duration-celebration);
+  --ease-bounce:                      var(--ease-bounce);
+  --ease-out:                         var(--ease-out);
 }
 
 /* ─── Shadow utility classes (avoids inline styles) ──────────────────────────── */
