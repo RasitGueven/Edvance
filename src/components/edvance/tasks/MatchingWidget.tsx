@@ -3,7 +3,13 @@
 // erzwungen, nicht über Konvention. Tap-Fallback (links antippen → rechts
 // antippen) bleibt erhalten. Farbtints zeigen, was zu was gehört.
 
-import { useState, type JSX } from 'react'
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type JSX,
+} from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -16,7 +22,6 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core'
-import { ArrowRight } from 'lucide-react'
 
 export type MatchPairs = Map<number, number> // leftIdx → rightIdx
 
@@ -32,7 +37,8 @@ const TINTS: { line: string; tintVar: string }[] = [
   { line: 'var(--color-primary)', tintVar: 'var(--color-primary-light)' },
   { line: 'var(--color-success)', tintVar: 'var(--color-success-light)' },
   { line: 'var(--color-gold-warning)', tintVar: 'var(--color-gold-warning-light)' },
-  { line: 'var(--color-primary)', tintVar: 'var(--color-primary-light)' },
+  { line: 'var(--color-info)', tintVar: 'var(--color-info-light)' },
+  { line: 'var(--color-destructive)', tintVar: 'var(--color-destructive-light)' },
 ]
 
 const LEFT_PREFIX = 'L:'
@@ -47,6 +53,10 @@ export function MatchingWidget({
 }: Props): JSX.Element {
   const [armed, setArmed] = useState<number | null>(null) // linker Index, falls per Tap armiert
   const [dragLeft, setDragLeft] = useState<number | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const leftRefs = useRef<Map<number, HTMLDivElement | null>>(new Map())
+  const rightRefs = useRef<Map<number, HTMLDivElement | null>>(new Map())
+  const [paths, setPaths] = useState<Array<{ d: string; color: string }>>([])
 
   // reverse + Insertion-Order für stabile Tint-Zuteilung
   const r2l = new Map<number, number>()
@@ -134,6 +144,42 @@ export function MatchingWidget({
 
   const draggedLeftLabel = dragLeft !== null ? left[dragLeft] : null
 
+  const recomputeLines = useCallback((): void => {
+    const container = containerRef.current
+    if (!container) return
+    const cRect = container.getBoundingClientRect()
+    const next: Array<{ d: string; color: string }> = []
+    pairs.forEach((r, l) => {
+      const lEl = leftRefs.current.get(l)
+      const rEl = rightRefs.current.get(r)
+      if (!lEl || !rEl) return
+      const lR = lEl.getBoundingClientRect()
+      const rR = rEl.getBoundingClientRect()
+      const x1 = lR.right - cRect.left
+      const y1 = lR.top + lR.height / 2 - cRect.top
+      const x2 = rR.left - cRect.left
+      const y2 = rR.top + rR.height / 2 - cRect.top
+      const cx = (x1 + x2) / 2
+      const d = `M ${x1} ${y1} C ${cx} ${y1}, ${cx} ${y2}, ${x2} ${y2}`
+      const tint = tintForLeft(l)
+      next.push({ d, color: tint?.line ?? 'var(--color-primary)' })
+    })
+    setPaths(next)
+  }, [pairs, tintForLeft])
+
+  useLayoutEffect(() => {
+    recomputeLines()
+    const el = containerRef.current
+    if (!el) return
+    const obs = new ResizeObserver(recomputeLines)
+    obs.observe(el)
+    window.addEventListener('resize', recomputeLines)
+    return () => {
+      obs.disconnect()
+      window.removeEventListener('resize', recomputeLines)
+    }
+  }, [recomputeLines])
+
   return (
     <DndContext
       sensors={sensors}
@@ -141,31 +187,59 @@ export function MatchingWidget({
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-3 gap-y-2">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
-          Begriff
-        </p>
-        <span />
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
-          {armed !== null ? '→ Tippe hier' : 'Zuordnung'}
-        </p>
+      <div ref={containerRef} className="relative">
+        <div className="grid grid-cols-[1fr_56px_1fr] items-center gap-x-3 gap-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+            Begriff
+          </p>
+          <span />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+            {armed !== null ? '→ Tippe hier' : 'Zuordnung'}
+          </p>
 
-        {Array.from({ length: Math.max(left.length, right.length) }).map((_, row) => (
-          <Row
-            key={row}
-            leftIdx={row < left.length ? row : null}
-            leftItem={row < left.length ? left[row] : null}
-            rightIdx={row < right.length ? row : null}
-            rightItem={row < right.length ? right[row] : null}
-            armed={armed}
-            pairs={pairs}
-            r2l={r2l}
-            tintForLeft={tintForLeft}
-            disabled={disabled}
-            onTapLeft={tapLeft}
-            onTapRight={tapRight}
-          />
-        ))}
+          {Array.from({ length: Math.max(left.length, right.length) }).map(
+            (_, row) => (
+              <Row
+                key={row}
+                leftIdx={row < left.length ? row : null}
+                leftItem={row < left.length ? left[row] : null}
+                rightIdx={row < right.length ? row : null}
+                rightItem={row < right.length ? right[row] : null}
+                armed={armed}
+                pairs={pairs}
+                r2l={r2l}
+                tintForLeft={tintForLeft}
+                disabled={disabled}
+                onTapLeft={tapLeft}
+                onTapRight={tapRight}
+                registerLeft={(idx, el) => {
+                  if (el) leftRefs.current.set(idx, el)
+                  else leftRefs.current.delete(idx)
+                }}
+                registerRight={(idx, el) => {
+                  if (el) rightRefs.current.set(idx, el)
+                  else rightRefs.current.delete(idx)
+                }}
+              />
+            ),
+          )}
+        </div>
+        <svg
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full"
+        >
+          {paths.map((p, i) => (
+            <path
+              key={i}
+              d={p.d}
+              fill="none"
+              stroke={p.color}
+              strokeWidth={3}
+              strokeLinecap="round"
+              opacity={0.7}
+            />
+          ))}
+        </svg>
       </div>
       <DragOverlay dropAnimation={null}>
         {draggedLeftLabel !== null ? (
@@ -184,12 +258,14 @@ function Row({
   rightIdx,
   rightItem,
   armed,
-  pairs,
+  pairs: _pairs,
   r2l,
   tintForLeft,
   disabled,
   onTapLeft,
   onTapRight,
+  registerLeft,
+  registerRight,
 }: {
   leftIdx: number | null
   leftItem: string | null
@@ -202,6 +278,8 @@ function Row({
   disabled: boolean
   onTapLeft: (l: number) => void
   onTapRight: (r: number) => void
+  registerLeft: (idx: number, el: HTMLDivElement | null) => void
+  registerRight: (idx: number, el: HTMLDivElement | null) => void
 }): JSX.Element {
   const leftTint = leftIdx !== null ? tintForLeft(leftIdx) : null
   const rightL = rightIdx !== null ? r2l.get(rightIdx) ?? null : null
@@ -216,13 +294,12 @@ function Row({
           isArmed={armed === leftIdx}
           disabled={disabled}
           onTap={() => onTapLeft(leftIdx)}
+          register={registerLeft}
         />
       ) : (
         <span />
       )}
-      <ArrowRight
-        className={`h-4 w-4 shrink-0 ${leftTint || armed !== null ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-tertiary)]'}`}
-      />
+      <span aria-hidden />
       {rightIdx !== null && rightItem !== null ? (
         <RightCell
           idx={rightIdx}
@@ -230,6 +307,7 @@ function Row({
           tint={rightTint}
           showDropHint={armed !== null && !r2l.has(rightIdx)}
           onTap={() => onTapRight(rightIdx)}
+          register={registerRight}
         />
       ) : (
         <span />
@@ -248,6 +326,7 @@ function LeftCell({
   isArmed,
   disabled,
   onTap,
+  register,
 }: {
   idx: number
   label: string
@@ -255,6 +334,7 @@ function LeftCell({
   isArmed: boolean
   disabled: boolean
   onTap: () => void
+  register: (idx: number, el: HTMLDivElement | null) => void
 }): JSX.Element {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `${LEFT_PREFIX}${idx}`,
@@ -265,9 +345,13 @@ function LeftCell({
     style.borderColor = tint.line
     style.background = tint.tintVar
   }
+  const composedRef = (el: HTMLDivElement | null): void => {
+    setNodeRef(el)
+    register(idx, el)
+  }
   return (
     <div
-      ref={setNodeRef}
+      ref={composedRef}
       role="button"
       tabIndex={0}
       onClick={onTap}
@@ -305,12 +389,14 @@ function RightCell({
   tint,
   showDropHint,
   onTap,
+  register,
 }: {
   idx: number
   label: string
   tint: { line: string; tintVar: string } | null
   showDropHint: boolean
   onTap: () => void
+  register: (idx: number, el: HTMLDivElement | null) => void
 }): JSX.Element {
   const { setNodeRef, isOver } = useDroppable({ id: `${RIGHT_PREFIX}${idx}` })
   const style: React.CSSProperties = {}
@@ -318,9 +404,13 @@ function RightCell({
     style.borderColor = tint.line
     style.background = tint.tintVar
   }
+  const composedRef = (el: HTMLDivElement | null): void => {
+    setNodeRef(el)
+    register(idx, el)
+  }
   return (
     <div
-      ref={setNodeRef}
+      ref={composedRef}
       role="button"
       tabIndex={0}
       onClick={onTap}

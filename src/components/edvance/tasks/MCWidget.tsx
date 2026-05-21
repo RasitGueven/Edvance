@@ -15,7 +15,11 @@ const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 // reagieren Buttons nativ (Space/Enter), Radio-Semantik via aria-checked.
 export function MCWidget({ options, selected, onChange, disabled }: Props): JSX.Element {
   return (
-    <div className="flex flex-col gap-3" role="radiogroup" aria-label="Antwortoptionen">
+    <div
+      className="grid grid-cols-2 gap-3"
+      role="radiogroup"
+      aria-label="Antwortoptionen"
+    >
       {options.map((opt, i) => {
         const active = selected === i
         return (
