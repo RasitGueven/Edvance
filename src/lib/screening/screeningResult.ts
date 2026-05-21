@@ -13,6 +13,7 @@ export type ParsedClusterResult = {
   reachedAfb: 'I' | 'II' | 'III' | null
   mastery: number // 0..1
   displayLevel: number // 1..10 (für MasteryBar)
+  confidence: 'low' | 'medium' | 'high'
 }
 
 export type ParsedScreeningResult = {
@@ -46,6 +47,10 @@ function toAfb(v: unknown): 'I' | 'II' | 'III' | null {
   return v === 'I' || v === 'II' || v === 'III' ? v : null
 }
 
+function toConfidence(v: unknown): 'low' | 'medium' | 'high' {
+  return v === 'high' || v === 'medium' || v === 'low' ? v : 'low'
+}
+
 function parseCluster(raw: unknown): ParsedClusterResult | null {
   if (!isObj(raw) || typeof raw.clusterId !== 'string' || raw.clusterId === '') {
     return null
@@ -72,6 +77,7 @@ function parseCluster(raw: unknown): ParsedClusterResult | null {
     reachedAfb,
     mastery,
     displayLevel,
+    confidence: toConfidence(raw.confidence),
   }
 }
 
