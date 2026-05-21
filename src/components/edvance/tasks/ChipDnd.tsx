@@ -138,6 +138,7 @@ export function ChipDnd({
         placeholder={placeholder ?? '…'}
         armed={armed !== null}
         onTap={() => tapSlot(slotId)}
+        disabled={disabled ?? false}
       />
     )
   }
@@ -165,71 +166,113 @@ function ChipOverlay({ label }: { label: string }): JSX.Element {
   )
 }
 
+// Wird sowohl im Pool als auch innerhalb eines belegten Slots gerendert.
+// Als <div> (statt <button>), damit die Verschachtelung im Slot kein
+// invalides <button><button> erzeugt. role/tabIndex erhalten Tastatur-
+// und Screenreader-Zugriff.
 function DraggableChip({
   chip,
   armed,
   onTap,
   disabled,
+  variant = 'pool',
 }: {
   chip: ChipItem
   armed: boolean
   onTap: () => void
   disabled: boolean
+  variant?: 'pool' | 'slot'
 }): JSX.Element {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: chip.id,
     disabled,
   })
-  // Während des Drags: Original ausblenden, Chip im DragOverlay folgt dem
-  // Cursor. touch-action:none verhindert Scrollen beim Touch-Drag.
+  const base =
+    'inline-flex h-11 cursor-grab select-none items-center rounded-[var(--radius-md)] px-3 text-sm font-medium transition-shadow active:cursor-grabbing'
+  const tone = armed
+    ? 'border border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)] shadow-md'
+    : variant === 'slot'
+      ? 'border border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+      : 'border border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] shadow-sm hover:shadow-md'
   return (
-    <button
+    <div
       ref={setNodeRef}
-      type="button"
+      role="button"
+      tabIndex={0}
+      aria-label={chip.label}
       onClick={onTap}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onTap()
+        }
+      }}
       {...listeners}
       {...attributes}
       style={{ touchAction: 'none' }}
-      className={`inline-flex h-11 cursor-grab select-none items-center rounded-[var(--radius-md)] border px-3 text-sm font-medium transition-shadow active:cursor-grabbing ${
-        armed
-          ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)] shadow-md'
-          : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] shadow-sm hover:shadow-md'
-      } ${isDragging ? 'invisible' : ''}`}
+      className={`${base} ${tone} ${isDragging ? 'invisible' : ''}`}
     >
       {chip.label}
-    </button>
+    </div>
   )
 }
 
+// Drop-Target. Belegt → enthält einen DraggableChip (Drag in anderen
+// Slot möglich, Tap räumt den Slot bzw. ersetzt durch einen armierten
+// Chip); leer → klickbarer Placeholder, nimmt armierten Chip auf.
 function DropSlot({
   slotId,
   chip,
   placeholder,
   armed,
   onTap,
+  disabled,
 }: {
   slotId: string
   chip: ChipItem | null
   placeholder: string
   armed: boolean
   onTap: () => void
+  disabled: boolean
 }): JSX.Element {
   const { setNodeRef, isOver } = useDroppable({ id: slotId })
   const filled = chip !== null
+  const frame =
+    'inline-flex min-h-11 min-w-[5.5rem] items-center justify-center rounded-[var(--radius-md)] border-2 border-dashed px-1.5 transition-colors'
+  const tone =
+    isOver || armed
+      ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+      : filled
+        ? 'border-[var(--color-primary)] bg-[var(--color-bg-surface)]'
+        : 'border-[var(--color-border)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)]'
+  if (filled && chip) {
+    return (
+      <div ref={setNodeRef} className={`${frame} ${tone}`}>
+        <DraggableChip
+          chip={chip}
+          armed={false}
+          onTap={onTap}
+          disabled={disabled}
+          variant="slot"
+        />
+      </div>
+    )
+  }
   return (
-    <button
+    <div
       ref={setNodeRef}
-      type="button"
+      role="button"
+      tabIndex={0}
       onClick={onTap}
-      className={`inline-flex min-h-11 min-w-[5.5rem] items-center justify-center rounded-[var(--radius-md)] border-2 border-dashed px-3 text-sm transition-colors ${
-        isOver || armed
-          ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
-          : filled
-            ? 'border-[var(--color-primary)] bg-[var(--color-bg-surface)]'
-            : 'border-[var(--color-border)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)]'
-      }`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onTap()
+        }
+      }}
+      className={`${frame} ${tone} cursor-pointer text-sm`}
     >
-      {filled ? chip.label : placeholder}
-    </button>
+      {placeholder}
+    </div>
   )
 }
