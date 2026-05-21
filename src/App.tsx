@@ -3,6 +3,8 @@ import { Login } from '@/pages/Login'
 import { DesignShowcase } from '@/pages/DesignShowcase'
 import { MockIndex } from '@/pages/mock/MockIndex'
 import { MockScreeningCoach } from '@/pages/mock/MockScreeningCoach'
+import { MockDndWidgets } from '@/pages/mock/MockDndWidgets'
+import { MockTaskWidgets } from '@/pages/mock/MockTaskWidgets'
 import { MockScreeningParent } from '@/pages/mock/MockScreeningParent'
 import { StudentDashboard } from '@/pages/student/StudentDashboard'
 import { CoachDashboard } from '@/pages/coach/CoachDashboard'
@@ -22,6 +24,7 @@ import { ScreeningItemsPage } from '@/pages/admin/ScreeningItemsPage'
 import { ScreeningCoveragePage } from '@/pages/admin/ScreeningCoveragePage'
 import { IntakePage } from '@/pages/coach/IntakePage'
 import { ScreeningResultsPage } from '@/pages/coach/ScreeningResultsPage'
+import { StudentFocusAreasPage } from '@/pages/coach/StudentFocusAreasPage'
 import { ReportsPage } from '@/pages/coach/ReportsPage'
 import { ClusterView } from '@/pages/student/ClusterView'
 import { TaskPlayer } from '@/pages/student/TaskPlayer'
@@ -85,6 +88,14 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['coach', 'admin']}>
               <ScreeningResultsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/focus-areas"
+          element={
+            <ProtectedRoute allowedRoles={['coach', 'admin']}>
+              <StudentFocusAreasPage />
             </ProtectedRoute>
           }
         />
@@ -213,6 +224,8 @@ export default function App(): JSX.Element {
         <Route path="/mock" element={<MockIndex />} />
         <Route path="/mock/screening-coach" element={<MockScreeningCoach />} />
         <Route path="/mock/screening-parent" element={<MockScreeningParent />} />
+        <Route path="/mock/dnd-widgets" element={<MockDndWidgets />} />
+        <Route path="/mock/task-widgets" element={<MockTaskWidgets />} />
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
         <Route path="/demo/design" element={<DesignDemo />} />
         <Route path="/demo/graph" element={<GraphDemo />} />

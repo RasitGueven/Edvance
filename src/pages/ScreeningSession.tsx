@@ -26,6 +26,7 @@ import {
   type AdaptiveSession,
 } from '@/lib/screening/adaptive'
 import {
+  buildAdaptiveConfigForStudent,
   buildScreeningAnswer,
   finishScreeningTest,
   loadActiveScreeningPool,
@@ -54,6 +55,7 @@ export function ScreeningSession(): JSX.Element {
   const testIdRef = useRef<string | null>(null)
   const initRef = useRef(false)
 
+  const [studentId, setStudentId] = useState<string | null>(null)
   const [phase, setPhase] = useState<Phase>('loading')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [item, setItem] = useState<ScreeningItem | null>(null)
@@ -66,15 +68,23 @@ export function ScreeningSession(): JSX.Element {
     void (async () => {
       // Persistenz best effort: scheitert test-start (kein Schüler-Row,
       // RLS …), läuft das Screening trotzdem in-memory weiter.
+      let classLevel: number | null = null
+      let adaptiveConfig = {}
       if (user?.id) {
-        const studentId = await resolveScreeningStudentId(user.id)
-        if (studentId) {
-          const t = await startOrResumeScreeningTest(studentId)
+        const sid = await resolveScreeningStudentId(user.id)
+        if (sid) {
+          setStudentId(sid)
+          const t = await startOrResumeScreeningTest(sid)
           testIdRef.current = t.data
+          const cfg = await buildAdaptiveConfigForStudent(sid)
+          classLevel = cfg.classLevel
+          adaptiveConfig = cfg.config
         }
       }
 
-      const { data, error } = await loadActiveScreeningPool()
+      const { data, error } = await loadActiveScreeningPool(
+        classLevel !== null ? { classLevel } : undefined,
+      )
       if (error) {
         setErrorMsg(error)
         setPhase('error')
@@ -85,7 +95,7 @@ export function ScreeningSession(): JSX.Element {
         setPhase('empty')
         return
       }
-      const session = createAdaptiveSession(pool, {})
+      const session = createAdaptiveSession(pool, adaptiveConfig)
       sessionRef.current = session
       const first = nextItem(session)
       if (!first) {
@@ -173,6 +183,7 @@ export function ScreeningSession(): JSX.Element {
               state={taskState}
               onChange={setTaskState}
               onEnter={handleNext}
+              studentId={studentId}
             />
 
             <Button

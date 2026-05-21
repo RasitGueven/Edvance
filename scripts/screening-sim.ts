@@ -15,6 +15,7 @@ import {
   nextItem,
   submitAnswer,
   summarize,
+  summarizeLogs,
 } from '@/lib/screening/adaptive'
 
 // Deterministischer RNG (mulberry32).
@@ -222,6 +223,111 @@ function answerFor(item: ScreeningItem, correct: boolean): { value: number } {
   assert.equal(nextItem(s), null, 'leerer Pool → kein Item')
   assert.ok(isComplete(s), 'leerer Pool → sofort fertig')
   assert.deepEqual(summarize(s), [], 'leerer Pool → leere Auswertung')
+}
+
+// ── 7) Dynamischer Startpunkt: falsches Warm-up → Focus-Start L1 ─────────────
+{
+  const pool = poolFor('cA', 'tA')
+  const s = createAdaptiveSession(pool, { rng: rngFactory(7) })
+  const warm = nextItem(s)
+  assert.ok(warm && warm.level === 1, 'Warm-up L1')
+  submitAnswer(s, answerFor(warm, false), 1000) // Warm-up FALSCH
+  const f1 = nextItem(s)
+  assert.ok(f1, 'Fokus-Item nach falschem Warm-up')
+  assert.equal(f1.level, 1, 'falsches Warm-up → Focus-Start L1')
+}
+
+// ── 8) Bestätigung an AFB III: Glückstreffer ohne 2. Treffer ≠ Level 3 ───────
+{
+  const pool = poolFor('cA', 'tA', 4)
+  const s = createAdaptiveSession(pool, { rng: rngFactory(8) })
+  // Warm-up richtig → Focus startet auf L2
+  const warm = nextItem(s)!
+  submitAnswer(s, answerFor(warm, true), 1000)
+  // L2 richtig → L3
+  const l2 = nextItem(s)!
+  assert.equal(l2.level, 2)
+  submitAnswer(s, answerFor(l2, true), 1000)
+  // L3 richtig (Glückstreffer) → aber dann L3 falsch
+  const l3a = nextItem(s)!
+  assert.equal(l3a.level, 3)
+  submitAnswer(s, answerFor(l3a, true), 1000)
+  // Cap erhöht sich (needsConfirm) → noch ein L3-Item
+  const l3b = nextItem(s)
+  if (l3b && l3b.cluster_id === 'cA') {
+    assert.equal(l3b.level, 3, 'AFB III braucht Bestätigung — weiteres L3-Item')
+    submitAnswer(s, answerFor(l3b, false), 1000) // falsch → keine Bestätigung
+  }
+  // bis Ende durchspielen
+  for (let g = 0; g < 50 && !isComplete(s); g += 1) {
+    const it = nextItem(s)
+    if (!it) break
+    submitAnswer(s, answerFor(it, true), 1000)
+  }
+  const cA = summarize(s).find((c) => c.clusterId === 'cA')!
+  assert.ok(
+    cA.estimatedLevel < 3,
+    `nur 1× richtig auf L3 → estimatedLevel < 3 (war ${cA.estimatedLevel})`,
+  )
+}
+
+// ── 9) Schärfere Konvergenz: 2× richtig in Folge stoppt NICHT vorzeitig ──────
+{
+  const pool = poolFor('cA', 'tA', 4)
+  const s = createAdaptiveSession(pool, { rng: rngFactory(9) })
+  // Warm-up richtig
+  submitAnswer(s, answerFor(nextItem(s)!, true), 1000)
+  // L2 richtig
+  const a = nextItem(s)!
+  assert.equal(a.level, 2)
+  submitAnswer(s, answerFor(a, true), 1000)
+  // Nach 2× richtig in Folge (Warm-up L1 + L2) muss die Treppe weiterlaufen.
+  const b = nextItem(s)
+  assert.ok(b, 'nach 2× richtig nicht vorzeitig fertig')
+  assert.equal(b!.level, 3, 'Treppe steigt weiter auf L3')
+}
+
+// ── 10) Mastery-Downgrade: 2× richtig + 3× falsch auf L2 → estimatedLevel 1 ──
+{
+  // summarizeLogs deckt die reine Auswertungslogik ab — ohne Treppe.
+  const logs = [
+    { itemId: 'i1', clusterId: 'cA', level: 1 as ScreeningLevel, correct: true, durationMs: 0 },
+    { itemId: 'i2', clusterId: 'cA', level: 2 as ScreeningLevel, correct: true, durationMs: 0 },
+    { itemId: 'i3', clusterId: 'cA', level: 2 as ScreeningLevel, correct: true, durationMs: 0 },
+    { itemId: 'i4', clusterId: 'cA', level: 2 as ScreeningLevel, correct: false, durationMs: 0 },
+    { itemId: 'i5', clusterId: 'cA', level: 2 as ScreeningLevel, correct: false, durationMs: 0 },
+    { itemId: 'i6', clusterId: 'cA', level: 2 as ScreeningLevel, correct: false, durationMs: 0 },
+  ]
+  const [c] = summarizeLogs(logs)
+  // L2-Mastery = 2/5 = 40 % < 50 % → Downgrade auf 1.
+  assert.equal(c.estimatedLevel, 1, 'wackelige L2-Mastery → Downgrade auf L1')
+  assert.equal(c.reachedAfb, 'I')
+}
+
+// ── 11) Konfidenz-Feld ───────────────────────────────────────────────────────
+{
+  // Sehr dünn beantwortet → low
+  const thin = summarizeLogs([
+    { itemId: 'x1', clusterId: 'cA', level: 1, correct: true, durationMs: 0 },
+  ])
+  assert.equal(thin[0].confidence, 'low', 'nur 1 Item → low')
+
+  // Solide bestätigt → high
+  const solid = summarizeLogs([
+    { itemId: 'y1', clusterId: 'cB', level: 1, correct: true, durationMs: 0 },
+    { itemId: 'y2', clusterId: 'cB', level: 2, correct: true, durationMs: 0 },
+    { itemId: 'y3', clusterId: 'cB', level: 2, correct: true, durationMs: 0 },
+    { itemId: 'y4', clusterId: 'cB', level: 3, correct: false, durationMs: 0 },
+  ])
+  assert.equal(solid[0].confidence, 'high', '4 entschiedene Items, Treffer auf L2 → high')
+
+  // Mehrere offene → medium oder low (keine high)
+  const pending = summarizeLogs([
+    { itemId: 'z1', clusterId: 'cC', level: 1, correct: true, durationMs: 0 },
+    { itemId: 'z2', clusterId: 'cC', level: 2, correct: null, durationMs: 0 },
+    { itemId: 'z3', clusterId: 'cC', level: 2, correct: null, durationMs: 0 },
+  ])
+  assert.notEqual(pending[0].confidence, 'high', 'viele Pendings dürfen nicht high werden')
 }
 
 console.log('screening-sim: alle Checks bestanden ✓')

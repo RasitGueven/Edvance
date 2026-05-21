@@ -928,3 +928,77 @@ alter table screening_items
   add constraint screening_items_iqb_titel_uniq unique (iqb_titel);
 create index if not exists screening_items_quelle_idx
   on screening_items (quelle);
+
+-- ============================================================================
+-- Migration 030 – Student Focus Areas (Coach setzt Schwerpunkte pro Schüler)
+-- ============================================================================
+create table student_focus_areas (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  student_id uuid not null references students (id) on delete cascade,
+  cluster_id uuid not null references skill_clusters (id) on delete cascade,
+  coach_id uuid references profiles (id) on delete set null,
+  source text default 'klassenarbeit',
+  note text,
+  active boolean not null default true
+);
+create index student_focus_areas_student_idx
+  on student_focus_areas (student_id) where active = true;
+create index student_focus_areas_cluster_idx
+  on student_focus_areas (cluster_id) where active = true;
+alter table student_focus_areas enable row level security;
+create policy "student_focus_areas_coach_all" on student_focus_areas
+  for all using (public.get_my_role() in ('coach','admin'))
+  with check (public.get_my_role() in ('coach','admin'));
+create policy "student_focus_areas_parent_read" on student_focus_areas
+  for select using (
+    public.get_my_role() = 'parent'
+    and exists (
+      select 1 from students s
+      where s.id = student_focus_areas.student_id
+        and public.is_parent_of_student(s.id)
+    )
+  );
+
+-- ============================================================================
+-- Migration 031 – Storage-RLS für privaten Bucket 'screening-uploads'
+-- Voraussetzung: Bucket in Supabase Studio manuell anlegen (privat, ≤8MB).
+-- Pfad: {student_id}/{timestamp}-{rand}.{ext}
+-- ============================================================================
+create policy "screening_uploads_insert_own_student"
+on storage.objects for insert to authenticated
+with check (
+  bucket_id = 'screening-uploads'
+  and (storage.foldername(name))[1] = public.get_my_student_id()::text
+);
+create policy "screening_uploads_select_own_student"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and (storage.foldername(name))[1] = public.get_my_student_id()::text
+);
+create policy "screening_uploads_delete_own_student"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and (storage.foldername(name))[1] = public.get_my_student_id()::text
+);
+create policy "screening_uploads_select_parent"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and public.get_my_role() = 'parent'
+  and public.is_parent_of_student(((storage.foldername(name))[1])::uuid)
+);
+create policy "screening_uploads_select_coach_admin"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and public.get_my_role() in ('coach','admin')
+);
+create policy "screening_uploads_delete_admin"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and public.get_my_role() = 'admin'
+);

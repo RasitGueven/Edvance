@@ -13,18 +13,42 @@ import {
   getActiveScreeningTest,
   completeScreeningTest,
 } from '@/lib/supabase/screening'
-import { getStudentByProfile } from '@/lib/supabase/students'
-import { summarizeLogs, type AdaptiveAnswerLog } from '@/lib/screening/adaptive'
+import { getStudentByProfile, getStudent } from '@/lib/supabase/students'
+import { listFocusAreasForStudent } from '@/lib/supabase/studentFocusAreas'
+import {
+  summarizeLogs,
+  type AdaptiveAnswerLog,
+  type AdaptiveConfig,
+} from '@/lib/screening/adaptive'
 import type { ScreeningItem, SupabaseResult } from '@/types'
 
 export const SCREENING_SUBJECT = 'Mathematik'
 
 // Nur freigegebene Items. Engine degradiert robust bei leerem Ergebnis
-// (Aufrufer zeigt dann einen freundlichen Leerzustand).
-export async function loadActiveScreeningPool(): Promise<
-  SupabaseResult<ScreeningItem[]>
-> {
-  return listScreeningItems({ active: true })
+// (Aufrufer zeigt dann einen freundlichen Leerzustand). Optional auf die
+// Klassenstufe einschränken — VERA-Items kommen alle mit class_level=8,
+// Edvance-Items aktuell auch klassen-spezifisch geseedet.
+export async function loadActiveScreeningPool(opts?: {
+  classLevel?: number
+}): Promise<SupabaseResult<ScreeningItem[]>> {
+  return listScreeningItems({ active: true, classLevel: opts?.classLevel })
+}
+
+// Adaptive-Config aus Schüler-Stammdaten (Klassenstufe) und Coach-Schwer-
+// punkten (student_focus_areas) ableiten. Ergebnis ist direkt in
+// `createAdaptiveSession` einsetzbar.
+export async function buildAdaptiveConfigForStudent(
+  studentId: string,
+): Promise<{ classLevel: number | null; config: AdaptiveConfig }> {
+  const [{ data: student }, { data: foci }] = await Promise.all([
+    getStudent(studentId),
+    listFocusAreasForStudent(studentId, { active: true }),
+  ])
+  const weightedClusterIds = (foci ?? []).map((f) => f.cluster_id)
+  return {
+    classLevel: student?.class_level ?? null,
+    config: { weightedClusterIds },
+  }
 }
 
 export type McPayload = { type: 'mc'; options: string[]; correct_index?: number }
@@ -37,11 +61,17 @@ export function isMcPayload(p: unknown): p is McPayload {
   )
 }
 
+// Jede Variante kann optional eine DataURL-Skizze und/oder Storage-Pfade
+// zu Foto-Uploads als Rechenweg-Belege mitführen — kommen nicht in den
+// Auto-Grader, sind aber als Belege in der Coach-Inbox sichtbar.
+type AnswerBelege = { drawing?: string | null; uploads?: string[] }
+
 export type RawAnswer =
-  | { kind: 'mc'; index: number | null }
-  | { kind: 'numeric'; value: string }
-  | { kind: 'open'; text: string }
-  | { kind: 'multistep'; steps: Record<string, string> }
+  | ({ kind: 'mc'; index: number | null } & AnswerBelege)
+  | ({ kind: 'numeric'; value: string } & AnswerBelege)
+  | ({ kind: 'open'; text: string } & AnswerBelege)
+  | ({ kind: 'multistep'; steps: Record<string, string> } & AnswerBelege)
+  | ({ kind: 'slotmap'; slots: Record<string, string | null> } & AnswerBelege)
 
 // Rohwert aus der UI → Antwort-Objekt für gradeScreeningAnswer / DB.
 // Shape pro input_type:
@@ -50,20 +80,36 @@ export type RawAnswer =
 //   OPEN/manual  → { text }
 //   MULTI-STEP   → { steps: { '1a': '…', '1b': '…' } }
 export function buildScreeningAnswer(item: ScreeningItem, raw: RawAnswer): unknown {
-  if (raw.kind === 'mc') return { index: raw.index }
-  if (raw.kind === 'numeric') return { value: raw.value.trim() }
+  // Belege (drawing dataURL, uploads Storage-Pfade) liegen jeweils top-level.
+  // Auto-Grader (grade.ts) ignoriert beide Felder vollständig.
+  const drawing = raw.drawing ?? null
+  const uploads = raw.uploads && raw.uploads.length > 0 ? raw.uploads : null
+  const withBelege = <T extends object>(obj: T): T & { drawing?: string; uploads?: string[] } => {
+    let out: T & { drawing?: string; uploads?: string[] } = { ...obj }
+    if (drawing) out = { ...out, drawing }
+    if (uploads) out = { ...out, uploads }
+    return out
+  }
+
+  if (raw.kind === 'mc') return withBelege({ index: raw.index })
+  if (raw.kind === 'numeric') return withBelege({ value: raw.value.trim() })
   if (raw.kind === 'multistep') {
     const steps: Record<string, string> = {}
     for (const [k, v] of Object.entries(raw.steps)) steps[k] = v.trim()
-    return { steps }
+    return withBelege({ steps })
+  }
+  if (raw.kind === 'slotmap') {
+    const slots: Record<string, string> = {}
+    for (const [k, v] of Object.entries(raw.slots)) if (v) slots[k] = v
+    return withBelege({ slots })
   }
   // open: für check_type 'numeric'/'normalized' nimmt der Grader value, für
   // 'manual' bevorzugt er text — wir liefern beides, damit beides passt.
   const t = raw.text.trim()
   if (item.check_type === 'numeric' || item.check_type === 'normalized') {
-    return { value: t }
+    return withBelege({ value: t })
   }
-  return { text: t }
+  return withBelege({ text: t })
 }
 
 // Schüler-Row zum eingeloggten Profil (kann fehlen → Coach/Admin testen

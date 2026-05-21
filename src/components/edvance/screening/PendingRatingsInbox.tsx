@@ -11,6 +11,7 @@ import {
   createScreeningItemRating,
   listItemRatingsForResults,
 } from '@/lib/supabase/screeningItemRatings'
+import { getScreeningPhotoSignedUrls } from '@/lib/supabase/screeningUploads'
 import type {
   ScreeningAfb,
   ScreeningItem,
@@ -38,8 +39,32 @@ function answerPreview(raw: unknown): string {
         .map(([k, v]) => `${k}: ${typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)}`)
         .join(' · ')
     }
+    if (obj.slots && typeof obj.slots === 'object') {
+      return Object.entries(obj.slots as Record<string, unknown>)
+        .map(([k, v]) => `${k} → ${String(v)}`)
+        .join(' · ')
+    }
+    if (typeof obj.index === 'number') return `Auswahl ${obj.index + 1}`
+    // Skizze allein ohne andere Antwort
+    if (typeof obj.drawing === 'string') return '(nur Skizze)'
   }
   return JSON.stringify(raw)
+}
+
+function answerDrawing(raw: unknown): string | null {
+  if (raw && typeof raw === 'object') {
+    const d = (raw as Record<string, unknown>).drawing
+    if (typeof d === 'string' && d.startsWith('data:image/')) return d
+  }
+  return null
+}
+
+function answerUploadPaths(raw: unknown): string[] {
+  if (raw && typeof raw === 'object') {
+    const u = (raw as Record<string, unknown>).uploads
+    if (Array.isArray(u)) return u.filter((p): p is string => typeof p === 'string')
+  }
+  return []
 }
 
 export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Element {
@@ -52,6 +77,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
   >({})
   const [savingId, setSavingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [uploadUrls, setUploadUrls] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (pending.length === 0) return
@@ -67,6 +93,13 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
       setRatings(ratingRes.data ?? new Map())
       if (itemRes.error) setError(itemRes.error)
     })
+  }, [pending.length, results])
+
+  // Signed URLs für alle gerade sichtbaren Foto-Uploads vorab ziehen.
+  useEffect(() => {
+    const allPaths = pending.flatMap((p) => answerUploadPaths(p.answer))
+    if (allPaths.length === 0) return
+    void getScreeningPhotoSignedUrls(allPaths).then((urls) => setUploadUrls(urls))
   }, [pending.length, results])
 
   if (pending.length === 0) {
@@ -139,6 +172,51 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
               <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--text-primary)]">
                 {answerPreview(p.answer)}
               </p>
+              {answerDrawing(p.answer) && (
+                <a
+                  href={answerDrawing(p.answer) ?? '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-block"
+                  title="Skizze in voller Größe öffnen"
+                >
+                  <img
+                    src={answerDrawing(p.answer) ?? ''}
+                    alt="Rechenweg-Skizze"
+                    className="max-h-40 rounded border border-[var(--border)] bg-white object-contain"
+                  />
+                </a>
+              )}
+              {answerUploadPaths(p.answer).length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {answerUploadPaths(p.answer).map((path) => {
+                    const url = uploadUrls[path]
+                    if (!url) {
+                      return (
+                        <div
+                          key={path}
+                          className="h-24 w-24 animate-pulse rounded border border-[var(--border)] bg-[var(--muted)]"
+                        />
+                      )
+                    }
+                    return (
+                      <a
+                        key={path}
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        title="Rechenweg-Foto in voller Größe"
+                      >
+                        <img
+                          src={url}
+                          alt="Rechenweg-Foto"
+                          className="h-24 w-24 rounded border border-[var(--border)] bg-white object-cover"
+                        />
+                      </a>
+                    )
+                  })}
+                </div>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               {AFBS.map((afb) => (

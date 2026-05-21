@@ -154,6 +154,15 @@ export function ScreeningResultsPage(): JSX.Element {
   ): 'muted' | 'success' | 'primary' | 'xp' =>
     afb === 'I' ? 'success' : afb === 'II' ? 'primary' : afb === 'III' ? 'xp' : 'muted'
 
+  const confidenceMeta = (
+    c: 'low' | 'medium' | 'high',
+  ): { variant: 'success' | 'muted' | 'warning'; label: string } =>
+    c === 'high'
+      ? { variant: 'success', label: 'Konfidenz hoch' }
+      : c === 'medium'
+        ? { variant: 'muted', label: 'Konfidenz mittel' }
+        : { variant: 'warning', label: 'Konfidenz niedrig' }
+
   return (
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle="Screening-Ergebnisse" sticky />
@@ -328,6 +337,14 @@ export function ScreeningResultsPage(): JSX.Element {
                                   <EdvanceBadge variant={afbVariant(c.reachedAfb)}>
                                     {c.reachedAfb ? `AFB ${c.reachedAfb}` : 'unter AFB I'}
                                   </EdvanceBadge>
+                                  {(() => {
+                                    const conf = confidenceMeta(c.confidence)
+                                    return (
+                                      <EdvanceBadge variant={conf.variant}>
+                                        {conf.label}
+                                      </EdvanceBadge>
+                                    )
+                                  })()}
                                 </div>
                               </div>
                               <MasteryBar level={c.displayLevel} showLabel />
