@@ -8,6 +8,7 @@
 import { useState, type JSX } from 'react'
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   TouchSensor,
   useDraggable,
@@ -15,6 +16,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core'
 
 export type ChipItem = { id: string; label: string }
@@ -42,7 +44,10 @@ export function ChipDnd({
   disabled,
 }: ChipDndProps): JSX.Element {
   const [armed, setArmed] = useState<string | null>(null) // tap-fallback: armierter Chip
+  const [dragId, setDragId] = useState<string | null>(null)
 
+  // Drag startet erst ab 4 px Bewegung (Maus) bzw. nach 120 ms Touch-
+  // Halten — darunter bleibt es ein Tap (Tap-Fallback funktioniert weiter).
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 6 } }),
@@ -52,7 +57,13 @@ export function ChipDnd({
     Object.values(assignments).filter((v): v is string => v !== null),
   )
 
+  function handleDragStart(e: DragStartEvent): void {
+    setDragId(String(e.active.id))
+    setArmed(null) // Drag setzt einen evtl. armierten Tap-Chip zurück
+  }
+
   function handleDragEnd(e: DragEndEvent): void {
+    setDragId(null)
     const chipId = String(e.active.id)
     const slotId = e.over ? String(e.over.id) : null
     if (slotId === null) {
@@ -63,6 +74,12 @@ export function ChipDnd({
     }
     placeChip(slotId, chipId)
   }
+
+  function handleDragCancel(): void {
+    setDragId(null)
+  }
+
+  const draggedChip = dragId ? chips.find((c) => c.id === dragId) ?? null : null
 
   function placeChip(slotId: string, chipId: string): void {
     // Wenn Chip woanders steckt → dort lösen
@@ -126,9 +143,25 @@ export function ChipDnd({
   }
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
       {children({ renderChipPool, renderSlot })}
+      <DragOverlay dropAnimation={null}>
+        {draggedChip ? <ChipOverlay label={draggedChip.label} /> : null}
+      </DragOverlay>
     </DndContext>
+  )
+}
+
+function ChipOverlay({ label }: { label: string }): JSX.Element {
+  return (
+    <div className="pointer-events-none inline-flex h-11 cursor-grabbing select-none items-center rounded-[var(--radius-md)] border border-[var(--color-primary)] bg-[var(--color-primary-light)] px-3 text-sm font-medium text-[var(--color-primary)] shadow-lg">
+      {label}
+    </div>
   )
 }
 
@@ -147,6 +180,8 @@ function DraggableChip({
     id: chip.id,
     disabled,
   })
+  // Während des Drags: Original ausblenden, Chip im DragOverlay folgt dem
+  // Cursor. touch-action:none verhindert Scrollen beim Touch-Drag.
   return (
     <button
       ref={setNodeRef}
@@ -154,11 +189,12 @@ function DraggableChip({
       onClick={onTap}
       {...listeners}
       {...attributes}
-      className={`inline-flex h-11 select-none items-center rounded-[var(--radius-md)] border px-3 text-sm font-medium transition-shadow ${
+      style={{ touchAction: 'none' }}
+      className={`inline-flex h-11 cursor-grab select-none items-center rounded-[var(--radius-md)] border px-3 text-sm font-medium transition-shadow active:cursor-grabbing ${
         armed
           ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)] shadow-md'
           : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] shadow-sm hover:shadow-md'
-      } ${isDragging ? 'opacity-50' : ''}`}
+      } ${isDragging ? 'invisible' : ''}`}
     >
       {chip.label}
     </button>
