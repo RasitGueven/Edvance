@@ -57,6 +57,8 @@ export type ClusterSummary = {
   mastery: number // 0..1 (correct / answered, ignoriert pending)
   // Items, die auf Coach-Rating warten (correct === null).
   pending: number
+  // Statistische Belastbarkeit der Cluster-Aussage. Heuristik, keine IRT.
+  confidence: 'low' | 'medium' | 'high'
 }
 
 export function levelToAfb(l: 0 | ScreeningLevel): ScreeningAfb | null {
@@ -181,8 +183,24 @@ function pickNearLevel(
   return null
 }
 
+// Mindestanzahl korrekter Items pro Level, damit das Level als "bestätigt"
+// gilt. AFB III braucht 2 Treffer (Lucky-Guess-Schutz bei 4-Optionen-MC).
+function requiredHits(level: ScreeningLevel): number {
+  return level === 3 ? 2 : 1
+}
+
+function correctOnLevel(log: AdaptiveAnswerLog[], level: ScreeningLevel): number {
+  return log.filter((e) => e.level === level && e.correct === true).length
+}
+
 function focusCap(cs: ClusterState): number {
-  return cs.weighted ? 5 : 3
+  const base = cs.weighted ? 5 : 3
+  // Wenn die Treppe schon auf AFB III ist und die Bestätigung (2× richtig)
+  // noch fehlt, ein Extra-Item zulassen — sonst stoppt converged() zu früh
+  // und wir verschenken den entscheidenden Treffer.
+  const needsConfirm =
+    cs.level === 3 && correctOnLevel(cs.log, 3) < requiredHits(3)
+  return base + (needsConfirm ? 1 : 0)
 }
 
 function converged(cs: ClusterState): boolean {
@@ -190,7 +208,12 @@ function converged(cs: ClusterState): boolean {
   if (n < 2) return false
   const a = cs.log[n - 1]
   const b = cs.log[n - 2]
-  return a.level === b.level && a.correct === b.correct
+  // Nur „2× falsch in Folge auf gleicher Stufe" beendet den Fokus früh.
+  // 2× richtig in Folge lassen wir bewusst stehen — die Treppe soll weiter
+  // steigen, bis Cap oder AFB-III-Bestätigung erreicht ist.
+  return (
+    a.level === b.level && a.correct === false && b.correct === false
+  )
 }
 
 function finalizeCluster(cs: ClusterState): void {
@@ -287,19 +310,54 @@ export function submitAnswer(
       finalizeCluster(cs)
     }
   } else {
-    // Warm-up zählt für die Auswertung mit, treibt aber die Treppe nicht.
+    // Warm-up zählt für die Auswertung mit und setzt den Focus-Startpunkt:
+    // korrektes L1-Warm-up → Focus startet auf L2, sonst auf L1.
     cs.log.push(entry)
+    cs.level = correct === true ? 2 : 1
   }
 
   return entry
 }
 
+function masteryOnLevel(log: AdaptiveAnswerLog[], level: ScreeningLevel): number {
+  const onLevel = log.filter((e) => e.level === level && e.correct !== null)
+  if (onLevel.length === 0) return 0
+  return onLevel.filter((e) => e.correct === true).length / onLevel.length
+}
+
 function estimateLevel(log: AdaptiveAnswerLog[]): 0 | ScreeningLevel {
+  // Höchstes Level, auf dem genug richtige Antworten vorliegen (AFB III: 2,
+  // sonst 1). Verhindert Lucky-Guess-Aufstufung auf III.
   let best: 0 | ScreeningLevel = 0
-  for (const e of log) {
-    if (e.correct === true && e.level > best) best = e.level
+  for (const lvl of [1, 2, 3] as ScreeningLevel[]) {
+    if (correctOnLevel(log, lvl) >= requiredHits(lvl)) best = lvl
+  }
+  // Downgrade-Regel: Wenn die Mastery auf dem ermittelten Level < 50 %, ist
+  // der Schüler dort noch wackelig — eine Stufe runter.
+  if (best > 0 && masteryOnLevel(log, best) < 0.5) {
+    best = (best - 1) as 0 | ScreeningLevel
   }
   return best
+}
+
+function confidenceFor(
+  answered: number,
+  pending: number,
+  estimatedLevel: 0 | ScreeningLevel,
+  log: AdaptiveAnswerLog[],
+): 'low' | 'medium' | 'high' {
+  if (
+    answered >= 4 &&
+    pending === 0 &&
+    estimatedLevel > 0 &&
+    correctOnLevel(log, estimatedLevel as ScreeningLevel) >= 1
+  ) {
+    return 'high'
+  }
+  if (answered >= 2 && pending <= Math.max(1, Math.floor(answered / 3))) {
+    return 'medium'
+  }
+  return 'low'
 }
 
 // Wie summarize, aber über eine flache Log-Liste (z. B. aus persistierten
@@ -329,6 +387,7 @@ export function summarizeLogs(logs: AdaptiveAnswerLog[]): ClusterSummary[] {
       estimatedLevel,
       mastery: decided === 0 ? 0 : correct / decided,
       pending,
+      confidence: confidenceFor(log.length, pending, estimatedLevel, log),
     }
   })
 }
@@ -351,6 +410,7 @@ export function summarize(s: AdaptiveSession): ClusterSummary[] {
       estimatedLevel,
       mastery: decided === 0 ? 0 : correct / decided,
       pending,
+      confidence: confidenceFor(answered, pending, estimatedLevel, log),
     }
   })
 }
