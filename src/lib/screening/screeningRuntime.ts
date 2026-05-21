@@ -61,15 +61,17 @@ export function isMcPayload(p: unknown): p is McPayload {
   )
 }
 
-// Jede Variante kann optional eine DataURL-Skizze als Rechenweg-Beleg
-// mitführen — kommt nicht in den Auto-Grader, ist aber als Beleg im
-// Coach-Inbox sichtbar.
+// Jede Variante kann optional eine DataURL-Skizze und/oder Storage-Pfade
+// zu Foto-Uploads als Rechenweg-Belege mitführen — kommen nicht in den
+// Auto-Grader, sind aber als Belege in der Coach-Inbox sichtbar.
+type AnswerBelege = { drawing?: string | null; uploads?: string[] }
+
 export type RawAnswer =
-  | { kind: 'mc'; index: number | null; drawing?: string | null }
-  | { kind: 'numeric'; value: string; drawing?: string | null }
-  | { kind: 'open'; text: string; drawing?: string | null }
-  | { kind: 'multistep'; steps: Record<string, string>; drawing?: string | null }
-  | { kind: 'slotmap'; slots: Record<string, string | null>; drawing?: string | null }
+  | ({ kind: 'mc'; index: number | null } & AnswerBelege)
+  | ({ kind: 'numeric'; value: string } & AnswerBelege)
+  | ({ kind: 'open'; text: string } & AnswerBelege)
+  | ({ kind: 'multistep'; steps: Record<string, string> } & AnswerBelege)
+  | ({ kind: 'slotmap'; slots: Record<string, string | null> } & AnswerBelege)
 
 // Rohwert aus der UI → Antwort-Objekt für gradeScreeningAnswer / DB.
 // Shape pro input_type:
@@ -78,31 +80,36 @@ export type RawAnswer =
 //   OPEN/manual  → { text }
 //   MULTI-STEP   → { steps: { '1a': '…', '1b': '…' } }
 export function buildScreeningAnswer(item: ScreeningItem, raw: RawAnswer): unknown {
-  // Drawing landet in jeder Variante an derselben Stelle: top-level `drawing`.
-  // Auto-Grader (siehe grade.ts) ignoriert das Feld vollständig.
+  // Belege (drawing dataURL, uploads Storage-Pfade) liegen jeweils top-level.
+  // Auto-Grader (grade.ts) ignoriert beide Felder vollständig.
   const drawing = raw.drawing ?? null
-  const withDrawing = <T extends object>(obj: T): T & { drawing?: string } =>
-    drawing ? { ...obj, drawing } : obj
+  const uploads = raw.uploads && raw.uploads.length > 0 ? raw.uploads : null
+  const withBelege = <T extends object>(obj: T): T & { drawing?: string; uploads?: string[] } => {
+    let out: T & { drawing?: string; uploads?: string[] } = { ...obj }
+    if (drawing) out = { ...out, drawing }
+    if (uploads) out = { ...out, uploads }
+    return out
+  }
 
-  if (raw.kind === 'mc') return withDrawing({ index: raw.index })
-  if (raw.kind === 'numeric') return withDrawing({ value: raw.value.trim() })
+  if (raw.kind === 'mc') return withBelege({ index: raw.index })
+  if (raw.kind === 'numeric') return withBelege({ value: raw.value.trim() })
   if (raw.kind === 'multistep') {
     const steps: Record<string, string> = {}
     for (const [k, v] of Object.entries(raw.steps)) steps[k] = v.trim()
-    return withDrawing({ steps })
+    return withBelege({ steps })
   }
   if (raw.kind === 'slotmap') {
     const slots: Record<string, string> = {}
     for (const [k, v] of Object.entries(raw.slots)) if (v) slots[k] = v
-    return withDrawing({ slots })
+    return withBelege({ slots })
   }
   // open: für check_type 'numeric'/'normalized' nimmt der Grader value, für
   // 'manual' bevorzugt er text — wir liefern beides, damit beides passt.
   const t = raw.text.trim()
   if (item.check_type === 'numeric' || item.check_type === 'normalized') {
-    return withDrawing({ value: t })
+    return withBelege({ value: t })
   }
-  return withDrawing({ text: t })
+  return withBelege({ text: t })
 }
 
 // Schüler-Row zum eingeloggten Profil (kann fehlen → Coach/Admin testen

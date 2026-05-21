@@ -55,6 +55,7 @@ export function ScreeningSession(): JSX.Element {
   const testIdRef = useRef<string | null>(null)
   const initRef = useRef(false)
 
+  const [studentId, setStudentId] = useState<string | null>(null)
   const [phase, setPhase] = useState<Phase>('loading')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [item, setItem] = useState<ScreeningItem | null>(null)
@@ -70,11 +71,12 @@ export function ScreeningSession(): JSX.Element {
       let classLevel: number | null = null
       let adaptiveConfig = {}
       if (user?.id) {
-        const studentId = await resolveScreeningStudentId(user.id)
-        if (studentId) {
-          const t = await startOrResumeScreeningTest(studentId)
+        const sid = await resolveScreeningStudentId(user.id)
+        if (sid) {
+          setStudentId(sid)
+          const t = await startOrResumeScreeningTest(sid)
           testIdRef.current = t.data
-          const cfg = await buildAdaptiveConfigForStudent(studentId)
+          const cfg = await buildAdaptiveConfigForStudent(sid)
           classLevel = cfg.classLevel
           adaptiveConfig = cfg.config
         }
@@ -181,6 +183,7 @@ export function ScreeningSession(): JSX.Element {
               state={taskState}
               onChange={setTaskState}
               onEnter={handleNext}
+              studentId={studentId}
             />
 
             <Button

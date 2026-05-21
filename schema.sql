@@ -959,3 +959,46 @@ create policy "student_focus_areas_parent_read" on student_focus_areas
         and public.is_parent_of_student(s.id)
     )
   );
+
+-- ============================================================================
+-- Migration 031 – Storage-RLS für privaten Bucket 'screening-uploads'
+-- Voraussetzung: Bucket in Supabase Studio manuell anlegen (privat, ≤8MB).
+-- Pfad: {student_id}/{timestamp}-{rand}.{ext}
+-- ============================================================================
+create policy "screening_uploads_insert_own_student"
+on storage.objects for insert to authenticated
+with check (
+  bucket_id = 'screening-uploads'
+  and (storage.foldername(name))[1] = public.get_my_student_id()::text
+);
+create policy "screening_uploads_select_own_student"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and (storage.foldername(name))[1] = public.get_my_student_id()::text
+);
+create policy "screening_uploads_delete_own_student"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and (storage.foldername(name))[1] = public.get_my_student_id()::text
+);
+create policy "screening_uploads_select_parent"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and public.get_my_role() = 'parent'
+  and public.is_parent_of_student(((storage.foldername(name))[1])::uuid)
+);
+create policy "screening_uploads_select_coach_admin"
+on storage.objects for select to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and public.get_my_role() in ('coach','admin')
+);
+create policy "screening_uploads_delete_admin"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'screening-uploads'
+  and public.get_my_role() = 'admin'
+);

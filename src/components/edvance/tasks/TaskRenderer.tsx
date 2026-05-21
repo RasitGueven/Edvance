@@ -9,6 +9,7 @@ import { MultiStepWidget } from './MultiStepWidget'
 import { ClozeDndWidget, isClozeDndPayload } from './ClozeDndWidget'
 import { TableLabelWidget, isTableLabelPayload } from './TableLabelWidget'
 import { TaskDrawingSlot } from './TaskDrawingSlot'
+import { TaskPhotoSlot } from './TaskPhotoSlot'
 
 export type TaskState = {
   mcIndex: number | null
@@ -16,6 +17,7 @@ export type TaskState = {
   steps: Record<string, string>
   slots: Record<string, string | null>
   drawing: string | null
+  uploads: string[]
 }
 
 export const EMPTY_TASK_STATE: TaskState = {
@@ -24,6 +26,7 @@ export const EMPTY_TASK_STATE: TaskState = {
   steps: {},
   slots: {},
   drawing: null,
+  uploads: [],
 }
 
 // Drawing macht nur bei freien Antworten Sinn (Rechenweg). Bei MC und
@@ -40,6 +43,8 @@ type Props = {
   onChange: (next: TaskState) => void
   onEnter?: () => void
   disabled?: boolean
+  // Für Foto-Upload: ohne studentId kein RLS-konformer Pfad → Slot bleibt aus.
+  studentId?: string | null
 }
 
 function resolveTeilaufgaben(item: ScreeningItem): ScreeningTeilaufgabe[] | null {
@@ -63,13 +68,14 @@ function slotIds(item: ScreeningItem): string[] {
 
 export function buildRawAnswer(item: ScreeningItem, s: TaskState): RawAnswer {
   const drawing = s.drawing ?? null
-  if (item.input_type === 'MC') return { kind: 'mc', index: s.mcIndex, drawing }
-  if (item.input_type === 'NUMERIC') return { kind: 'numeric', value: s.text, drawing }
+  const uploads = s.uploads.length > 0 ? s.uploads : undefined
+  if (item.input_type === 'MC') return { kind: 'mc', index: s.mcIndex, drawing, uploads }
+  if (item.input_type === 'NUMERIC') return { kind: 'numeric', value: s.text, drawing, uploads }
   if (item.input_type === 'CLOZE_DND' || item.input_type === 'TABLE_LABEL') {
-    return { kind: 'slotmap', slots: s.slots, drawing }
+    return { kind: 'slotmap', slots: s.slots, drawing, uploads }
   }
-  if (resolveTeilaufgaben(item)) return { kind: 'multistep', steps: s.steps, drawing }
-  return { kind: 'open', text: s.text, drawing }
+  if (resolveTeilaufgaben(item)) return { kind: 'multistep', steps: s.steps, drawing, uploads }
+  return { kind: 'open', text: s.text, drawing, uploads }
 }
 
 // Ist die Antwort vollständig genug, dass „Weiter" sinnvoll ist?
@@ -160,7 +166,14 @@ function renderWidget(
   )
 }
 
-export function TaskRenderer({ item, state, onChange, onEnter, disabled }: Props): JSX.Element {
+export function TaskRenderer({
+  item,
+  state,
+  onChange,
+  onEnter,
+  disabled,
+  studentId,
+}: Props): JSX.Element {
   const teilaufgaben = useMemo(() => resolveTeilaufgaben(item), [item])
   const widget = renderWidget(item, state, onChange, onEnter, disabled, teilaufgaben)
   if (!showDrawingSlot(item)) return widget
@@ -170,6 +183,12 @@ export function TaskRenderer({ item, state, onChange, onEnter, disabled }: Props
       <TaskDrawingSlot
         value={state.drawing}
         onChange={(dataUrl) => onChange({ ...state, drawing: dataUrl })}
+        disabled={disabled}
+      />
+      <TaskPhotoSlot
+        studentId={studentId ?? null}
+        uploads={state.uploads}
+        onChange={(uploads) => onChange({ ...state, uploads })}
         disabled={disabled}
       />
     </div>

@@ -11,6 +11,7 @@ import {
   createScreeningItemRating,
   listItemRatingsForResults,
 } from '@/lib/supabase/screeningItemRatings'
+import { getScreeningPhotoSignedUrls } from '@/lib/supabase/screeningUploads'
 import type {
   ScreeningAfb,
   ScreeningItem,
@@ -58,6 +59,14 @@ function answerDrawing(raw: unknown): string | null {
   return null
 }
 
+function answerUploadPaths(raw: unknown): string[] {
+  if (raw && typeof raw === 'object') {
+    const u = (raw as Record<string, unknown>).uploads
+    if (Array.isArray(u)) return u.filter((p): p is string => typeof p === 'string')
+  }
+  return []
+}
+
 export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Element {
   const { user } = useAuth()
   const pending = results.filter((r) => r.correct === null)
@@ -68,6 +77,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
   >({})
   const [savingId, setSavingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [uploadUrls, setUploadUrls] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (pending.length === 0) return
@@ -83,6 +93,13 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
       setRatings(ratingRes.data ?? new Map())
       if (itemRes.error) setError(itemRes.error)
     })
+  }, [pending.length, results])
+
+  // Signed URLs für alle gerade sichtbaren Foto-Uploads vorab ziehen.
+  useEffect(() => {
+    const allPaths = pending.flatMap((p) => answerUploadPaths(p.answer))
+    if (allPaths.length === 0) return
+    void getScreeningPhotoSignedUrls(allPaths).then((urls) => setUploadUrls(urls))
   }, [pending.length, results])
 
   if (pending.length === 0) {
@@ -169,6 +186,36 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
                     className="max-h-40 rounded border border-[var(--border)] bg-white object-contain"
                   />
                 </a>
+              )}
+              {answerUploadPaths(p.answer).length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {answerUploadPaths(p.answer).map((path) => {
+                    const url = uploadUrls[path]
+                    if (!url) {
+                      return (
+                        <div
+                          key={path}
+                          className="h-24 w-24 animate-pulse rounded border border-[var(--border)] bg-[var(--muted)]"
+                        />
+                      )
+                    }
+                    return (
+                      <a
+                        key={path}
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        title="Rechenweg-Foto in voller Größe"
+                      >
+                        <img
+                          src={url}
+                          alt="Rechenweg-Foto"
+                          className="h-24 w-24 rounded border border-[var(--border)] bg-white object-cover"
+                        />
+                      </a>
+                    )
+                  })}
+                </div>
               )}
             </div>
             <div className="flex flex-wrap gap-2">
