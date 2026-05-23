@@ -35,7 +35,7 @@ export function formatDuration(ms: number) {
 
 // ── RadialGauge ───────────────────────────────────────────────────────────────
 
-export function RadialGauge({
+function RadialGauge({
   value,
   color,
   size = 140,
@@ -192,7 +192,7 @@ export function SkillBar({ cluster, level, label }: { cluster: string; level: nu
 
 // ── MiniMetric ────────────────────────────────────────────────────────────────
 
-export function MiniMetric({
+function MiniMetric({
   label, value, color, inverted = false,
 }: {
   label: string
@@ -213,7 +213,7 @@ export function MiniMetric({
 
 // ── SmallBadge ────────────────────────────────────────────────────────────────
 
-export function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
+function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-muted bg-[var(--background)] border border-[var(--border)]">
       {icon}
@@ -224,7 +224,7 @@ export function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
 
 // ── KV ────────────────────────────────────────────────────────────────────────
 
-export function KV({ k, v }: { k: string; v: string }) {
+function KV({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex items-center justify-between rounded-lg bg-card px-2.5 py-1.5 border border-[var(--border)]">
       <span className="text-muted">{k}</span>
