@@ -14,9 +14,19 @@
 // entspricht (I=1, II=2, III=3). Legacy-Items ohne `afb`-Spalte nutzen den
 // gleichen numerischen Schwierigkeitsbegriff. `reachedAfb` in der Summary
 // leitet sich aus `estimatedLevel` ab.
+//
+// Pure scoring helpers live in ./scoring.ts to keep this file within limits.
 
 import type { ScreeningAfb, ScreeningItem, ScreeningLevel } from '@/types'
 import { gradeScreeningAnswer } from './grade'
+import {
+  levelToAfb,
+  requiredHits,
+  correctOnLevel,
+  estimateLevel,
+  confidenceFor,
+  summarizeLogs,
+} from './scoring'
 
 export const RECOMMENDED_BUDGET_MS = 20 * 60 * 1000
 
@@ -61,9 +71,8 @@ export type ClusterSummary = {
   confidence: 'low' | 'medium' | 'high'
 }
 
-export function levelToAfb(l: 0 | ScreeningLevel): ScreeningAfb | null {
-  return l === 1 ? 'I' : l === 2 ? 'II' : l === 3 ? 'III' : null
-}
+// Re-export scoring helpers so existing importers keep working unchanged.
+export { levelToAfb, summarizeLogs }
 
 type ClusterState = {
   clusterId: string
@@ -181,16 +190,6 @@ function pickNearLevel(
     if (chosen) return chosen
   }
   return null
-}
-
-// Mindestanzahl korrekter Items pro Level, damit das Level als "bestätigt"
-// gilt. AFB III braucht 2 Treffer (Lucky-Guess-Schutz bei 4-Optionen-MC).
-function requiredHits(level: ScreeningLevel): number {
-  return level === 3 ? 2 : 1
-}
-
-function correctOnLevel(log: AdaptiveAnswerLog[], level: ScreeningLevel): number {
-  return log.filter((e) => e.level === level && e.correct === true).length
 }
 
 function focusCap(cs: ClusterState): number {
@@ -317,79 +316,6 @@ export function submitAnswer(
   }
 
   return entry
-}
-
-function masteryOnLevel(log: AdaptiveAnswerLog[], level: ScreeningLevel): number {
-  const onLevel = log.filter((e) => e.level === level && e.correct !== null)
-  if (onLevel.length === 0) return 0
-  return onLevel.filter((e) => e.correct === true).length / onLevel.length
-}
-
-function estimateLevel(log: AdaptiveAnswerLog[]): 0 | ScreeningLevel {
-  // Höchstes Level, auf dem genug richtige Antworten vorliegen (AFB III: 2,
-  // sonst 1). Verhindert Lucky-Guess-Aufstufung auf III.
-  let best: 0 | ScreeningLevel = 0
-  for (const lvl of [1, 2, 3] as ScreeningLevel[]) {
-    if (correctOnLevel(log, lvl) >= requiredHits(lvl)) best = lvl
-  }
-  // Downgrade-Regel: Wenn die Mastery auf dem ermittelten Level < 50 %, ist
-  // der Schüler dort noch wackelig — eine Stufe runter.
-  if (best > 0 && masteryOnLevel(log, best) < 0.5) {
-    best = (best - 1) as 0 | ScreeningLevel
-  }
-  return best
-}
-
-function confidenceFor(
-  answered: number,
-  pending: number,
-  estimatedLevel: 0 | ScreeningLevel,
-  log: AdaptiveAnswerLog[],
-): 'low' | 'medium' | 'high' {
-  if (
-    answered >= 4 &&
-    pending === 0 &&
-    estimatedLevel > 0 &&
-    correctOnLevel(log, estimatedLevel as ScreeningLevel) >= 1
-  ) {
-    return 'high'
-  }
-  if (answered >= 2 && pending <= Math.max(1, Math.floor(answered / 3))) {
-    return 'medium'
-  }
-  return 'low'
-}
-
-// Wie summarize, aber über eine flache Log-Liste (z. B. aus persistierten
-// screening_item_results rekonstruiert) — Cluster-Reihenfolge = Erstkontakt.
-// Server-Wahrheit für das result_summary nach einem (ggf. resumten) Lauf.
-export function summarizeLogs(logs: AdaptiveAnswerLog[]): ClusterSummary[] {
-  const order: string[] = []
-  const byCluster = new Map<string, AdaptiveAnswerLog[]>()
-  for (const e of logs) {
-    if (!byCluster.has(e.clusterId)) {
-      order.push(e.clusterId)
-      byCluster.set(e.clusterId, [])
-    }
-    byCluster.get(e.clusterId)?.push(e)
-  }
-  return order.map((clusterId) => {
-    const log = byCluster.get(clusterId) ?? []
-    const correct = log.filter((e) => e.correct === true).length
-    const pending = log.filter((e) => e.correct === null).length
-    const decided = log.length - pending
-    const estimatedLevel = estimateLevel(log)
-    return {
-      clusterId,
-      answered: log.length,
-      correct,
-      reachedAfb: levelToAfb(estimatedLevel),
-      estimatedLevel,
-      mastery: decided === 0 ? 0 : correct / decided,
-      pending,
-      confidence: confidenceFor(log.length, pending, estimatedLevel, log),
-    }
-  })
 }
 
 // Cluster-Auswertung für Report/Coach (Eingabe für P5 result_summary).
