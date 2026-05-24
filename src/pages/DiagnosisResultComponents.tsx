@@ -3,8 +3,6 @@ import { Clock, Pencil, Lightbulb } from 'lucide-react'
 import type { BehaviorAnalysis, BehaviorSnapshot } from '@/types/diagnosis'
 import type { RunTask } from '@/types'
 
-// ── Signal Labels (shared constant) ──────────────────────────────────────────
-
 export const SIGNAL_LABELS: Record<
   BehaviorAnalysis['mastery_signal'],
   { label: string; color: string; emoji: string }
@@ -14,8 +12,6 @@ export const SIGNAL_LABELS: Record<
   gap:        { label: 'Lücke',          color: 'var(--destructive)', emoji: '✗' },
   guessing:   { label: 'Geraten',        color: 'var(--warning)',     emoji: '?' },
 }
-
-// ── Formatters ────────────────────────────────────────────────────────────────
 
 export function formatDate(iso: string) {
   return new Intl.DateTimeFormat('de-DE', {
@@ -32,8 +28,6 @@ export function formatDuration(ms: number) {
   if (min === 0) return `${sec}s`
   return `${min}m ${sec}s`
 }
-
-// ── RadialGauge ───────────────────────────────────────────────────────────────
 
 function RadialGauge({
   value,
@@ -65,8 +59,6 @@ function RadialGauge({
   )
 }
 
-// ── GaugeCard ─────────────────────────────────────────────────────────────────
-
 export function GaugeCard({
   icon, label, value, color, inverted = false, caption,
 }: {
@@ -96,8 +88,6 @@ export function GaugeCard({
   )
 }
 
-// ── KpiCard ───────────────────────────────────────────────────────────────────
-
 export function KpiCard({
   icon, label, value, sub, color, bg,
 }: {
@@ -122,8 +112,6 @@ export function KpiCard({
   )
 }
 
-// ── FlagTag ───────────────────────────────────────────────────────────────────
-
 export function FlagTag({ label, tone = 'primary' }: { label: string; tone?: 'primary' | 'warning' | 'success' }) {
   const colors = {
     primary: { bg: 'var(--primary)', tag: 'color-mix(in srgb, var(--primary) 12%, transparent)' },
@@ -144,8 +132,6 @@ export function FlagTag({ label, tone = 'primary' }: { label: string; tone?: 'pr
     </span>
   )
 }
-
-// ── SkillBar ──────────────────────────────────────────────────────────────────
 
 export function SkillBar({ cluster, level, label }: { cluster: string; level: number; label: string }) {
   const colorMap = {
@@ -190,8 +176,6 @@ export function SkillBar({ cluster, level, label }: { cluster: string; level: nu
   )
 }
 
-// ── MiniMetric ────────────────────────────────────────────────────────────────
-
 function MiniMetric({
   label, value, color, inverted = false,
 }: {
@@ -211,8 +195,6 @@ function MiniMetric({
   )
 }
 
-// ── SmallBadge ────────────────────────────────────────────────────────────────
-
 function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-muted bg-[var(--background)] border border-[var(--border)]">
@@ -222,8 +204,6 @@ function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
   )
 }
 
-// ── KV ────────────────────────────────────────────────────────────────────────
-
 function KV({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex items-center justify-between rounded-lg bg-card px-2.5 py-1.5 border border-[var(--border)]">
@@ -232,8 +212,6 @@ function KV({ k, v }: { k: string; v: string }) {
     </div>
   )
 }
-
-// ── SectionHeader ─────────────────────────────────────────────────────────────
 
 export function SectionHeader({
   icon, label, description,
@@ -256,8 +234,6 @@ export function SectionHeader({
     </div>
   )
 }
-
-// ── TaskCard ──────────────────────────────────────────────────────────────────
 
 export function TaskCard({
   index, task, snapshot, analysis,

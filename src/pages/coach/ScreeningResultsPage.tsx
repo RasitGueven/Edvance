@@ -1,8 +1,3 @@
-// Read-only Coach-/Admin-Sicht auf abgeschlossene adaptive Screenings:
-// Schüler wählen → abgeschlossene Läufe listen → Cluster-Ergebnisse +
-// Gesamtwerte. Coach = Beobachter; Punktzahlen hier erlaubt (nicht die
-// §6-Schüler-Regel). Robust bei null/altem/nicht-adaptivem Summary.
-
 import { useEffect, useMemo, useState } from 'react'
 import type { JSX } from 'react'
 import { Link } from 'react-router-dom'
@@ -66,7 +61,6 @@ export function ScreeningResultsPage(): JSX.Element {
     })
   }, [])
 
-  // Cluster-Namen einmalig auflösen (Fach fix = SCREENING_SUBJECT).
   useEffect(() => {
     if (clusterNames.size > 0) return
     void (async () => {
@@ -96,8 +90,6 @@ export function ScreeningResultsPage(): JSX.Element {
   const studentLabel = (s: StudentWithName): string =>
     `${s.full_name ?? 'Unbenannt'}${s.class_level ? ` · Kl. ${s.class_level}` : ''}`
 
-  // Wenn ein Test ausgewählt wird, alle Item-Ergebnisse für KPI-Aggregation
-  // nachladen (Median-Dauer, Auto-Grade-Quote, Pending).
   useEffect(() => {
     if (!selectedTestId) {
       setResults([])
@@ -117,7 +109,6 @@ export function ScreeningResultsPage(): JSX.Element {
     : null
   const kpis = useMemo(() => computeKpis(results), [results])
 
-  // Median-Dauer pro Cluster — defensiv: bei keinen Daten Map leer lassen.
   const medianByCluster = useMemo(() => {
     const buckets = new Map<string, number[]>()
     for (const r of results) {

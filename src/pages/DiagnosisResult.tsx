@@ -36,7 +36,6 @@ import {
 } from './DiagnosisResultComponents'
 import { LernplanSection } from './DiagnosisLernplan'
 
-// Mapping: Diagnose-Mock-Cluster (M8.* taxonomy) → KMK-Kompetenzbereich
 const DIAGNOSIS_TO_COMPETENCY: Record<string, string> = {
   'Rationale Zahlen': 'Zahl & Rechnen',
   'Terme & Gleichungen': 'Algebra & Funktionen',
@@ -145,7 +144,6 @@ export function DiagnosisResult() {
       <EdvanceNavbar subtitle="Diagnose · Auswertung" />
 
       <main className="mx-auto max-w-4xl px-4 py-8 pb-24">
-        {/* ── Hero Header ────────────────────────────────────────── */}
         <div
           className="rounded-3xl p-8 mb-8 overflow-hidden relative border-2 border-b-4 border-[var(--primary-shadow)]"
           style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)' }}
@@ -175,7 +173,6 @@ export function DiagnosisResult() {
           </div>
         </div>
 
-        {/* ── KPI Strip ──────────────────────────────────────────── */}
         <div className="grid grid-cols-2 gap-4 mb-10 lg:grid-cols-4">
           <KpiCard
             icon={<CheckCircle2 className="h-5 w-5" />}
@@ -211,7 +208,6 @@ export function DiagnosisResult() {
           />
         </div>
 
-        {/* ── Verhaltens-Profil ──────────────────────────────────── */}
         <section className="mb-10">
           <SectionHeader
             icon={<Activity className="h-4 w-4" />}
@@ -281,7 +277,6 @@ export function DiagnosisResult() {
           )}
         </section>
 
-        {/* ── Mastery-Profil ─────────────────────────────────────── */}
         <section className="mb-10">
           <SectionHeader
             icon={<TrendingUp className="h-4 w-4" />}
@@ -295,7 +290,6 @@ export function DiagnosisResult() {
           </div>
         </section>
 
-        {/* ── Aufgaben-Detail ────────────────────────────────────── */}
         <section className="mb-10">
           <SectionHeader
             icon={<Pencil className="h-4 w-4" />}
@@ -315,7 +309,6 @@ export function DiagnosisResult() {
           </div>
         </section>
 
-        {/* ── Coach-Notiz ────────────────────────────────────────── */}
         <section className="mb-10">
           <SectionHeader
             icon={<Pencil className="h-4 w-4" />}
@@ -333,10 +326,8 @@ export function DiagnosisResult() {
           </div>
         </section>
 
-        {/* ── Lernplan ───────────────────────────────────────────── */}
         <LernplanSection focus={focus} clusterIdFor={clusterIdFor} />
 
-        {/* ── Action Footer ──────────────────────────────────────── */}
         <div className="rounded-2xl bg-card p-5 flex items-center justify-between gap-3 flex-wrap border-2 border-b-4 border-[var(--border)]">
           <div>
             <p className="text-sm font-black text-foreground">Bereit für die erste Lernsession?</p>

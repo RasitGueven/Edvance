@@ -47,7 +47,6 @@ export function StudentDashboard(): JSX.Element {
   const [nextSession, setNextSession] = useState<CoachingSession | null>(null)
   const [sessionLoading, setSessionLoading] = useState<boolean>(true)
 
-  // Student + progress
   useEffect(() => {
     if (!user) return
     let cancelled = false
@@ -69,7 +68,6 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [user])
 
-  // Naechste Session laden, sobald student bekannt.
   useEffect(() => {
     if (!student) return
     let cancelled = false
@@ -92,7 +90,6 @@ export function StudentDashboard(): JSX.Element {
   const lowerSearch = search.trim().toLowerCase()
   const isFiltering = lowerSearch.length > 0 || typeFilter !== 'all'
 
-  // Subjects beim Mount.
   useEffect(() => {
     let cancelled = false
     void getSubjects().then(({ data, error: e }) => {
@@ -110,7 +107,6 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [])
 
-  // Cluster bei Subject-Wechsel.
   useEffect(() => {
     if (!selectedSubjectId) return
     let cancelled = false
@@ -130,7 +126,6 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [selectedSubjectId])
 
-  // Tasks lazy laden, sobald Filter erstmals aktiv wird.
   useEffect(() => {
     if (!isFiltering || allTasks !== null || clusters.length === 0) return
     let cancelled = false
@@ -149,7 +144,6 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [isFiltering, allTasks, clusters])
 
-  // Cluster-Fortschritt berechnen sobald student + clusters geladen.
   useEffect(() => {
     if (!student || clusters.length === 0) return
     let cancelled = false
@@ -213,12 +207,10 @@ export function StudentDashboard(): JSX.Element {
     <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
       <EdvanceNavbar subtitle="Mein Lernplan" />
 
-      {/* Ambient background blobs */}
       <div aria-hidden="true" className="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-[0.07] blur-3xl bg-[var(--xp-gold)]" />
       <div aria-hidden="true" className="pointer-events-none absolute -left-24 bottom-1/4 h-80 w-80 rounded-full opacity-[0.08] blur-3xl bg-[var(--color-levelup)]" />
       <div aria-hidden="true" className="pointer-events-none absolute right-1/4 top-2/3 h-64 w-64 rounded-full opacity-[0.06] blur-3xl bg-[var(--color-primary)]" />
 
-      {/* Hero-Section */}
       <StudentHero
         displayName={displayName}
         xpTotal={xpTotal}
@@ -226,7 +218,6 @@ export function StudentDashboard(): JSX.Element {
         level={level}
       />
 
-      {/* Seam: soften the hard edge between hero and body */}
       <div aria-hidden="true" className="h-8 bg-gradient-to-b from-[var(--color-primary)] to-[var(--background)] opacity-20" />
 
       <main className="mx-auto max-w-3xl px-4 py-8">
@@ -236,7 +227,6 @@ export function StudentDashboard(): JSX.Element {
           </EdvanceCard>
         )}
 
-        {/* Bento-Widget-Grid */}
         <div className="mb-8">
           <StudentBentoGrid
             xpTotal={xpTotal}
@@ -247,7 +237,6 @@ export function StudentDashboard(): JSX.Element {
           />
         </div>
 
-        {/* Nächste Session */}
         <div className="mb-8 flex flex-col gap-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
             Nächste Session
@@ -277,7 +266,6 @@ export function StudentDashboard(): JSX.Element {
           )}
         </div>
 
-        {/* Search + Filters */}
         <div id="lernpfad" className="flex flex-col gap-3">
           <div className="relative">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
@@ -322,7 +310,6 @@ export function StudentDashboard(): JSX.Element {
           </div>
         </div>
 
-        {/* Subject Tabs (nur wenn >1) */}
         {subjects.length > 1 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {subjects.map((s) => (
@@ -338,7 +325,6 @@ export function StudentDashboard(): JSX.Element {
           </div>
         )}
 
-        {/* Body */}
         {isFiltering ? (
           <FilterResults
             loading={loadingTasks}
