@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Clock, Pencil, Lightbulb } from 'lucide-react'
 import type { BehaviorAnalysis, BehaviorSnapshot } from '@/types/diagnosis'
 import type { RunTask } from '@/types'
+import { EdvanceCard } from '@/components/edvance'
 
 export const SIGNAL_LABELS: Record<
   BehaviorAnalysis['mastery_signal'],
@@ -74,7 +75,7 @@ export function GaugeCard({
     : value > 65 ? color : value > 35 ? 'var(--warning)' : 'var(--destructive)'
 
   return (
-    <div className="flex flex-col items-center rounded-3xl bg-card p-6 text-center border-2 border-b-4 border-[var(--border)]">
+    <EdvanceCard className="flex flex-col items-center text-center border-2 border-b-4 border-[var(--border)]">
       <div className="relative">
         <RadialGauge value={value} color={displayColor} />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -84,7 +85,7 @@ export function GaugeCard({
       </div>
       <p className="mt-3 text-xs font-bold uppercase tracking-wider text-muted">{label}</p>
       <p className="mt-1.5 text-xs font-semibold text-muted leading-relaxed max-w-[180px]">{caption}</p>
-    </div>
+    </EdvanceCard>
   )
 }
 
@@ -99,7 +100,7 @@ export function KpiCard({
   bg: string
 }) {
   return (
-    <div className="rounded-2xl bg-card p-5 border-2 border-b-4 border-[var(--border)]">
+    <EdvanceCard className="p-5 border-2 border-b-4 border-[var(--border)]">
       <div className="flex items-center gap-2.5 mb-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: bg, color }}>
           {icon}
@@ -108,7 +109,7 @@ export function KpiCard({
       </div>
       <p className="text-3xl font-black text-foreground tracking-tight">{value}</p>
       {sub && <p className="mt-0.5 text-xs font-semibold text-muted">{sub}</p>}
-    </div>
+    </EdvanceCard>
   )
 }
 
@@ -188,10 +189,10 @@ function MiniMetric({
     ? value > 60 ? 'var(--destructive)' : value > 30 ? 'var(--warning)' : 'var(--success)'
     : value > 65 ? color : value > 35 ? 'var(--warning)' : 'var(--destructive)'
   return (
-    <div className="rounded-lg bg-card p-2 text-center border border-[var(--border)]">
+    <EdvanceCard className="p-2 text-center border border-[var(--border)]">
       <p className="text-[9px] font-bold uppercase tracking-wider text-muted">{label}</p>
       <p className="text-base font-black" style={{ color: display }}>{value}</p>
-    </div>
+    </EdvanceCard>
   )
 }
 
@@ -206,10 +207,10 @@ function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
 
 function KV({ k, v }: { k: string; v: string }) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-card px-2.5 py-1.5 border border-[var(--border)]">
+    <EdvanceCard className="flex items-center justify-between px-2.5 py-1.5 border border-[var(--border)]">
       <span className="text-muted">{k}</span>
       <span className="text-foreground font-black">{v}</span>
-    </div>
+    </EdvanceCard>
   )
 }
 
@@ -256,7 +257,7 @@ export function TaskCard({
     : 'var(--border-strong)'
 
   return (
-    <div className="rounded-2xl bg-card overflow-hidden transition-all border-2 border-b-4 border-[var(--border)]">
+    <EdvanceCard className="overflow-hidden p-0 border-2 border-b-4 border-[var(--border)]">
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
@@ -344,6 +345,6 @@ export function TaskCard({
           </div>
         </div>
       )}
-    </div>
+    </EdvanceCard>
   )
 }

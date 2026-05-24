@@ -11,6 +11,7 @@ import { completeScreeningTest } from '@/lib/supabase/screening'
 import type { BehaviorSnapshot } from '@/types/diagnosis'
 import { Button } from '@/components/ui/button'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { EdvanceCard } from '@/components/edvance'
 import {
   Clock,
   TrendingUp,
@@ -259,7 +260,7 @@ export function DiagnosisResult() {
           </div>
 
           {result.overall_behavior_flags.length > 0 ? (
-            <div className="rounded-2xl bg-card p-5 border-2 border-b-4 border-[var(--border)]">
+            <EdvanceCard className="p-5 border-2 border-b-4 border-[var(--border)]">
               <div className="flex items-center gap-1.5 mb-3">
                 <ShieldAlert className="h-3.5 w-3.5 text-muted" />
                 <p className="text-xs font-bold uppercase tracking-wider text-muted">Wiederkehrende Muster</p>
@@ -269,7 +270,7 @@ export function DiagnosisResult() {
                   <FlagTag key={f} label={f} />
                 ))}
               </div>
-            </div>
+            </EdvanceCard>
           ) : (
             <p className="text-sm font-semibold text-muted text-center py-4">
               Keine wiederkehrenden Verhaltensmuster erkennbar.
@@ -283,11 +284,11 @@ export function DiagnosisResult() {
             label="Mastery-Profil"
             description="Kompetenzstand pro Themengebiet auf einer Skala von 1–10"
           />
-          <div className="rounded-3xl bg-card p-6 border-2 border-b-4 border-[var(--border)]">
+          <EdvanceCard className="p-6 border-2 border-b-4 border-[var(--border)]">
             {result.skill_levels.map(s => (
               <SkillBar key={s.skill_cluster} cluster={s.skill_cluster} level={s.level} label={s.label} />
             ))}
-          </div>
+          </EdvanceCard>
         </section>
 
         <section className="mb-10">
@@ -315,7 +316,7 @@ export function DiagnosisResult() {
             label="Coach-Notiz"
             description="Abschließende Einschätzung in eigenen Worten"
           />
-          <div className="rounded-3xl bg-card p-1.5 border-2 border-b-4 border-[var(--border)]">
+          <EdvanceCard className="p-1.5 border-2 border-b-4 border-[var(--border)]">
             <textarea
               value={state.coachNote}
               onChange={e => setCoachNote(e.target.value)}
@@ -323,12 +324,12 @@ export function DiagnosisResult() {
               rows={5}
               className="w-full rounded-2xl bg-transparent p-4 text-sm font-medium text-foreground focus:outline-none resize-none leading-relaxed"
             />
-          </div>
+          </EdvanceCard>
         </section>
 
         <LernplanSection focus={focus} clusterIdFor={clusterIdFor} />
 
-        <div className="rounded-2xl bg-card p-5 flex items-center justify-between gap-3 flex-wrap border-2 border-b-4 border-[var(--border)]">
+        <EdvanceCard className="p-5 flex items-center justify-between gap-3 flex-wrap border-2 border-b-4 border-[var(--border)]">
           <div>
             <p className="text-sm font-black text-foreground">Bereit für die erste Lernsession?</p>
             <p className="text-xs font-semibold text-muted mt-0.5">
@@ -352,7 +353,7 @@ export function DiagnosisResult() {
               Zurück zum Admin
             </Button>
           </div>
-        </div>
+        </EdvanceCard>
       </main>
     </div>
   )
