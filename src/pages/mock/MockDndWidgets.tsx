@@ -1,6 +1,3 @@
-// Vorschau für Cloze-DnD und Tabellen-Beschriftung — ohne Persistenz.
-// Hier zum visuellen Testen, bevor Items in der DB angelegt werden.
-
 import { useState, type JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'

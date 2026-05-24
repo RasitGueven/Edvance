@@ -1,9 +1,5 @@
 import { useId, type JSX } from 'react'
 
-// SVG-Koordinatensystem mit festem Bereich x,y ∈ [-10, 10] und 1er-Gitter.
-// Plottet beliebige Funktionen f(x). Farben kommen ausschließlich aus
-// CSS-Variablen (Aufrufer übergibt z. B. 'var(--primary)').
-
 export type PlotFn = {
   fn: (x: number) => number
   color: string

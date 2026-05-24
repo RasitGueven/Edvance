@@ -1,5 +1,3 @@
-// Geteilte Konstanten/Typen der Diagnose-Verwaltung.
-
 import { COGNITIVE_TYPE_LABELS, INPUT_TYPE_LABELS } from '@/lib/taskLabels'
 import type { CognitiveType, InputType } from '@/types'
 

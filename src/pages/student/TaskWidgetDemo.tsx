@@ -8,8 +8,6 @@ import { MathToolbar } from '@/components/edvance/MathToolbar'
 import { Card, CardContent } from '@/components/ui/card'
 import type { InputType } from '@/types'
 
-// ─── Demo-Daten ─────────────────────────────────────────────────────────────
-
 const MC_DEMO = {
   question: 'Ein Würfel wird dreimal geworfen. Was ist die Wahrscheinlichkeit, dass mindestens eine 6 fällt?',
   options: [
@@ -55,8 +53,6 @@ const TYPE_META: Record<InputType, { label: string; color: string }> = {
   FREE_INPUT: { label: 'Freitext', color: 'var(--warning)' },
   DRAW: { label: 'Zeichnen', color: 'var(--brand-navy)' },
 }
-
-// ─── Sektion ─────────────────────────────────────────────────────────────────
 
 function Section({
   type,
@@ -123,28 +119,21 @@ function Section({
   )
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
-
 export function TaskWidgetDemo(): JSX.Element {
-  // MC
   const [mcSel, setMcSel] = useState<number | null>(null)
   const [mcDone, setMcDone] = useState(false)
 
-  // Matching — right items shuffled once
   const [pairs, setPairs] = useState<MatchPairs>(new Map())
   const [matchDone, setMatchDone] = useState(false)
   const shuffled = ['Menge aller möglichen Ergebnisse', 'Anzahl Treffer ÷ Gesamtanzahl', 'Alles außer dem betrachteten Ereignis', 'Alle Ergebnisse gleich wahrscheinlich']
 
-  // Steps
   const [stepAns, setStepAns] = useState<string[]>([])
   const [stepsDone, setStepsDone] = useState(false)
 
-  // Free input
   const [freeText, setFreeText] = useState('')
   const [freeDone, setFreeDone] = useState(false)
   const freeRef = useRef<HTMLTextAreaElement>(null)
 
-  // Draw
   const [drawing, setDrawing] = useState<string | null>(null)
   const [drawDone, setDrawDone] = useState(false)
 

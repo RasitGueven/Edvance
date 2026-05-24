@@ -8,9 +8,6 @@ type Props = {
   disabled?: boolean
 }
 
-// Zahleneingabe — Komma und Punkt erlaubt (grade.ts:toNumber). Größeres
-// Touch-Target (56 px) für Tablets. Unit als Pill rechts integriert, damit
-// Schüler:innen sehen, in welcher Einheit gerechnet wird.
 export function NumericWidget({
   value,
   onChange,

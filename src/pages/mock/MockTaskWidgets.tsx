@@ -1,6 +1,3 @@
-// Vorschau für die polierten Basis-Widgets (MC, NUMERIC, OPEN, Multi-Step).
-// Ohne Persistenz — rein zum visuellen Abnehmen der v2-Tokens.
-
 import { useState, type JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'

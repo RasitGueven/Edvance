@@ -7,7 +7,6 @@ export function cn(...inputs: ClassValue[]): string {
 
 const MAX_INITIALS = 2
 
-// Erzeugt zwei-Buchstaben-Initialen aus einem vollen Namen, z.B. "Lena Fischer" → "LF".
 export function getInitials(name: string): string {
   return name
     .split(' ')
@@ -17,7 +16,6 @@ export function getInitials(name: string): string {
     .slice(0, MAX_INITIALS)
 }
 
-// Formatiert das aktuelle Datum als deutsche Langform, z.B. "Donnerstag, 8. Mai 2026".
 export function formatDateLongDe(date: Date = new Date()): string {
   return new Intl.DateTimeFormat('de-DE', {
     weekday: 'long',

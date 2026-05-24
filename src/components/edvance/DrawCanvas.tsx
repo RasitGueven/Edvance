@@ -1,8 +1,3 @@
-// Handschrift-Canvas mit Pointer-Events (Maus, Touch, Stift einheitlich).
-// Bei jedem Stroke-Ende wird onChange mit dem aktuellen PNG-Data-URL aufgerufen
-// (oder null nach Loeschen). Aufrufer kann den Daten-String z.B. als
-// answer_text in der DB speichern.
-
 import { useEffect, useRef, useState, type JSX, type PointerEvent } from 'react'
 import { Eraser } from 'lucide-react'
 

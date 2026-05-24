@@ -14,15 +14,11 @@ const ACCENT_VAR: Record<TileAccent, string> = {
   repair: 'var(--color-moment-repair)',
 }
 
-// Responsive Bento: Telefon = 2 Spalten, iPad hochkant (md) = 3-Spalten-
-// Bento, iPad quer / Desktop (lg) = 4-Spalten-Bento.
 const SIZE_CLASS: Record<TileSize, string> = {
   sm: 'col-span-1',
   wide: 'col-span-2 md:col-span-1 lg:col-span-2',
   lg: 'col-span-2 md:row-span-2 lg:row-span-2',
 }
-
-// ─── KPI-Header-Widget (Hero) ─────────────────────────────────────────────────
 
 type Kpi = { value: number; label: string }
 
@@ -72,8 +68,6 @@ export function AdminKpiBar({
     </EdvanceCard>
   )
 }
-
-// ─── Funktions-Widget (Kachel) ────────────────────────────────────────────────
 
 type TileBadge = {
   label: string
@@ -160,8 +154,6 @@ export function AdminTile({
     </Link>
   )
 }
-
-// ─── Bento-Grid-Container ─────────────────────────────────────────────────────
 
 export function AdminTileGrid({ children }: { children: ReactNode }): JSX.Element {
   return (

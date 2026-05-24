@@ -18,13 +18,9 @@ const STATUS_VARIANT: Record<
   Lücke: 'destructive',
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export type ClusterProgress = Record<string, { completed: number; total: number }>
 
 type ContentType = Task['content_type']
-
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 const CLUSTER_TINTS = [
   { bg: 'var(--color-primary-light)',     fg: 'var(--color-primary)' },
@@ -34,8 +30,6 @@ const CLUSTER_TINTS = [
   { bg: 'color-mix(in srgb, var(--xp-gold) 14%, white)', fg: 'var(--xp-gold)' },
 ]
 
-// ─── RowIcon ──────────────────────────────────────────────────────────────────
-
 export function RowIcon({ type }: { type: ContentType }): JSX.Element {
   if (type === 'video') return <PlayCircle className="h-5 w-5 shrink-0 text-warning" />
   if (type === 'article') return <FileText className="h-5 w-5 shrink-0 text-success" />
@@ -43,8 +37,6 @@ export function RowIcon({ type }: { type: ContentType }): JSX.Element {
     return <FlaskConical className="h-5 w-5 shrink-0 text-primary" />
   return <BookOpen className="h-5 w-5 shrink-0 text-primary" />
 }
-
-// ─── FilterResults ────────────────────────────────────────────────────────────
 
 export function FilterResults({
   loading,
@@ -102,8 +94,6 @@ export function FilterResults({
   )
 }
 
-// ─── RecommendationBanner ─────────────────────────────────────────────────────
-
 export function RecommendationBanner({
   clusterId,
   clusterName,
@@ -142,8 +132,6 @@ export function RecommendationBanner({
     </EdvanceCard>
   )
 }
-
-// ─── ClusterGrid ──────────────────────────────────────────────────────────────
 
 type ClusterGridProps = {
   clusters: SkillCluster[]

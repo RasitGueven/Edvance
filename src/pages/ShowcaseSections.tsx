@@ -1,5 +1,3 @@
-// Static sections of DesignShowcase — no state required.
-
 import {
   EdvanceCard,
   EdvanceBadge,

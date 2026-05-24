@@ -33,7 +33,6 @@ const RANGE_LABEL: Record<RangeFilter, string> = {
   all: 'Alle',
 }
 
-// Y-M-D in Europe/Berlin (DB speichert UTC, CLAUDE.md §10).
 function berlinYMD(iso: string): { y: number; m: number; d: number } {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Berlin',
@@ -46,7 +45,6 @@ function berlinYMD(iso: string): { y: number; m: number; d: number } {
   return { y: get('year'), m: get('month'), d: get('day') }
 }
 
-// ISO-Kalenderwoche (Mo–So) aus einem Berlin-Datum.
 function isoWeek(y: number, m: number, d: number): { year: number; week: number } {
   const date = new Date(Date.UTC(y, m - 1, d))
   const day = (date.getUTCDay() + 6) % 7

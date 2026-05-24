@@ -1,8 +1,3 @@
-// Coach-/Admin-Editor für die Schwerpunkte einer Schüler:in. Diese fließen
-// in den Adaptive-Engine als gewichtete Cluster — fokussierte Bereiche
-// werden zuerst und mit höherer Fragenkappe geprüft. Quelle ist meist die
-// letzte Klassenarbeit; Coach kann auch eigene Beobachtungen festhalten.
-
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Plus, X } from 'lucide-react'

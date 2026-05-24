@@ -1,6 +1,3 @@
-// Sub-components for TaskPlayer — extracted to keep TaskPlayer.tsx under 400 lines.
-// TypeBadge, DifficultyBadge, VideoBlock, UnsupportedBlock.
-
 import type { JSX } from 'react'
 import { MathContent } from '@/lib/render/MathContent'
 import type { Task } from '@/types'

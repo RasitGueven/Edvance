@@ -1,8 +1,3 @@
-// Optionaler Rechenweg-Slot unter der Hauptantwort. Per Default kollabiert,
-// damit das Kind nicht abgelenkt wird. Erscheint nur bei freien Antworten
-// (NUMERIC, OPEN, MULTI-STEP) — MC und Zuordnung brauchen keinen
-// Rechenweg, weil die Antwort selbst ausgewählt/zugeordnet wird.
-
 import { useState, type JSX } from 'react'
 import { Pencil, Trash2, X } from 'lucide-react'
 import { DrawCanvas } from '../DrawCanvas'
