@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Sparkles, Target } from 'lucide-react'
 import type { SkillLevelEntry } from '@/types/diagnosis'
 import { SectionHeader } from './DiagnosisResultComponents'
+import { EdvanceCard } from '@/components/edvance'
 
 interface LernplanSectionProps {
   focus: SkillLevelEntry[]
@@ -35,9 +36,8 @@ export function LernplanSection({ focus, clusterIdFor }: LernplanSectionProps) {
           {focus.map((s, i) => {
             const cid = clusterIdFor(s.skill_cluster)
             const card = (
-              <div
-                className="rounded-2xl bg-card p-5 transition-shadow group-hover:shadow-md"
-                style={{ border: '2px solid var(--border)', borderBottomWidth: '4px' }}
+              <EdvanceCard
+                className="p-5 border-2 border-b-4 border-[var(--border)] transition-shadow group-hover:shadow-md"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span
@@ -68,7 +68,7 @@ export function LernplanSection({ focus, clusterIdFor }: LernplanSectionProps) {
                     }}
                   />
                 </div>
-              </div>
+              </EdvanceCard>
             )
             return cid ? (
               <Link key={s.skill_cluster} to={`/student/cluster/${cid}`} className="group block">

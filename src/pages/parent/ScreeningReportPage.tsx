@@ -236,15 +236,15 @@ function ReportColumn({
         <p className="text-sm text-[var(--text-muted)]">{emptyText}</p>
       ) : (
         items.map((it) => (
-          <div
+          <EdvanceCard
             key={it.label}
-            className="flex items-center justify-between gap-2 rounded-xl border border-[var(--border)] bg-card p-3"
+            className="flex items-center justify-between gap-2 p-3 border border-[var(--border)]"
           >
             <span className="text-sm text-[var(--text-primary)]">{it.label}</span>
             <EdvanceBadge variant={it.status.variant}>
               {it.status.label}
             </EdvanceBadge>
-          </div>
+          </EdvanceCard>
         ))
       )}
     </div>
