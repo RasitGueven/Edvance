@@ -44,7 +44,6 @@ export function TaskPlayer(): JSX.Element {
   const completedRef = useRef<string | null>(null)
   const { user } = useAuth()
 
-  // Task + Cluster + Siblings laden bei taskId-Aenderung.
   useEffect(() => {
     if (!taskId) return
     let cancelled = false
@@ -96,7 +95,6 @@ export function TaskPlayer(): JSX.Element {
     }
   }, [taskId])
 
-  // Behavior-Tracking starten bei Aufgaben-Wechsel (nur exercise).
   useEffect(() => {
     if (!task || task.content_type !== 'exercise') return
     if (startedTaskRef.current === task.id) return

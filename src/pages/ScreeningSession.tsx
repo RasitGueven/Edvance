@@ -1,9 +1,3 @@
-// Stiller, adaptiver Lernstand-Check (CLAUDE.md §6: das Kind sieht NIE
-// richtig/falsch). Auto-Grading + Item-Wahl laufen clientseitig im reinen
-// Controller; der Coach ist hier reiner Beobachter (kein Rating, kein
-// Coach-View in diesem Flow). P5a: In-Memory-Lauf gegen den freigegebenen
-// Item-Pool, robust bei leerem Pool. Persistenz/Resume folgt (P5b).
-
 import { useEffect, useRef, useState } from 'react'
 import type { JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -38,7 +32,6 @@ import type { ScreeningItem } from '@/types'
 
 type Phase = 'loading' | 'empty' | 'error' | 'running' | 'done'
 
-// Wechselnde, neutrale Ermutigungen — nie wertend (kein richtig/falsch).
 const KICKERS = [
   'Weiter geht’s',
   'Nächste Aufgabe',

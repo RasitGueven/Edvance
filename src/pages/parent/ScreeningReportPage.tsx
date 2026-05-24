@@ -1,9 +1,3 @@
-// Vereinfachter Eltern-Report zum letzten abgeschlossenen Screening jedes
-// Kindes. Keine harten Prozente — qualitative Labels (Stärken / Entwicklungs-
-// felder) aus dem Recommendation-Layer. Radar visualisiert die Kompetenzen.
-// CLAUDE.md §6: das Kind sieht hier sowieso nichts; Eltern sehen das
-// kuratierte Ergebnis ihres eigenen Kindes (RLS via is_parent_of_student).
-
 import { useEffect, useState, type JSX } from 'react'
 import {
   EdvanceCard,

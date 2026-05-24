@@ -8,7 +8,6 @@ export function ScenarioCelebration(): JSX.Element {
   const [animKey, setAnimKey] = useState(0)
   const [visible, setVisible] = useState(true)
 
-  // Badge-Animation beim ersten Render auslösen
   useEffect(() => { setAnimKey((k) => k + 1) }, [])
 
   function replay() {
