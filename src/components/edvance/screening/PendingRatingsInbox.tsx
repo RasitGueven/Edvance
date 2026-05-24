@@ -1,7 +1,3 @@
-// Coach-Inbox für offene Open-Antworten: zeigt Prompt + Schüler-Antwort,
-// erfasst AFB-Rating (I/II/III) + optionale Notiz. Append-only — Korrektur
-// = neuer Eintrag (CLAUDE.md §6/§10 + Migration 028).
-
 import { useEffect, useState, type JSX } from 'react'
 import { Button } from '@/components/ui/button'
 import { EdvanceCard, EdvanceBadge, EmptyState } from '@/components/edvance'

@@ -29,9 +29,6 @@ export const EMPTY_TASK_STATE: TaskState = {
   uploads: [],
 }
 
-// Drawing macht nur bei freien Antworten Sinn (Rechenweg). Bei MC und
-// allen Zuordnungs-Typen klickt das Kind ohnehin nur — Skizzieren würde
-// nur ablenken. STEPS_FINAL = Multi-Step zählt als frei.
 function showDrawingSlot(item: ScreeningItem): boolean {
   if (resolveTeilaufgaben(item)) return true
   return item.input_type === 'NUMERIC' || item.input_type === 'OPEN'
@@ -53,7 +50,6 @@ function resolveTeilaufgaben(item: ScreeningItem): ScreeningTeilaufgabe[] | null
   return raw
 }
 
-// Liefert den Antwort-Wert im Format, das `buildScreeningAnswer` erwartet.
 function slotIds(item: ScreeningItem): string[] {
   if (item.input_type === 'CLOZE_DND' && isClozeDndPayload(item.payload)) {
     return item.payload.segments

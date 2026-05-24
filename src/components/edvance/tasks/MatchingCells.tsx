@@ -1,6 +1,3 @@
-// LeftCell and RightCell sub-components for MatchingWidget.
-// Extracted to keep MatchingWidget.tsx within the 400-line limit.
-
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import type { JSX } from 'react'
 

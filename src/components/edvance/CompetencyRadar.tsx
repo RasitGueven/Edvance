@@ -24,9 +24,6 @@ function polar(
   return [cx + r * Math.sin(angleRad), cy - r * Math.cos(angleRad)]
 }
 
-// FIFA/PES-Style Kompetenz-Radar. Achsenanzahl flexibel (3–8 sinnvoll).
-// Ringe markieren Stufen, das aktive Polygon füllt die erreichten Werte.
-// Reine SVG-Komponente, keine Chart-Lib.
 export function CompetencyRadar({
   axes,
   max = 10,

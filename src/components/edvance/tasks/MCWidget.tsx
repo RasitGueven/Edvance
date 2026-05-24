@@ -10,9 +10,6 @@ type Props = {
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 
-// Single-Choice. Aktive Auswahl: dezenter Primary-Rahmen + Check rechts —
-// keine harten Farbschlachten. Touch-Target ≥ 56 px. Auf Tastatur
-// reagieren Buttons nativ (Space/Enter), Radio-Semantik via aria-checked.
 export function MCWidget({ options, selected, onChange, disabled }: Props): JSX.Element {
   return (
     <div
