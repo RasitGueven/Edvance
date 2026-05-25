@@ -17,11 +17,10 @@ import {
   KpiCard,
   FlagTag,
   SkillBar,
-  TaskCard,
   SectionHeader,
-  FocusPlanSection,
-  DiagnosisHeroHeader,
 } from '@/components/edvance/diagnosis/DiagnosisResultComponents'
+import { TaskCard } from '@/components/edvance/diagnosis/DiagnosisTaskCard'
+import { DiagnosisHeroHeader, FocusPlanSection } from '@/components/edvance/diagnosis/DiagnosisResultSections'
 import {
   Clock,
   Pencil,
