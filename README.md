@@ -251,6 +251,8 @@ Erster Schritt · Aufgewärmt · Dranbleiber · Maschine · Hausaufgaben-Held ·
 
 ## Bereits fertig / definiert
 
+### Spec & Konzept
+
 - Businessplan bei IHK eingereicht
 - Onboarding & Lernstandsanalyse Mathe (v3)
 - Lernpfad-Generierung PRD (v1.1, entwicklerfertig)
@@ -264,6 +266,24 @@ Erster Schritt · Aufgewärmt · Dranbleiber · Maschine · Hausaufgaben-Held ·
 - Home-Schooling Quests (3 Typen, automatisch post-session)
 - Technologie-Stack-Entscheidung (Supabase + custom React-Frontend)
 - Timeline bis Launch Januar 2027
+
+### Implementierung (Stand Mai 2026)
+
+- Foundation: Vite + React 18 + TypeScript + Tailwind v4 + shadcn/ui
+- Supabase Auth mit Rollenhierarchie (student / parent / coach / admin), `ProtectedRoute`
+- Design-System: `EdvanceCard`, `MasteryBar`, `XPBar`, `StatCard`, `EdvanceBadge`, `EmptyState`, `LoadingPulse`, `ToastBanner` — inkl. Premium-Türkis-Levelup, Streak-Repair- und Boss-Grün-Tokens
+- Brand: echtes Edvance-Logo + Wordmark in der Navbar (Space Grotesk)
+- Aufgaben-Schema: Tabellen + RLS + Seed-Script für KMK-Cluster
+- NRW Klasse 8 Mathe Taxonomie + Diagnostic-Generator
+- Schema-Migrationen 011–021 (Leads, Intake, Screening, Tiers/Subscriptions, Student-Coach, Sessions, Gamification, Parent-Reports, Provision-RPC)
+- Edge Function `provision_student` (Lead → Schüler-Konvertierung live)
+- Erstgespräch Stufe A `/admin/leads` + Stufe B `/coach/intake`
+- Tarif-Verwaltung `/admin/tiers` (DB-Katalog statt Hardcode)
+- Diagnose-/Screening-Engine mit echtem Content (`/screening` DB-gestützt, Resume aus DB)
+- Coach- / Student- / Parent-Dashboard auf Echtdaten — alle Mock-/localStorage-Daten entfernt (außer `ThemeContext`)
+- Schnellzugriff-Kacheln in allen drei Dashboards
+
+> Aktueller Schwerpunkt: Diagnostik-Content seeden (`is_diagnostic=true`), Mathebuch-Import (Lambacher Schweizer 8. Kl. NRW), Home-Quest-Flow. Details in `docs/ROADMAP.md`.
 
 ---
 
@@ -280,8 +300,9 @@ Erster Schritt · Aufgewärmt · Dranbleiber · Maschine · Hausaufgaben-Held ·
 - Eskalation, wenn Coach Report nicht rechtzeitig freigibt?
 
 ### Technologie
-- Datenmodell in Supabase finalisieren (Aufgaben, Mastery, Sessions, Reports) — beim Entwickler-Onboarding
-- Edge Functions vs. separater Backend-Service für Edvance-spezifische Logik (Case-Routing, Mastery-Engine, Eltern-Report-Generierung)
+- Aufgaben-DB-Befüllung: Diagnostik-Content (`is_diagnostic=true`) fehlt → Screening läuft, aber leer
+- Mathebuch-Import (Lambacher Schweizer 8. Kl. NRW) — Pipeline + Lizenz mit Klett
+- Edge Functions vs. separater Backend-Service für Mastery-Engine und Eltern-Report-Generierung
 - Finale Wahl der KI-API für Eddy (Anthropic Claude empfohlen)
 
 ### Operatives
