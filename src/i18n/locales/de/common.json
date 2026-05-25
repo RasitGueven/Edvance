@@ -1,0 +1,21 @@
+{
+  "save": "Speichern",
+  "saving": "Speichert…",
+  "cancel": "Abbrechen",
+  "discard": "Verwerfen",
+  "back": "Zurück",
+  "close": "Schließen",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "create": "Anlegen",
+  "remove": "Entfernen",
+  "add": "Hinzufügen",
+  "optional": "optional",
+  "loading": "Lädt…",
+  "active": "Aktiv",
+  "inactive": "Inaktiv",
+  "yes": "Ja",
+  "no": "Nein",
+  "moveUp": "Nach oben",
+  "moveDown": "Nach unten"
+}

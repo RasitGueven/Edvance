@@ -1,0 +1,124 @@
+{
+  "page": {
+    "titleEdit": "Aufgabe bearbeiten",
+    "titleNew": "Neue Aufgabe",
+    "subtitle": "Aufgabenverwaltung (Screening & Lernpfad)",
+    "backToList": "Zur Liste"
+  },
+  "header": {
+    "idLabel": "ID",
+    "newPlaceholder": "Neue Aufgabe – Titel eingeben"
+  },
+  "usage": {
+    "title": "Verwendung",
+    "screening": "Screening",
+    "lernpfad": "Lernpfad",
+    "beides": "Beides",
+    "notPersisted": "Verwendung wird noch nicht in der Datenbank gespeichert – Schema-Migration ausstehend.",
+    "drawWarning": "DRAW im Screening nicht auto-bewertbar – diese Aufgabe wird als manuelles Coach-Rating geführt."
+  },
+  "sections": {
+    "aufgabenstellung": "Aufgabenstellung",
+    "aufgabentyp": "Aufgabentyp",
+    "antwortoptionen": "Antwortoptionen",
+    "hinweise": "Hinweise",
+    "teilaufgaben": "Teilaufgaben",
+    "coach": "Coach-Hinweise",
+    "metadaten": "Metadaten",
+    "preview": "Live-Vorschau"
+  },
+  "fields": {
+    "context": "Kontext / Stammtext",
+    "contextHint": "wird über allen Teilaufgaben angezeigt",
+    "prompt": "Aufgabentext",
+    "skillLabel": "Skill",
+    "skillCode": "Skill-Code",
+    "topic": "Thema",
+    "classLevel": "Klassenstufe",
+    "level": "Level (1–3)",
+    "afb": "AFB (Anforderungsbereich)",
+    "phase": "Phase",
+    "explanation": "Erklärung / Musterlösung",
+    "typicalErrors": "Typische Fehler",
+    "typicalErrorsHint": "eine pro Zeile",
+    "tolerance": "Toleranz",
+    "checkType": "Check-Type",
+    "estimatedTime": "Geschätzte Dauer (Sek.)"
+  },
+  "inputTypes": {
+    "MC": "Multiple Choice",
+    "NUMERIC": "Numerisch",
+    "MATCHING": "Zuordnung",
+    "STEPS_FINAL": "Mehrschrittig",
+    "OPEN": "Freitext",
+    "DRAW": "Zeichnen"
+  },
+  "hint": {
+    "n": "Hinweis {{n}}",
+    "placeholder1": "z.B. Erinnerung an die passende Formel …",
+    "placeholder2": "z.B. konkreter Schritt zur Lösung …",
+    "explainer": "Hinweise werden Schüler:innen nacheinander angezeigt (Stufe 1 zuerst). Leere Hinweise werden ausgeblendet.",
+    "notPersisted": "Hinweise werden noch nicht in der Datenbank gespeichert – Schema-Migration ausstehend.",
+    "show": "Hinweis {{n}} anzeigen",
+    "rangeLabel": "Hinweise ({{count}}/2)"
+  },
+  "mc": {
+    "addOption": "Option hinzufügen",
+    "markCorrect": "Als richtig markieren",
+    "optionPlaceholder": "Antworttext"
+  },
+  "numeric": {
+    "value": "Richtiger Wert",
+    "unit": "Einheit",
+    "unitPlaceholder": "z.B. cm, €, %",
+    "mode": "Vergleichsmodus",
+    "modeExact": "Exakt",
+    "modeTolerance": "Mit Toleranz (±)",
+    "modeRounded": "Gerundet (2 NK)"
+  },
+  "matching": {
+    "left": "Links",
+    "right": "Rechts",
+    "addPair": "Paar hinzufügen"
+  },
+  "steps": {
+    "info": "Bei mehrschrittigen Aufgaben wird nur der finale Endwert bewertet. Bei Bedarf Teilaufgaben unten anlegen.",
+    "addFinal": "Endwert hinzufügen"
+  },
+  "open": {
+    "label": "Akzeptierte Formulierungen",
+    "hint": "Hinweis für Coach-Bewertung, keine harte Validierung",
+    "add": "Formulierung hinzufügen"
+  },
+  "draw": {
+    "title": "Zeichnen-Aufgabe",
+    "line1": "Schüler:in zeichnet auf einer Canvas – automatische Bewertung nicht möglich.",
+    "line2": "Coach prüft die Zeichnung manuell und vergibt XP."
+  },
+  "teil": {
+    "addTeilaufgabe": "Teilaufgabe hinzufügen",
+    "typeNumeric": "Numerisch",
+    "typeOpen": "Freitext",
+    "promptPlaceholder": "Prompt der Teilaufgabe",
+    "empty": "Keine Teilaufgaben – optional, für mehrteilige Aufgaben."
+  },
+  "preview": {
+    "student": "Schüler",
+    "coach": "Coach",
+    "promptMissing": "Prompt fehlt",
+    "coachSolution": "Lösung / Erklärung",
+    "coachErrors": "Typische Fehler",
+    "coachNote": "Akzeptierte Formulierungen"
+  },
+  "validation": {
+    "promptEmpty": "Aufgabentext darf nicht leer sein.",
+    "skillCodeMissing": "Skill-Code fehlt.",
+    "skillLabelMissing": "Skill-Bezeichnung fehlt.",
+    "topicMissing": "Thema fehlt.",
+    "openManualMismatch": "OPEN ↔ manual: offene Items brauchen check_type=manual.",
+    "afbPhaseMismatch": "AFB und Phase entweder beide gesetzt (v2) oder beide leer (Legacy).",
+    "clusterMissing": "Cluster fehlt – bitte zurück zur Liste und Cluster wählen.",
+    "saveFailed": "Speichern fehlgeschlagen: {{error}}"
+  },
+  "loadError": "Aufgabe konnte nicht geladen werden."
+}

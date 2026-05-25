@@ -21,6 +21,7 @@ import { XpRulesPage } from '@/pages/admin/XpRulesPage'
 import { TiersPage } from '@/pages/admin/TiersPage'
 import { DiagnosticsPage } from '@/pages/admin/DiagnosticsPage'
 import { ScreeningItemsPage } from '@/pages/admin/ScreeningItemsPage'
+import { ScreeningItemEditorPage } from '@/pages/admin/ScreeningItemEditorPage'
 import { ScreeningCoveragePage } from '@/pages/admin/ScreeningCoveragePage'
 import { IntakePage } from '@/pages/coach/IntakePage'
 import { ScreeningResultsPage } from '@/pages/coach/ScreeningResultsPage'
@@ -208,6 +209,22 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <ScreeningItemsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/screening-items/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <ScreeningItemEditorPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/screening-items/new"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <ScreeningItemEditorPage />
             </ProtectedRoute>
           }
         />

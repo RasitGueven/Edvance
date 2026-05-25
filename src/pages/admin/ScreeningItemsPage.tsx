@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,7 +9,6 @@ import {
   LoadingPulse,
 } from '@/components/edvance'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { ItemEditorModal } from '@/components/edvance/screening/ItemEditorModal'
 import { getClustersBySubject, getSubjects } from '@/lib/supabase/tasks'
 import {
   listScreeningItems,
@@ -90,8 +89,7 @@ export function ScreeningItemsPage(): JSX.Element {
   const [v2Filter, setV2Filter] = useState<V2Filter>('all')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [editing, setEditing] = useState<ScreeningItem | null>(null)
-  const [modalOpen, setModalOpen] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     getSubjects().then(({ data }) => {
@@ -129,16 +127,11 @@ export function ScreeningItemsPage(): JSX.Element {
   }
 
   const openCreate = (): void => {
-    setEditing(null)
-    setModalOpen(true)
+    if (!clusterId) return
+    navigate(`/admin/screening-items/new?clusterId=${clusterId}`)
   }
   const openEdit = (it: ScreeningItem): void => {
-    setEditing(it)
-    setModalOpen(true)
-  }
-  const onSaved = (): void => {
-    setModalOpen(false)
-    reload()
+    navigate(`/admin/screening-items/${it.id}/edit`)
   }
 
   const shown = items.filter((i) => {
@@ -260,14 +253,6 @@ export function ScreeningItemsPage(): JSX.Element {
           </div>
         )}
       </main>
-
-      <ItemEditorModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSaved={onSaved}
-        item={editing}
-        clusterId={clusterId || null}
-      />
     </div>
   )
 }

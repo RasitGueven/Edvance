@@ -31,6 +31,23 @@ export async function listScreeningItems(opts?: {
   }
 }
 
+export async function getScreeningItem(
+  id: string,
+): Promise<SupabaseResult<ScreeningItem>> {
+  try {
+    const { data, error } = await supabase
+      .from('screening_items')
+      .select('*')
+      .eq('id', id)
+      .single()
+    if (error) return { data: null, error: error.message }
+    return { data: data as ScreeningItem, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Item konnte nicht geladen werden'
+    return { data: null, error: message }
+  }
+}
+
 // Items per Id-Liste (für die Coach-Rating-Inbox: prompt + Lösungsschema
 // neben der Schüler-Antwort darstellen).
 export async function listScreeningItemsByIds(
