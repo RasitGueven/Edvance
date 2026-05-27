@@ -19,11 +19,11 @@ const STATUS_LABEL: Record<LeadStatus, string> = {
   rejected: 'Abgelehnt',
 }
 
-const STATUS_VARIANT: Record<LeadStatus, 'primary' | 'warning' | 'success' | 'muted'> = {
+const STATUS_VARIANT: Record<LeadStatus, 'primary' | 'warning' | 'mastered' | 'muted'> = {
   new: 'primary',
   contacted: 'warning',
   onboarding_scheduled: 'warning',
-  converted: 'success',
+  converted: 'mastered',
   rejected: 'muted',
 }
 

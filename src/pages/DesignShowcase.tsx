@@ -43,7 +43,7 @@ export function DesignShowcase() {
       {/* Header */}
       <div className="px-8 py-10 bg-[var(--color-primary)]">
         <div className="max-w-5xl mx-auto">
-          <EdvanceBadge variant="xp" className="mb-4">Design System v2</EdvanceBadge>
+          <EdvanceBadge variant="xp-day" className="mb-4">Design System v2</EdvanceBadge>
           <h1 className="text-2xl font-bold text-white mt-2">Edvance Design Showcase</h1>
           <p className="text-sm text-[var(--color-primary-light)] mt-1 leading-relaxed max-w-lg">
             Alle Komponenten auf einen Blick – der visuelle Spiegel vor jedem Release.
@@ -214,21 +214,21 @@ export function DesignShowcase() {
               </p>
             </EdvanceCard>
 
-            <EdvanceCard variant="raised">
+            <EdvanceCard variant="default">
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2">variant: raised</p>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 Erhöhte Card für prominenteren Content.
               </p>
             </EdvanceCard>
 
-            <EdvanceCard variant="navy">
+            <EdvanceCard variant="hero-student">
               <p className="text-xs font-semibold uppercase tracking-wider opacity-60 mb-2">variant: navy</p>
               <p className="text-sm leading-relaxed opacity-80">
                 Navy-Hintergrund. Für Header-Bereiche oder primäre Highlights.
               </p>
             </EdvanceCard>
 
-            <EdvanceCard variant="blue-pale">
+            <EdvanceCard variant="subtle">
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2">variant: blue-pale</p>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 Helles Blau. Für Info-Boxen oder Onboarding-Hinweise.
@@ -237,7 +237,7 @@ export function DesignShowcase() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {(['left-primary', 'left-success', 'left-warning', 'left-destructive'] as const).map(
+            {(['primary', 'strength', 'exam', 'coach-emergency'] as const).map(
               (accent) => (
                 <EdvanceCard key={accent} accent={accent}>
                   <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1">
@@ -255,12 +255,12 @@ export function DesignShowcase() {
           <EdvanceCard>
             <div className="flex flex-wrap gap-3">
               <EdvanceBadge variant="primary">Primary</EdvanceBadge>
-              <EdvanceBadge variant="success">Erfolg</EdvanceBadge>
+              <EdvanceBadge variant="mastered">Erfolg</EdvanceBadge>
               <EdvanceBadge variant="warning">Hinweis</EdvanceBadge>
-              <EdvanceBadge variant="destructive">Fehler</EdvanceBadge>
+              <EdvanceBadge variant="exam">Fehler</EdvanceBadge>
               <EdvanceBadge variant="muted">Neutral</EdvanceBadge>
-              <EdvanceBadge variant="xp">1.240 XP</EdvanceBadge>
-              <EdvanceBadge variant="streak">14 Tage</EdvanceBadge>
+              <EdvanceBadge variant="xp-day">1.240 XP</EdvanceBadge>
+              <EdvanceBadge variant="streak-presence">14 Tage</EdvanceBadge>
             </div>
           </EdvanceCard>
         </Section>

@@ -179,7 +179,7 @@ export function TiersPage(): JSX.Element {
                   <span className="text-base font-semibold text-[var(--color-text-primary)]">
                     {t.name} · {(t.price_cents / 100).toLocaleString('de-DE')} €
                   </span>
-                  <EdvanceBadge variant={t.active ? 'success' : 'muted'}>
+                  <EdvanceBadge variant={t.active ? 'mastered' : 'muted'}>
                     {t.active ? 'Aktiv' : 'Inaktiv'}
                   </EdvanceBadge>
                 </div>

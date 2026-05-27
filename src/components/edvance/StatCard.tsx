@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { EdvanceCard } from './EdvanceCard'
+import { EdvanceCard } from './Card'
 
 interface StatCardProps {
   value: string | number
@@ -7,6 +7,7 @@ interface StatCardProps {
   icon: string
   trend?: string | null
   color?: string
+  className?: string
 }
 
 export function StatCard({
@@ -14,15 +15,21 @@ export function StatCard({
   label,
   icon,
   trend = null,
-  color = 'var(--primary)',
+  color = 'var(--color-primary)',
+  className,
 }: StatCardProps) {
   const isPositive = trend?.startsWith('+')
 
   return (
-    <EdvanceCard className="group flex items-start gap-4 hover:-translate-y-0.5 transition-transform duration-200">
+    <EdvanceCard
+      className={cn(
+        'group flex items-start gap-4 hover:-translate-y-0.5 transition-transform duration-200',
+        className,
+      )}
+    >
       <div
-        className="flex-none flex items-center justify-center w-12 h-12 rounded-[var(--radius-lg)] text-xl shrink-0 transition-transform duration-200 group-hover:scale-110"
-        style={{ backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)` }}
+        className="flex-none flex items-center justify-center w-12 h-12 rounded-[var(--radius-md)] text-xl shrink-0 transition-transform duration-200 group-hover:scale-110"
+        style={{ backgroundColor: `color-mix(in srgb, ${color} 14%, white)` }}
       >
         {icon}
       </div>
@@ -34,17 +41,17 @@ export function StatCard({
           {trend && (
             <span
               className={cn(
-                'text-xs font-semibold rounded-[var(--radius-full)] px-2 py-0.5 shrink-0',
+                'text-xs font-semibold rounded-[var(--radius-sm)] px-2 py-0.5 shrink-0',
                 isPositive
-                  ? 'bg-[var(--success-light)] text-[var(--success)]'
-                  : 'bg-[var(--destructive-light)] text-[var(--destructive)]',
+                  ? 'bg-[var(--color-success-eltern-light)] text-[var(--color-success-eltern)]'
+                  : 'bg-[var(--color-error-gap-light)] text-[var(--color-error-gap)]',
               )}
             >
               {trend}
             </span>
           )}
         </div>
-        <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{label}</p>
+        <p className="text-sm text-[var(--color-text-tertiary)] mt-1 leading-relaxed">{label}</p>
       </div>
     </EdvanceCard>
   )

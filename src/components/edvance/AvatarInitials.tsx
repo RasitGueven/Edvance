@@ -6,15 +6,19 @@ interface AvatarInitialsProps {
   color?: 'auto' | string
 }
 
-const AVATAR_PALETTE = [
-  'var(--primary)',
-  'var(--success)',
-  'var(--warning)',
-  'var(--level-purple)',
-  'var(--streak-orange)',
-  'var(--info)',
-  'var(--destructive)',
-  'var(--success-dark)',
+/**
+ * Deterministische Palette — abgeleitet von v2-Tokens, damit alle Avatare
+ * konsistent mit der Brand-Familie wirken.
+ */
+const AVATAR_PALETTE: readonly string[] = [
+  'var(--color-primary)',
+  'var(--color-success-eltern)',
+  'var(--color-gold-warning)',
+  'var(--color-repair)',
+  'var(--color-accent-streak)',
+  'var(--color-success-skilltree)',
+  'var(--color-error-gap)',
+  'var(--color-success)',
 ]
 
 function nameToColor(name: string): string {

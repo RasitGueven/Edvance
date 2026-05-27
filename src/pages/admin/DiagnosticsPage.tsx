@@ -238,7 +238,7 @@ function TaskRow({ task, onSaved }: { task: Task; onSaved: () => void }): JSX.El
         <p className="text-sm text-[var(--color-text-primary)] line-clamp-2">
           {task.title ?? task.question ?? `task:${task.id.slice(0, 8)}`}
         </p>
-        <EdvanceBadge variant={edit.is_diagnostic ? 'success' : 'muted'}>
+        <EdvanceBadge variant={edit.is_diagnostic ? 'mastered' : 'muted'}>
           {edit.is_diagnostic ? 'Diagnostisch' : 'Inaktiv'}
         </EdvanceBadge>
       </div>

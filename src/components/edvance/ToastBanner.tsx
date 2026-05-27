@@ -8,15 +8,16 @@ interface ToastBannerProps {
   onClose?: () => void
 }
 
-const TOAST_CLASS: Record<string, string> = {
+const TOAST_CLASS: Record<ToastBannerProps['type'], string> = {
   success: 'toast-success',
   xp:      'toast-xp',
-  levelup: 'toast-levelup',
+  /* Level-Up wird über LevelUpModal abgewickelt — Toast als Fallback bleibt mit Primary+Gold */
+  levelup: 'bg-[var(--color-primary)] text-[var(--color-gold-altgold)] border-[var(--color-primary)]',
   warning: 'toast-warning',
   error:   'toast-error',
 }
 
-const TOAST_ICON: Record<string, string> = {
+const TOAST_ICON: Record<ToastBannerProps['type'], string> = {
   success: '✓',
   xp:      '🎉',
   levelup: '⬆️',
@@ -45,7 +46,7 @@ export function ToastBanner({ type, message, xpAmount, onClose }: ToastBannerPro
         'flex items-center gap-3 px-5 py-3',
         'rounded-[var(--radius-lg)] font-semibold border-[1.5px]',
         '-translate-x-1/2 min-w-[280px] max-w-[480px]',
-        'shadow-elevation-lg',
+        'shadow-lg',
         TOAST_CLASS[type],
         exiting ? 'animate-toast-out' : 'animate-toast-in',
       )}
@@ -58,7 +59,7 @@ export function ToastBanner({ type, message, xpAmount, onClose }: ToastBannerPro
       <span className="flex-1 text-sm">{message}</span>
 
       {type === 'xp' && xpAmount !== undefined && (
-        <span className="text-xl font-bold leading-none animate-bounce-pop">
+        <span className="text-xl font-bold leading-none animate-xp-float">
           +{xpAmount} XP
         </span>
       )}

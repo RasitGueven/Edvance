@@ -215,7 +215,7 @@ export function IntakePage(): JSX.Element {
                             {new Date(s.created_at).toLocaleDateString('de-DE')}
                           </span>
                           <EdvanceBadge
-                            variant={s.status === 'final' ? 'success' : 'warning'}
+                            variant={s.status === 'final' ? 'mastered' : 'warning'}
                           >
                             {s.status === 'final' ? 'Final' : 'Entwurf'}
                           </EdvanceBadge>

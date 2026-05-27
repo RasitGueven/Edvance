@@ -1,92 +1,79 @@
-import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-type ModalSize = 'md' | 'lg' | 'xl'
-
-const SIZE: Record<ModalSize, string> = {
-  md: 'max-w-xl',
-  lg: 'max-w-3xl',
-  xl: 'max-w-5xl',
+interface ModalProps {
+  open: boolean
+  onClose: () => void
+  title?: string
+  children: ReactNode
+  /** Größe — `md` default, `lg` für längere Inhalte, `auto` lässt Inhalt entscheiden. */
+  size?: 'md' | 'lg' | 'auto'
+  /** `dark` für Effekt-Momente (Boss, Level-Up); `default` für funktionale Inhalte. */
+  tone?: 'default' | 'dark'
+  className?: string
 }
 
+/**
+ * Generischer Modal-Container. Für emotionale Momente (Level-Up, Boss,
+ * Streak-Repair) gibt es eigene Komponenten in `./moments/`, die diesen Modal
+ * als Bühne nutzen können.
+ */
 export function Modal({
   open,
   onClose,
   title,
-  description,
-  size = 'lg',
   children,
-  footer,
-}: {
-  open: boolean
-  onClose: () => void
-  title: string
-  description?: string
-  size?: ModalSize
-  children: React.ReactNode
-  footer?: React.ReactNode
-}): JSX.Element | null {
+  size = 'md',
+  tone = 'default',
+  className,
+}: ModalProps) {
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent): void => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
+    return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
   if (!open) return null
 
+  const sizeClass: Record<NonNullable<ModalProps['size']>, string> = {
+    md:   'max-w-md',
+    lg:   'max-w-xl',
+    auto: '',
+  }
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 animate-fade-in"
+      style={{ backgroundColor: 'rgba(20, 33, 61, 0.55)' }}
+      onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={title}
     >
-      <button
-        type="button"
-        aria-label="Schließen"
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
       <div
         className={cn(
-          'relative w-full overflow-hidden rounded-[var(--radius-xl)]',
-          'bg-[var(--surface)] shadow-elevation-lg',
-          'flex max-h-[90vh] flex-col animate-scale-in',
-          SIZE[size],
+          'w-full rounded-[var(--radius-xl)] p-6 shadow-xl animate-scale-in',
+          tone === 'dark'
+            ? 'student-hero light-source text-white border-0'
+            : 'bg-[var(--color-bg-surface)] border border-[var(--color-border)]',
+          sizeClass[size],
+          className,
         )}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] px-6 py-4">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-base font-semibold text-[var(--text-primary)]">
-              {title}
-            </h2>
-            {description && (
-              <p className="text-sm text-[var(--text-muted)]">{description}</p>
+        {title && (
+          <h2
+            className={cn(
+              'text-xl font-bold mb-4',
+              tone === 'dark' ? 'text-white' : 'text-[var(--color-text-primary)]',
             )}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full p-1 text-[var(--text-muted)] hover:bg-[var(--border)]"
-            aria-label="Schließen"
           >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
-        {footer && (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[var(--border)] bg-[var(--card)] px-6 py-3">
-            {footer}
-          </div>
+            {title}
+          </h2>
         )}
+        {children}
       </div>
     </div>
   )
