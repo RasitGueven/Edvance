@@ -10,6 +10,14 @@ import { LambacherPreview } from '@/pages/admin/LambacherPreview'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { TiersPage } from '@/pages/admin/TiersPage'
 import { DiagnosticsPage } from '@/pages/admin/DiagnosticsPage'
+import { OnboardingPage } from '@/pages/admin/OnboardingPage'
+import { SchedulePage } from '@/pages/admin/SchedulePage'
+import { CoachesPage } from '@/pages/admin/CoachesPage'
+import { AssignmentsPage } from '@/pages/admin/AssignmentsPage'
+import { XpRulesPage } from '@/pages/admin/XpRulesPage'
+import { ScreeningItemsPage } from '@/pages/admin/ScreeningItemsPage'
+import { ScreeningItemEditorPage } from '@/pages/admin/ScreeningItemEditorPage'
+import { ScreeningCoveragePage } from '@/pages/admin/ScreeningCoveragePage'
 import { IntakePage } from '@/pages/coach/IntakePage'
 import { ScreeningResultsPage } from '@/pages/coach/ScreeningResultsPage'
 import { ReportsPage } from '@/pages/coach/ReportsPage'
@@ -141,6 +149,14 @@ export default function App(): JSX.Element {
             </ProtectedRoute>
           }
         />
+        <Route path="/admin/onboarding" element={<ProtectedRoute allowedRoles={['admin']}><OnboardingPage /></ProtectedRoute>} />
+        <Route path="/admin/schedule" element={<ProtectedRoute allowedRoles={['admin']}><SchedulePage /></ProtectedRoute>} />
+        <Route path="/admin/coaches" element={<ProtectedRoute allowedRoles={['admin']}><CoachesPage /></ProtectedRoute>} />
+        <Route path="/admin/assignments" element={<ProtectedRoute allowedRoles={['admin']}><AssignmentsPage /></ProtectedRoute>} />
+        <Route path="/admin/xp-rules" element={<ProtectedRoute allowedRoles={['admin']}><XpRulesPage /></ProtectedRoute>} />
+        <Route path="/admin/screening-items" element={<ProtectedRoute allowedRoles={['admin']}><ScreeningItemsPage /></ProtectedRoute>} />
+        <Route path="/admin/screening-items/:id" element={<ProtectedRoute allowedRoles={['admin']}><ScreeningItemEditorPage /></ProtectedRoute>} />
+        <Route path="/admin/screening-coverage" element={<ProtectedRoute allowedRoles={['admin']}><ScreeningCoveragePage /></ProtectedRoute>} />
 
         <Route path="/showcase" element={<DesignShowcase />} />
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />

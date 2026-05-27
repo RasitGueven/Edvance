@@ -134,14 +134,13 @@ export function EdvanceLogo({
 
   const wordmark = (
     <span
+      className="select-none leading-none"
       style={{
         fontFamily: "'Space Grotesk', sans-serif",
         fontWeight: 400,
         fontSize: size,
         letterSpacing: '0.045em',
         color,
-        lineHeight: 1,
-        userSelect: 'none',
       }}
     >
       edvance
@@ -150,10 +149,8 @@ export function EdvanceLogo({
 
   return (
     <div
-      className={className}
+      className={`inline-flex items-center ${className ?? ''}`}
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
         gap,
         flexDirection: symbolRight ? 'row-reverse' : 'row',
         ...style,
@@ -197,16 +194,12 @@ export function EdvanceAppIcon({
 
   return (
     <div
-      className={className}
+      className={`flex items-center justify-center shrink-0 ${className ?? ''}`}
       style={{
         width: size,
         height: size,
         borderRadius: radius,
         background,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
         ...style,
       }}
       aria-label="edvance"
