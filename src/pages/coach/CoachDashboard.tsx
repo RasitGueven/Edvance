@@ -22,8 +22,8 @@ import type {
 } from '@/types'
 
 const PLACEHOLDER_DASH = '–'
-const SHADOW_CARD = '0 1px 6px 0 rgba(0,0,0,0.07)'
-const SHADOW_ACTIVE = '0 2px 12px 0 rgba(15,110,86,0.10)'
+const SHADOW_CARD = 'var(--shadow-card, 0 1px 6px 0 rgba(0,0,0,0.07))'
+const SHADOW_ACTIVE = 'var(--shadow-active, 0 2px 12px 0 color-mix(in srgb, var(--success) 10%, transparent))'
 const ICON_BG_PRIMARY = 'color-mix(in srgb, var(--primary) 12%, transparent)'
 const ICON_BG_SUCCESS = 'color-mix(in srgb, var(--success) 12%, transparent)'
 const ICON_BG_WARNING = 'color-mix(in srgb, var(--warning) 12%, transparent)'

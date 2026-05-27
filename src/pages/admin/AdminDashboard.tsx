@@ -17,7 +17,7 @@ import { listTiers } from '@/lib/supabase/subscriptions'
 import { provisionStudent } from '@/lib/supabase/provision'
 import type { Coach, OnboardingFormData, SchoolKind, TierPlan } from '@/types'
 
-const SHADOW_CARD = '0 4px 24px 0 rgba(0,0,0,0.08)'
+const SHADOW_CARD = 'var(--shadow-card, 0 4px 24px 0 rgba(0,0,0,0.08))'
 const SUCCESS_ICON_BG = 'color-mix(in srgb, var(--success) 15%, transparent)'
 
 const STEP_DATA = 0
