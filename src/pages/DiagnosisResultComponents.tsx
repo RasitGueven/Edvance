@@ -8,10 +8,10 @@ export const SIGNAL_LABELS: Record<
   BehaviorAnalysis['mastery_signal'],
   { label: string; color: string; emoji: string }
 > = {
-  secure:     { label: 'Sicher',         color: 'var(--success)',     emoji: '✓' },
-  developing: { label: 'In Entwicklung', color: 'var(--primary)',     emoji: '↗' },
-  gap:        { label: 'Lücke',          color: 'var(--destructive)', emoji: '✗' },
-  guessing:   { label: 'Geraten',        color: 'var(--warning)',     emoji: '?' },
+  secure:     { label: 'Sicher',         color: 'var(--color-success)',     emoji: '✓' },
+  developing: { label: 'In Entwicklung', color: 'var(--color-primary)',     emoji: '↗' },
+  gap:        { label: 'Lücke',          color: 'var(--color-error-exam)', emoji: '✗' },
+  guessing:   { label: 'Geraten',        color: 'var(--color-gold-warning)',     emoji: '?' },
 }
 
 export function formatDate(iso: string) {
@@ -47,7 +47,7 @@ function RadialGauge({
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <circle cx={size / 2} cy={size / 2} r={radius} stroke="var(--border)" strokeWidth={thickness} fill="none" />
+      <circle cx={size / 2} cy={size / 2} r={radius} stroke="var(--color-border)" strokeWidth={thickness} fill="none" />
       <circle
         cx={size / 2} cy={size / 2} r={radius}
         stroke={color} strokeWidth={thickness} fill="none"
@@ -71,11 +71,11 @@ export function GaugeCard({
   caption: string
 }) {
   const displayColor = inverted
-    ? value > 60 ? 'var(--destructive)' : value > 30 ? 'var(--warning)' : 'var(--success)'
-    : value > 65 ? color : value > 35 ? 'var(--warning)' : 'var(--destructive)'
+    ? value > 60 ? 'var(--color-error-exam)' : value > 30 ? 'var(--color-gold-warning)' : 'var(--color-success)'
+    : value > 65 ? color : value > 35 ? 'var(--color-gold-warning)' : 'var(--color-error-exam)'
 
   return (
-    <EdvanceCard className="flex flex-col items-center text-center border-2 border-b-4 border-[var(--border)]">
+    <EdvanceCard className="flex flex-col items-center text-center border-2 border-b-4 border-[var(--color-border)]">
       <div className="relative">
         <RadialGauge value={value} color={displayColor} />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -100,7 +100,7 @@ export function KpiCard({
   bg: string
 }) {
   return (
-    <EdvanceCard className="p-5 border-2 border-b-4 border-[var(--border)]">
+    <EdvanceCard className="p-5 border-2 border-b-4 border-[var(--color-border)]">
       <div className="flex items-center gap-2.5 mb-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: bg, color }}>
           {icon}
@@ -115,9 +115,9 @@ export function KpiCard({
 
 export function FlagTag({ label, tone = 'primary' }: { label: string; tone?: 'primary' | 'warning' | 'success' }) {
   const colors = {
-    primary: { bg: 'var(--primary)', tag: 'color-mix(in srgb, var(--primary) 12%, transparent)' },
-    warning: { bg: 'var(--warning)', tag: 'color-mix(in srgb, var(--warning) 12%, transparent)' },
-    success: { bg: 'var(--success)', tag: 'color-mix(in srgb, var(--success) 12%, transparent)' },
+    primary: { bg: 'var(--color-primary)', tag: 'color-mix(in srgb, var(--color-primary) 12%, transparent)' },
+    warning: { bg: 'var(--color-gold-warning)', tag: 'color-mix(in srgb, var(--color-gold-warning) 12%, transparent)' },
+    success: { bg: 'var(--color-success)', tag: 'color-mix(in srgb, var(--color-success) 12%, transparent)' },
   }[tone]
   return (
     <span
@@ -136,9 +136,9 @@ export function FlagTag({ label, tone = 'primary' }: { label: string; tone?: 'pr
 
 export function SkillBar({ cluster, level, label }: { cluster: string; level: number; label: string }) {
   const colorMap = {
-    Sicher:     { c: 'var(--success)',     d: 'var(--success-dark)' },
-    Erkennbar:  { c: 'var(--primary)',     d: 'var(--primary-shadow)' },
-    Lücke:      { c: 'var(--destructive)', d: 'var(--destructive-dark)' },
+    Sicher:     { c: 'var(--color-success)',     d: 'var(--color-success)' },
+    Erkennbar:  { c: 'var(--color-primary)',     d: 'var(--color-primary-hover)' },
+    Lücke:      { c: 'var(--color-error-exam)', d: 'var(--color-error-exam)' },
   } as const
   const { c: color, d: dark } = colorMap[label as keyof typeof colorMap]
   const pct = (level / 10) * 100
@@ -186,10 +186,10 @@ function MiniMetric({
   inverted?: boolean
 }) {
   const display = inverted
-    ? value > 60 ? 'var(--destructive)' : value > 30 ? 'var(--warning)' : 'var(--success)'
-    : value > 65 ? color : value > 35 ? 'var(--warning)' : 'var(--destructive)'
+    ? value > 60 ? 'var(--color-error-exam)' : value > 30 ? 'var(--color-gold-warning)' : 'var(--color-success)'
+    : value > 65 ? color : value > 35 ? 'var(--color-gold-warning)' : 'var(--color-error-exam)'
   return (
-    <EdvanceCard className="p-2 text-center border border-[var(--border)]">
+    <EdvanceCard className="p-2 text-center border border-[var(--color-border)]">
       <p className="text-[9px] font-bold uppercase tracking-wider text-muted">{label}</p>
       <p className="text-base font-black" style={{ color: display }}>{value}</p>
     </EdvanceCard>
@@ -198,7 +198,7 @@ function MiniMetric({
 
 function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-muted bg-[var(--background)] border border-[var(--border)]">
+    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-muted bg-[var(--color-bg-app)] border border-[var(--color-border)]">
       {icon}
       {text}
     </span>
@@ -207,7 +207,7 @@ function SmallBadge({ icon, text }: { icon?: ReactNode; text: string }) {
 
 function KV({ k, v }: { k: string; v: string }) {
   return (
-    <EdvanceCard className="flex items-center justify-between px-2.5 py-1.5 border border-[var(--border)]">
+    <EdvanceCard className="flex items-center justify-between px-2.5 py-1.5 border border-[var(--color-border)]">
       <span className="text-muted">{k}</span>
       <span className="text-foreground font-black">{v}</span>
     </EdvanceCard>
@@ -224,7 +224,7 @@ export function SectionHeader({
   return (
     <div className="mb-4 flex items-start gap-3">
       <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-primary bg-[color-mix(in_srgb,var(--primary)_10%,transparent)]"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-primary bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)]"
       >
         {icon}
       </span>
@@ -250,14 +250,14 @@ export function TaskCard({
   const signal = analysis ? SIGNAL_LABELS[analysis.mastery_signal] : null
   const ratingNum = snapshot?.coach_rating ?? null
   const ratingColor = ratingNum
-    ? ratingNum >= 3 ? 'var(--success)' : ratingNum === 2 ? 'var(--warning)' : 'var(--destructive)'
+    ? ratingNum >= 3 ? 'var(--color-success)' : ratingNum === 2 ? 'var(--color-gold-warning)' : 'var(--color-error-exam)'
     : 'var(--muted)'
   const ratingDark = ratingNum
-    ? ratingNum >= 3 ? 'var(--success-dark)' : ratingNum === 2 ? 'var(--warning-dark)' : 'var(--destructive-dark)'
-    : 'var(--border-strong)'
+    ? ratingNum >= 3 ? 'var(--color-success)' : ratingNum === 2 ? 'var(--color-gold-warning)' : 'var(--color-error-exam)'
+    : 'var(--color-neutral-unknown)'
 
   return (
-    <EdvanceCard className="overflow-hidden p-0 border-2 border-b-4 border-[var(--border)]">
+    <EdvanceCard className="overflow-hidden p-0 border-2 border-b-4 border-[var(--color-border)]">
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
@@ -302,16 +302,16 @@ export function TaskCard({
       </button>
 
       {open && snapshot && analysis && (
-        <div className="border-t-2 border-border p-5 bg-[var(--background)]">
+        <div className="border-t-2 border-border p-5 bg-[var(--color-bg-app)]">
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
             <div className="lg:col-span-3">
               <p className="text-xs font-bold uppercase tracking-wider text-muted mb-2">Schülerantwort</p>
-              <pre className="whitespace-pre-wrap font-mono text-sm bg-card rounded-xl p-4 leading-relaxed border-2 border-[var(--border)]">
+              <pre className="whitespace-pre-wrap font-mono text-sm bg-card rounded-xl p-4 leading-relaxed border-2 border-[var(--color-border)]">
                 {snapshot.answer_text}
               </pre>
               <p className="mt-3 text-xs font-bold uppercase tracking-wider text-muted mb-2">Musterlösung</p>
               <pre
-                className="whitespace-pre-wrap font-mono text-sm rounded-xl p-4 leading-relaxed bg-[color-mix(in_srgb,var(--success)_6%,transparent)] border-2 border-[color-mix(in_srgb,var(--success)_25%,transparent)]"
+                className="whitespace-pre-wrap font-mono text-sm rounded-xl p-4 leading-relaxed bg-[color-mix(in_srgb,var(--color-success)_6%,transparent)] border-2 border-[color-mix(in_srgb,var(--color-success)_25%,transparent)]"
               >
                 {task.solution}
               </pre>
@@ -329,9 +329,9 @@ export function TaskCard({
               </div>
 
               <div className="grid grid-cols-3 gap-2 mb-3">
-                <MiniMetric label="Conf" value={analysis.confidence_score} color="var(--success)" />
-                <MiniMetric label="Effort" value={analysis.effort_score} color="var(--primary)" />
-                <MiniMetric label="Frust" value={analysis.frustration_index} color="var(--warning)" inverted />
+                <MiniMetric label="Conf" value={analysis.confidence_score} color="var(--color-success)" />
+                <MiniMetric label="Effort" value={analysis.effort_score} color="var(--color-primary)" />
+                <MiniMetric label="Frust" value={analysis.frustration_index} color="var(--color-gold-warning)" inverted />
               </div>
 
               {analysis.flags.length > 0 && (

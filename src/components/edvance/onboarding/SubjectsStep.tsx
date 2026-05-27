@@ -2,7 +2,7 @@ import { Check } from 'lucide-react'
 import { MAX_SUBJECTS_PER_STUDENT, SUBJECTS } from '@/components/edvance/onboarding/constants'
 import type { StepProps } from '@/types'
 
-const SELECTED_BG = 'color-mix(in srgb, var(--primary) 8%, transparent)'
+const SELECTED_BG = 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
 
 export function SubjectsStep({ data, setData }: StepProps): JSX.Element {
   const toggleSubject = (subject: string): void => {
@@ -31,15 +31,15 @@ export function SubjectsStep({ data, setData }: StepProps): JSX.Element {
               onClick={() => toggleSubject(subject)}
               className="flex items-center justify-between rounded-xl border px-5 py-4 text-left transition-all"
               style={{
-                borderColor: selected ? 'var(--primary)' : 'var(--border)',
-                background: selected ? SELECTED_BG : 'var(--card)',
+                borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
+                background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
                 opacity: disabled ? 0.4 : 1,
                 cursor: disabled ? 'not-allowed' : 'pointer',
               }}
             >
               <span className="font-medium text-foreground">{subject}</span>
               {selected && (
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)]">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-primary)]">
                   <Check className="h-3.5 w-3.5 text-white" />
                 </span>
               )}

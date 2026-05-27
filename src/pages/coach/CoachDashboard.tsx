@@ -224,7 +224,7 @@ export function CoachDashboard(): JSX.Element {
           <p className="mt-0.5 text-sm text-muted">{formatDateLongDe()}</p>
         </div>
 
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Schnellzugriff
         </h2>
         <div className="mb-8">
@@ -269,19 +269,19 @@ export function CoachDashboard(): JSX.Element {
             label="Sessions heute"
             value={todayCount}
             icon={<CalendarDays className="h-5 w-5 text-primary" />}
-            iconBg="color-mix(in srgb, var(--primary) 12%, transparent)"
+            iconBg="color-mix(in srgb, var(--color-primary) 12%, transparent)"
           />
           <DashStatCard
             label="Aktive Schüler"
             value={totalActiveStudents(vms)}
             icon={<Users className="h-5 w-5 text-success" />}
-            iconBg="color-mix(in srgb, var(--success) 12%, transparent)"
+            iconBg="color-mix(in srgb, var(--color-success) 12%, transparent)"
           />
           <DashStatCard
             label="Nächste Session"
             value={nextUpcomingTime(vms)}
             icon={<Clock className="h-5 w-5 text-warning" />}
-            iconBg="color-mix(in srgb, var(--warning) 12%, transparent)"
+            iconBg="color-mix(in srgb, var(--color-gold-warning) 12%, transparent)"
           />
         </div>
 
@@ -302,7 +302,7 @@ export function CoachDashboard(): JSX.Element {
             ))}
           </div>
         </div>
-        {error && <p className="mb-3 text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="mb-3 text-sm text-[var(--color-error-exam)]">{error}</p>}
         {loading ? (
           <LoadingPulse type="list" lines={3} />
         ) : filteredVms.length === 0 ? (

@@ -13,11 +13,11 @@ export const TYPE_LABEL: Record<ContentType, string> = {
 }
 
 const TYPE_BADGE: Record<ContentType, { bg: string; fg: string }> = {
-  exercise: { bg: 'color-mix(in srgb, var(--primary) 12%, transparent)', fg: 'var(--primary)' },
-  exercise_group: { bg: 'color-mix(in srgb, var(--primary) 12%, transparent)', fg: 'var(--primary)' },
-  article: { bg: 'color-mix(in srgb, var(--success) 12%, transparent)', fg: 'var(--success)' },
-  video: { bg: 'color-mix(in srgb, var(--warning) 12%, transparent)', fg: 'var(--warning)' },
-  course: { bg: 'color-mix(in srgb, var(--level-purple) 12%, transparent)', fg: 'var(--level-purple)' },
+  exercise: { bg: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', fg: 'var(--color-primary)' },
+  exercise_group: { bg: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', fg: 'var(--color-primary)' },
+  article: { bg: 'color-mix(in srgb, var(--color-success) 12%, transparent)', fg: 'var(--color-success)' },
+  video: { bg: 'color-mix(in srgb, var(--color-gold-warning) 12%, transparent)', fg: 'var(--color-gold-warning)' },
+  course: { bg: 'color-mix(in srgb, var(--color-repair) 12%, transparent)', fg: 'var(--color-repair)' },
 }
 
 export function TypeBadge({ type }: { type: ContentType }): JSX.Element {
@@ -38,7 +38,7 @@ export function DifficultyBadge({ difficulty }: { difficulty: number }): JSX.Ele
       key={i}
       className="inline-block h-1.5 w-1.5 rounded-full"
       style={{
-        background: i <= difficulty ? 'var(--primary)' : 'var(--border-strong)',
+        background: i <= difficulty ? 'var(--color-primary)' : 'var(--color-neutral-unknown)',
       }}
     />
   ))

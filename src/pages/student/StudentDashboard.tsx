@@ -60,7 +60,8 @@ export function StudentDashboard(): JSX.Element {
       const { data: progress } = await getStudentProgress(s.id)
       if (cancelled || !progress) return
       setXpTotal(progress.xp_total)
-      setStreakDays(progress.streak_days)
+      // v2: streak_days durch presence_streak_weeks ersetzt (Migration 032).
+      setStreakDays(progress.presence_streak_weeks)
       setLevel(progress.level)
     })()
     return () => {
@@ -204,11 +205,11 @@ export function StudentDashboard(): JSX.Element {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Mein Lernplan" />
 
-      <div aria-hidden="true" className="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-[0.07] blur-3xl bg-[var(--xp-gold)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute -left-24 bottom-1/4 h-80 w-80 rounded-full opacity-[0.08] blur-3xl bg-[var(--color-levelup)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-[0.07] blur-3xl bg-[var(--color-accent)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -left-24 bottom-1/4 h-80 w-80 rounded-full opacity-[0.08] blur-3xl bg-[var(--color-primary)]" />
       <div aria-hidden="true" className="pointer-events-none absolute right-1/4 top-2/3 h-64 w-64 rounded-full opacity-[0.06] blur-3xl bg-[var(--color-primary)]" />
 
       <StudentHero
@@ -218,12 +219,12 @@ export function StudentDashboard(): JSX.Element {
         level={level}
       />
 
-      <div aria-hidden="true" className="h-8 bg-gradient-to-b from-[var(--color-primary)] to-[var(--background)] opacity-20" />
+      <div aria-hidden="true" className="h-8 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-bg-app)] opacity-20" />
 
       <main className="mx-auto max-w-3xl px-4 py-8">
         {error && (
           <EdvanceCard className="mb-6">
-            <p className="text-sm text-[var(--destructive)]">{error}</p>
+            <p className="text-sm text-[var(--color-error-exam)]">{error}</p>
           </EdvanceCard>
         )}
 
@@ -238,7 +239,7 @@ export function StudentDashboard(): JSX.Element {
         </div>
 
         <div className="mb-8 flex flex-col gap-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Nächste Session
           </p>
           {sessionLoading ? (
@@ -246,11 +247,11 @@ export function StudentDashboard(): JSX.Element {
           ) : nextSession ? (
             <EdvanceCard className="flex flex-wrap items-center justify-between gap-3 p-6">
               <div className="flex flex-col gap-1">
-                <span className="text-base font-semibold text-[var(--text-primary)]">
+                <span className="text-base font-semibold text-[var(--color-text-primary)]">
                   {formatSessionDate(nextSession.scheduled_at)} Uhr
                 </span>
                 {nextSession.room && (
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-[var(--color-text-secondary)]">
                     Raum {nextSession.room}
                   </span>
                 )}
@@ -268,13 +269,13 @@ export function StudentDashboard(): JSX.Element {
 
         <div id="lernpfad" className="flex flex-col gap-3">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Suche nach Aufgabe, Video, Artikel …"
-              className="h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] pl-11 pr-11 text-sm shadow-premium-sm focus:border-[var(--color-primary)] focus:shadow-glow-primary focus:outline-none transition-all"
+              className="h-12 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] pl-11 pr-11 text-sm shadow-xs focus:border-[var(--color-primary)]  focus:outline-none transition-all"
             />
             {search && (
               <button

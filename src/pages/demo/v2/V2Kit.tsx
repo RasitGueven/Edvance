@@ -1,9 +1,9 @@
 /**
  * Edvance Design-System v2 — UI-Kit
  *
- * SCHRITT 3 — Basis-Komponenten visuell auf v2-Tokens gemappt.
- * Greift nur unter `[data-design="v2"]`. Keine Aenderung an
- * produktiven Komponenten unter `src/components`.
+ * Basis-Komponenten visuell auf v2-Tokens gemappt. v2 ist seit der
+ * Big-Bang-Migration produktiv — der frühere [data-design="v2"]-Scope
+ * ist entfallen, alle Tokens und Klassen wirken global.
  *
  * KRITISCHE REGELN (siehe Schritt 7):
  *  1. `--color-accent` (#E8A020) NIE als Textfarbe auf Weiss — WCAG fail.
@@ -83,7 +83,7 @@ function BadgeRow(): JSX.Element {
         <Pill className="bg-[var(--color-error-exam-light)] text-[var(--color-error-exam)]">error-exam</Pill>
         <Pill className="bg-[var(--color-gold-warning-light)] text-[var(--color-gold-warning)]">warning</Pill>
         {/* XP-Pill: dunkler Text auf Gold, NIE Accent als Textfarbe auf Weiss */}
-        <Pill className="bg-[var(--color-gold-altgold)] text-[var(--color-accent-on)]">+25 XP</Pill>
+        <Pill className="bg-[var(--color-gold-altgold)] text-[var(--color-text-primary)]">+25 XP</Pill>
         <Pill className="bg-[var(--color-repair-light)] text-[var(--color-repair)]">streak-repair</Pill>
       </div>
     </Section>

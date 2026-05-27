@@ -37,7 +37,7 @@ function StatPanel({
   value,
   label,
   icon,
-  color = 'var(--primary)',
+  color = 'var(--color-primary)',
 }: {
   value: number
   label: string
@@ -59,7 +59,7 @@ function StatPanel({
         <p className="text-2xl font-bold leading-none" style={{ color }}>
           {value}
         </p>
-        <p className="mt-1 text-xs text-[var(--text-muted)]">{label}</p>
+        <p className="mt-1 text-xs text-[var(--color-text-tertiary)]">{label}</p>
       </div>
     </EdvanceCard>
   )
@@ -141,13 +141,13 @@ export function LambacherPreview(): JSX.Element {
               value={stats.withAssets}
               label="Mit Abbildung"
               icon={<ImageIcon className="h-6 w-6" />}
-              color="var(--success)"
+              color="var(--color-success)"
             />
             <StatPanel
               value={stats.withSolution}
               label="Mit Lösung"
               icon={<Brain className="h-6 w-6" />}
-              color="var(--warning)"
+              color="var(--color-gold-warning)"
             />
           </div>
         )}
@@ -166,8 +166,8 @@ export function LambacherPreview(): JSX.Element {
 
         {error && (
           <EdvanceCard accent="left-destructive">
-            <p className="text-sm font-semibold text-[var(--destructive)]">Fehler beim Laden</p>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">{error}</p>
+            <p className="text-sm font-semibold text-[var(--color-error-exam)]">Fehler beim Laden</p>
+            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{error}</p>
           </EdvanceCard>
         )}
 

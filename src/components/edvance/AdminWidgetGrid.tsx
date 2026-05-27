@@ -7,11 +7,11 @@ type TileAccent = 'primary' | 'success' | 'warning' | 'levelup' | 'repair'
 type TileSize = 'sm' | 'wide' | 'lg'
 
 const ACCENT_VAR: Record<TileAccent, string> = {
-  primary: 'var(--primary)',
-  success: 'var(--success)',
-  warning: 'var(--warning)',
-  levelup: 'var(--color-levelup)',
-  repair: 'var(--color-moment-repair)',
+  primary: 'var(--color-primary)',
+  success: 'var(--color-success)',
+  warning: 'var(--color-gold-warning)',
+  levelup: 'var(--color-primary)',
+  repair: 'var(--color-moment-repair-purple)',
 }
 
 const SIZE_CLASS: Record<TileSize, string> = {
@@ -125,7 +125,7 @@ export function AdminTile({
         <div className="flex flex-col gap-1.5">
           {stat &&
             (loading ? (
-              <span className="h-9 w-16 rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton" />
+              <span className="h-9 w-16 rounded-[var(--radius-md)] bg-[var(--color-border)] animate-skeleton" />
             ) : (
               <span
                 className="text-3xl font-bold leading-none"
@@ -134,10 +134,10 @@ export function AdminTile({
                 {stat.value}
               </span>
             ))}
-          <span className="text-base font-semibold text-[var(--text-primary)]">
+          <span className="text-base font-semibold text-[var(--color-text-primary)]">
             {title}
           </span>
-          <span className="text-xs leading-relaxed text-[var(--text-muted)]">
+          <span className="text-xs leading-relaxed text-[var(--color-text-tertiary)]">
             {stat ? stat.caption : description}
           </span>
           {cta && (

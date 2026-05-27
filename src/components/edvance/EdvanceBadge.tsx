@@ -23,23 +23,23 @@ export function EdvanceBadge({
 }: EdvanceBadgeProps) {
   const variantStyles: Record<string, string> = {
     primary:
-      'bg-[var(--primary-pale)] text-[var(--primary)] border border-[var(--primary-light)]',
+      'bg-[var(--color-primary-light)] text-[var(--color-primary)] border border-[var(--color-primary-light)]',
     success:
-      'bg-[var(--success-light)] text-[var(--success)] border border-[var(--success)]',
+      'bg-[var(--color-success-light)] text-[var(--color-success)] border border-[var(--color-success)]',
     warning:
-      'bg-[var(--warning-light)] text-[var(--warning)] border border-[var(--warning)]',
+      'bg-[var(--color-gold-warning-light)] text-[var(--color-gold-warning)] border border-[var(--color-gold-warning)]',
     destructive:
-      'bg-[var(--destructive-light)] text-[var(--destructive)] border border-[var(--destructive)]',
+      'bg-[var(--color-error-exam-light)] text-[var(--color-error-exam)] border border-[var(--color-error-exam)]',
     muted:
-      'bg-[var(--border)] text-[var(--text-muted)] border border-[var(--border-strong)]',
+      'bg-[var(--color-border)] text-[var(--color-text-tertiary)] border border-[var(--color-neutral-unknown)]',
     xp:
-      'bg-[var(--xp-gold)] text-[var(--brand-navy)] border border-[var(--xp-gold)] font-bold',
+      'bg-[var(--color-accent)] text-[var(--color-primary)] border border-[var(--color-accent)] font-bold',
     streak:
-      'bg-[var(--streak-orange)] text-white border border-[var(--streak-orange)]',
+      'bg-[var(--color-accent-streak)] text-white border border-[var(--color-accent-streak)]',
     levelup:
-      'bg-[var(--color-levelup)] text-[var(--color-levelup-on)] border border-[var(--color-levelup)] font-bold',
+      'bg-[var(--color-primary)] text-[var(--color-bg-surface)] border border-[var(--color-primary)] font-bold',
     repair:
-      'bg-[var(--color-moment-repair)] text-[var(--color-moment-repair-on)] border border-[var(--color-moment-repair)] font-bold',
+      'bg-[var(--color-moment-repair-purple)] text-[var(--color-bg-surface)] border border-[var(--color-moment-repair-purple)] font-bold',
   }
 
   return (

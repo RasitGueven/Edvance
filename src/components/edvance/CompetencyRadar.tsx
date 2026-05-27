@@ -64,7 +64,7 @@ export function CompetencyRadar({
           key={i}
           points={ringPoints((i + 1) / RING_LEVELS)}
           fill="none"
-          stroke="var(--border)"
+          stroke="var(--color-border)"
           strokeWidth={1}
         />
       ))}
@@ -79,7 +79,7 @@ export function CompetencyRadar({
             y1={cy}
             x2={x}
             y2={y}
-            stroke="var(--border)"
+            stroke="var(--color-border)"
             strokeWidth={1}
           />
         )
@@ -88,8 +88,8 @@ export function CompetencyRadar({
       {/* Datenfläche */}
       <polygon
         points={dataPoints}
-        fill="color-mix(in srgb, var(--primary) 22%, transparent)"
-        stroke="var(--primary)"
+        fill="color-mix(in srgb, var(--color-primary) 22%, transparent)"
+        stroke="var(--color-primary)"
         strokeWidth={2}
         strokeLinejoin="round"
       />
@@ -104,7 +104,7 @@ export function CompetencyRadar({
             cx={x}
             cy={y}
             r={4}
-            fill={a.value === null ? 'var(--text-muted)' : 'var(--primary)'}
+            fill={a.value === null ? 'var(--color-text-tertiary)' : 'var(--color-primary)'}
             stroke="white"
             strokeWidth={1.5}
           />
@@ -123,7 +123,7 @@ export function CompetencyRadar({
             y={ly}
             textAnchor={anchor}
             dominantBaseline="middle"
-            className="fill-[var(--text-secondary)] text-[11px] font-semibold uppercase tracking-wider"
+            className="fill-[var(--color-text-secondary)] text-[11px] font-semibold uppercase tracking-wider"
           >
             {a.label}
           </text>

@@ -21,9 +21,9 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
                 className={cn(
                   'w-8 h-8 rounded-[var(--radius-full)] flex items-center justify-center',
                   'text-xs font-bold border-2 transition-all duration-200',
-                  isPast   && 'bg-[var(--success)] border-[var(--success)] text-white',
-                  isActive && 'bg-[var(--primary)] border-[var(--primary)] text-white scale-110 shadow-elevation-sm',
-                  !isPast && !isActive && 'bg-transparent border-[var(--border-strong)] text-[var(--text-muted)]',
+                  isPast   && 'bg-[var(--color-success)] border-[var(--color-success)] text-white',
+                  isActive && 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white scale-110 shadow-xs',
+                  !isPast && !isActive && 'bg-transparent border-[var(--color-neutral-unknown)] text-[var(--color-text-tertiary)]',
                 )}
               >
                 {isPast ? '✓' : idx + 1}
@@ -31,9 +31,9 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
               <span
                 className={cn(
                   'text-xs max-w-[64px] text-center leading-tight',
-                  isActive && 'font-semibold text-[var(--primary)]',
-                  isPast   && 'text-[var(--success)]',
-                  !isPast && !isActive && 'text-[var(--text-muted)]',
+                  isActive && 'font-semibold text-[var(--color-primary)]',
+                  isPast   && 'text-[var(--color-success)]',
+                  !isPast && !isActive && 'text-[var(--color-text-tertiary)]',
                 )}
               >
                 {step}
@@ -43,7 +43,7 @@ export function ProgressStep({ steps, current }: ProgressStepProps) {
               <div
                 className={cn(
                   'flex-1 h-0.5 mb-5 mx-1 transition-colors duration-300',
-                  isPast ? 'bg-[var(--success)]' : 'bg-[var(--border)]',
+                  isPast ? 'bg-[var(--color-success)]' : 'bg-[var(--color-border)]',
                 )}
               />
             )}

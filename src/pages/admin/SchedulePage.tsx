@@ -23,7 +23,7 @@ import type {
 } from '@/types'
 
 const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm'
+  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm'
 
 const STATUS_VARIANT: Record<SessionStatus, 'primary' | 'warning' | 'success'> = {
   upcoming: 'primary',
@@ -82,7 +82,7 @@ function SessionRow({
   return (
     <EdvanceCard className="flex flex-col gap-3 p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-base font-semibold text-[var(--text-primary)]">
+        <span className="text-base font-semibold text-[var(--color-text-primary)]">
           {formatSessionDate(session.scheduled_at)} Uhr
         </span>
         <EdvanceBadge variant={STATUS_VARIANT[session.status]}>
@@ -90,19 +90,19 @@ function SessionRow({
         </EdvanceBadge>
       </div>
       {session.room && (
-        <span className="text-sm text-[var(--text-secondary)]">
+        <span className="text-sm text-[var(--color-text-secondary)]">
           Raum {session.room}
         </span>
       )}
 
       <div className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Teilnehmer
         </p>
         {loading ? (
           <LoadingPulse type="list" lines={2} />
         ) : assigned.length === 0 ? (
-          <p className="text-sm text-[var(--text-muted)]">Noch niemand zugewiesen.</p>
+          <p className="text-sm text-[var(--color-text-tertiary)]">Noch niemand zugewiesen.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {assigned.map((id) => (
@@ -114,7 +114,7 @@ function SessionRow({
         )}
       </div>
 
-      {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
       {available.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
@@ -205,17 +205,17 @@ export function SchedulePage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Stundenplan</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Stundenplan</h1>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         <EdvanceCard className="flex flex-col gap-4 p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Neue Session
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -17,21 +17,21 @@ export function EdvanceCard({
   onClick,
 }: EdvanceCardProps) {
   const variantStyles: Record<string, string> = {
-    default:    'bg-[var(--surface)] border border-[var(--border)] shadow-premium-sm',
-    raised:     'bg-[var(--surface-raised)] border border-[var(--border)] shadow-premium-md',
-    navy:       'bg-[var(--brand-navy)] text-[var(--text-inverse)] border border-[var(--brand-navy)] shadow-premium-md',
-    'blue-pale':'bg-[var(--primary-pale)] border border-[var(--primary-light)]',
-    hero:       'bg-gradient-hero text-white border-0 shadow-premium-xl noise-overlay',
-    glass:      'glass-light shadow-premium-md',
-    premium:    'bg-gradient-surface border border-[var(--border)] shadow-premium-md',
+    default:    'bg-[var(--color-bg-surface)] border border-[var(--color-border)] shadow-xs',
+    raised:     'bg-[var(--color-bg-surface)] border border-[var(--color-border)] shadow-md',
+    navy:       'bg-[var(--color-primary)] text-[var(--color-bg-surface)] border border-[var(--color-primary)] shadow-md',
+    'blue-pale':'bg-[var(--color-primary-light)] border border-[var(--color-primary-light)]',
+    hero:       'student-hero text-white border-0 shadow-xl',
+    glass:      'glass-card shadow-md',
+    premium:    'bg-[var(--color-bg-surface)] border border-[var(--color-border)] shadow-md',
   }
 
   const accentStyles: Record<string, string> = {
     none:               '',
-    'left-primary':     'border-l-4 border-l-[var(--primary)]',
-    'left-success':     'border-l-4 border-l-[var(--success)]',
-    'left-warning':     'border-l-4 border-l-[var(--warning)]',
-    'left-destructive': 'border-l-4 border-l-[var(--destructive)]',
+    'left-primary':     'border-l-4 border-l-[var(--color-primary)]',
+    'left-success':     'border-l-4 border-l-[var(--color-success)]',
+    'left-warning':     'border-l-4 border-l-[var(--color-gold-warning)]',
+    'left-destructive': 'border-l-4 border-l-[var(--color-error-exam)]',
   }
 
   const isInteractive = !!onClick
@@ -43,7 +43,7 @@ export function EdvanceCard({
         'rounded-[var(--radius-xl)] p-6',
         variantStyles[variant],
         accentStyles[accent],
-        !isDark && 'transition-all duration-300 hover:shadow-premium-lg',
+        !isDark && 'transition-all duration-300 hover:shadow-lg',
         isInteractive && 'cursor-pointer hover-lift',
         className,
       )}

@@ -9,7 +9,7 @@ interface LoadingPulseProps {
 function SkeletonBlock({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
     <div
-      className={cn('rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton', className)}
+      className={cn('rounded-[var(--radius-md)] bg-[var(--color-border)] animate-skeleton', className)}
       style={style}
     />
   )
@@ -18,7 +18,7 @@ function SkeletonBlock({ className, style }: { className?: string; style?: CSSPr
 export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
   if (type === 'card') {
     return (
-      <div className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] shadow-card bg-[var(--surface)]">
+      <div className="rounded-[var(--radius-xl)] p-6 border border-[var(--color-border)] shadow-card bg-[var(--color-bg-surface)]">
         <SkeletonBlock className="h-5 w-1/2 mb-4" />
         <SkeletonBlock className="h-4 w-full mb-2" />
         <SkeletonBlock className="h-4 w-3/4 mb-2" />
@@ -33,7 +33,7 @@ export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] shadow-card bg-[var(--surface)] flex items-start gap-3"
+            className="rounded-[var(--radius-xl)] p-6 border border-[var(--color-border)] shadow-card bg-[var(--color-bg-surface)] flex items-start gap-3"
           >
             <SkeletonBlock className="w-12 h-12 rounded-[var(--radius-lg)] flex-none" />
             <div className="flex-1 flex flex-col gap-2">

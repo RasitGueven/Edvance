@@ -133,10 +133,10 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
 
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         Wartet auf Bewertung ({pending.length})
       </h2>
-      {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
       {pending.map((p) => {
         const item = items.get(p.screening_item_id)
         const existing = ratings.get(p.id)
@@ -145,7 +145,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
         return (
           <EdvanceCard key={p.id} className="flex flex-col gap-3 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                 {clusterName}
               </span>
               {existing ? (
@@ -157,15 +157,15 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
               )}
             </div>
             {item?.prompt && (
-              <p className="text-sm leading-relaxed text-[var(--text-primary)]">
+              <p className="text-sm leading-relaxed text-[var(--color-text-primary)]">
                 {item.prompt}
               </p>
             )}
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
-              <p className="text-xs font-semibold text-[var(--text-muted)]">
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-app)] p-3">
+              <p className="text-xs font-semibold text-[var(--color-text-tertiary)]">
                 Schüler-Antwort
               </p>
-              <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--text-primary)]">
+              <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--color-text-primary)]">
                 {answerPreview(p.answer)}
               </p>
               {answerDrawing(p.answer) && (
@@ -179,7 +179,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
                   <img
                     src={answerDrawing(p.answer) ?? ''}
                     alt="Rechenweg-Skizze"
-                    className="max-h-40 rounded border border-[var(--border)] bg-white object-contain"
+                    className="max-h-40 rounded border border-[var(--color-border)] bg-white object-contain"
                   />
                 </a>
               )}
@@ -191,7 +191,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
                       return (
                         <div
                           key={path}
-                          className="h-24 w-24 animate-pulse rounded border border-[var(--border)] bg-[var(--muted)]"
+                          className="h-24 w-24 animate-pulse rounded border border-[var(--color-border)] bg-[var(--muted)]"
                         />
                       )
                     }
@@ -206,7 +206,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
                         <img
                           src={url}
                           alt="Rechenweg-Foto"
-                          className="h-24 w-24 rounded border border-[var(--border)] bg-white object-cover"
+                          className="h-24 w-24 rounded border border-[var(--color-border)] bg-white object-cover"
                         />
                       </a>
                     )
@@ -228,8 +228,8 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
                   className={[
                     'min-h-[44px] flex-1 rounded-xl border-2 px-3 text-sm font-semibold transition-colors',
                     draft.afb === afb
-                      ? 'border-[var(--primary)] bg-[var(--primary-pale)] text-[var(--primary)]'
-                      : 'border-[var(--border)] bg-card text-[var(--text-secondary)] hover:border-[var(--primary-light)]',
+                      ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                      : 'border-[var(--color-border)] bg-card text-[var(--color-text-secondary)] hover:border-[var(--color-primary-light)]',
                   ].join(' ')}
                 >
                   AFB {afb}
@@ -246,7 +246,7 @@ export function PendingRatingsInbox({ results, clusterNames }: Props): JSX.Eleme
               }
               placeholder="Notiz (optional)"
               rows={2}
-              className="min-h-[60px] w-full rounded-xl border-2 border-[var(--border)] bg-card p-3 text-sm leading-relaxed text-foreground focus:border-[var(--primary)] focus:outline-none"
+              className="min-h-[60px] w-full rounded-xl border-2 border-[var(--color-border)] bg-card p-3 text-sm leading-relaxed text-foreground focus:border-[var(--color-primary)] focus:outline-none"
             />
             <Button
               size="lg"

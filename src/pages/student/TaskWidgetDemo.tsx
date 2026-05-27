@@ -47,11 +47,11 @@ const DRAW_DEMO = {
 }
 
 const TYPE_META: Record<InputType, { label: string; color: string }> = {
-  MC: { label: 'Multiple Choice', color: 'var(--primary)' },
-  MATCHING: { label: 'Zuordnung', color: 'var(--info)' },
-  STEPS: { label: 'Rechnen (Schritte)', color: 'var(--success)' },
-  FREE_INPUT: { label: 'Freitext', color: 'var(--warning)' },
-  DRAW: { label: 'Zeichnen', color: 'var(--brand-navy)' },
+  MC: { label: 'Multiple Choice', color: 'var(--color-primary)' },
+  MATCHING: { label: 'Zuordnung', color: 'var(--color-primary)' },
+  STEPS: { label: 'Rechnen (Schritte)', color: 'var(--color-success)' },
+  FREE_INPUT: { label: 'Freitext', color: 'var(--color-gold-warning)' },
+  DRAW: { label: 'Zeichnen', color: 'var(--color-primary)' },
 }
 
 function Section({
@@ -79,11 +79,11 @@ function Section({
         >
           {label}
         </span>
-        <code className="rounded bg-[var(--surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--text-muted)]">
+        <code className="rounded bg-[var(--color-bg-subtle)] px-1.5 py-0.5 text-xs text-[var(--color-text-tertiary)]">
           {type}
         </code>
         {submitted && (
-          <span className="text-xs font-semibold" style={{ color: 'var(--success)' }}>
+          <span className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>
             ✓ Eingereicht
           </span>
         )}
@@ -108,7 +108,7 @@ function Section({
             <button
               type="button"
               onClick={onReset}
-              className="rounded-xl border-2 border-[var(--border)] px-4 py-2 text-sm font-semibold text-muted hover:border-[var(--primary-light)]"
+              className="rounded-xl border-2 border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-muted hover:border-[var(--color-primary-light)]"
             >
               Reset
             </button>
@@ -151,13 +151,13 @@ export function TaskWidgetDemo(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Widget-Demo" />
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Aufgaben-Widgets</h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Aufgaben-Widgets</h1>
+          <p className="mt-1 text-sm text-[var(--color-text-tertiary)]">
             Demo-Seite ohne Login — zeigt alle 5 Eingabe-Typen für Schüler-Aufgaben.
           </p>
         </div>
@@ -231,7 +231,7 @@ export function TaskWidgetDemo(): JSX.Element {
                 placeholder="Zeige deinen Lösungsweg …"
                 rows={5}
                 disabled={freeDone}
-                className="min-h-[120px] w-full resize-y rounded-xl border-2 border-[var(--border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--primary)] focus:outline-none"
+                className="min-h-[120px] w-full resize-y rounded-xl border-2 border-[var(--color-border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--color-primary)] focus:outline-none"
               />
               <MathToolbar onInsert={insertSymbol} />
             </div>

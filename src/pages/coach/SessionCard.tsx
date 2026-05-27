@@ -54,17 +54,17 @@ function StudentProfilePanel({ s }: { s: StudentVM }): JSX.Element {
   }, [s.student_id])
 
   return (
-    <div className="mt-1 flex flex-col gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)] p-4">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+    <div className="mt-1 flex flex-col gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         Kurzprofil
       </p>
       {loading ? (
         <LoadingPulse type="list" lines={2} />
       ) : (
-        <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--text-secondary)]">
+        <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--color-text-secondary)]">
           <span>Level {progress?.level ?? 1}</span>
           <span>{progress?.xp_total ?? 0} XP</span>
-          <span>{progress?.streak_days ?? 0} Tage Streak</span>
+          <span>{progress?.presence_streak_weeks ?? 0} Wochen Präsenz</span>
           <span>
             Kl. {s.classLevel ?? PLACEHOLDER_DASH}
             {s.schoolType ? ` · ${s.schoolType}` : ''}
@@ -171,7 +171,7 @@ export function SessionCard({
                     </Button>
                     {open ? (
                       <>
-                        <span className="text-xs font-semibold text-[var(--destructive)]">
+                        <span className="text-xs font-semibold text-[var(--color-error-exam)]">
                           Eingriff seit {sessionTime(open.started_at)}
                         </span>
                         <Button

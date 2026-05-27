@@ -3,8 +3,8 @@ import { EmptyState, LoadingPulse } from '@/components/edvance'
 import { getInitials } from '@/lib/utils'
 import type { CoachStepProps } from '@/types'
 
-const SELECTED_BG = 'color-mix(in srgb, var(--primary) 8%, transparent)'
-const AVATAR_GRADIENT = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)'
+const SELECTED_BG = 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
+const AVATAR_GRADIENT = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)'
 
 export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): JSX.Element {
   if (loading) return <LoadingPulse type="list" lines={3} />
@@ -30,9 +30,9 @@ export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): 
             onClick={() => setData({ ...data, coachId: coach.id })}
             className="flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all"
             style={{
-              borderColor: selected ? 'var(--primary)' : 'var(--border)',
-              background: selected ? SELECTED_BG : 'var(--card)',
-              boxShadow: selected ? '0 0 0 2px var(--primary)' : 'none',
+              borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
+              background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
+              boxShadow: selected ? '0 0 0 2px var(--color-primary)' : 'none',
             }}
           >
             <span
@@ -43,7 +43,7 @@ export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): 
             </span>
             <span className="font-medium text-foreground">{name}</span>
             {selected && (
-              <span className="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)]">
+              <span className="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-primary)]">
                 <Check className="h-3.5 w-3.5 text-white" />
               </span>
             )}

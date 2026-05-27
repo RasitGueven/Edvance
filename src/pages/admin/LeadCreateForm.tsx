@@ -63,7 +63,7 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
 
   return (
     <EdvanceCard className="flex flex-col gap-4 p-6">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         Neuer Lead
       </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -104,7 +104,7 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
           <Label htmlFor="lead-class">Klasse</Label>
           <select
             id="lead-class"
-            className="h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm"
+            className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm"
             value={form.class_level ?? ''}
             onChange={(e) =>
               setForm({
@@ -125,7 +125,7 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
           <Label htmlFor="lead-schooltype">Schultyp</Label>
           <select
             id="lead-schooltype"
-            className="h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm"
+            className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm"
             value={form.school_type ?? ''}
             onChange={(e) =>
               setForm({
@@ -146,7 +146,7 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
           <Label htmlFor="lead-goal">Ziel</Label>
           <select
             id="lead-goal"
-            className="h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm"
+            className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm"
             value={form.goal ?? ''}
             onChange={(e) =>
               setForm({ ...form, goal: (e.target.value || null) as LeadGoal | null })
@@ -181,10 +181,10 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
                 onClick={() => toggleSubject(subject)}
                 className="rounded-xl border px-4 py-2 text-sm transition-all"
                 style={{
-                  borderColor: active ? 'var(--primary)' : 'var(--border)',
+                  borderColor: active ? 'var(--color-primary)' : 'var(--color-border)',
                   background: active
-                    ? 'color-mix(in srgb, var(--primary) 8%, transparent)'
-                    : 'var(--card)',
+                    ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
+                    : 'var(--color-bg-surface)',
                 }}
               >
                 {subject}
@@ -193,7 +193,7 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
           })}
         </div>
       </div>
-      {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
       <div>
         <Button onClick={submit} disabled={saving}>
           {saving ? 'Speichert…' : 'Lead anlegen'}

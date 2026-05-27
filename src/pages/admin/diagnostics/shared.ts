@@ -5,7 +5,7 @@ export const INPUT_TYPES = Object.keys(INPUT_TYPE_LABELS) as InputType[]
 export const COG_TYPES = Object.keys(COGNITIVE_TYPE_LABELS) as CognitiveType[]
 
 export const SELECT_CLASS =
-  'h-10 rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 text-sm'
+  'h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 text-sm'
 
 export type Edit = {
   is_diagnostic: boolean

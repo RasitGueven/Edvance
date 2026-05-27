@@ -60,14 +60,14 @@ export function DiagnosticsPage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Diagnose-Aufgaben verwalten
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
             Aufgaben ansehen, Schwierigkeit/Format anpassen und festlegen,
             welche im Diagnose-Test erscheinen.
           </p>
@@ -104,7 +104,7 @@ export function DiagnosticsPage(): JSX.Element {
           onCreated={() => clusterId && loadTasks(clusterId)}
         />
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={4} />

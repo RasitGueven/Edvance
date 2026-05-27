@@ -39,7 +39,7 @@ export function CoordinateSystem({ functions, size = 420 }: Props): JSX.Element 
     <div className="flex flex-col gap-4">
       <svg
         viewBox={`0 0 ${size} ${size}`}
-        className="w-full rounded-xl border border-[var(--border)] bg-card"
+        className="w-full rounded-xl border border-[var(--color-border)] bg-card"
         role="img"
         aria-label="Koordinatensystem mit eingezeichneten Funktionen"
       >
@@ -57,7 +57,7 @@ export function CoordinateSystem({ functions, size = 420 }: Props): JSX.Element 
               y1={0}
               x2={sx(t)}
               y2={size}
-              stroke="var(--border)"
+              stroke="var(--color-border)"
               strokeWidth={t === 0 ? 0 : 1}
             />
             <line
@@ -65,21 +65,21 @@ export function CoordinateSystem({ functions, size = 420 }: Props): JSX.Element 
               y1={sy(t)}
               x2={size}
               y2={sy(t)}
-              stroke="var(--border)"
+              stroke="var(--color-border)"
               strokeWidth={t === 0 ? 0 : 1}
             />
           </g>
         ))}
 
         {/* Achsen */}
-        <line x1={sx(-RANGE)} y1={sy(0)} x2={sx(RANGE)} y2={sy(0)} stroke="var(--text-muted)" strokeWidth={2} />
-        <line x1={sx(0)} y1={sy(-RANGE)} x2={sx(0)} y2={sy(RANGE)} stroke="var(--text-muted)" strokeWidth={2} />
+        <line x1={sx(-RANGE)} y1={sy(0)} x2={sx(RANGE)} y2={sy(0)} stroke="var(--color-text-tertiary)" strokeWidth={2} />
+        <line x1={sx(0)} y1={sy(-RANGE)} x2={sx(0)} y2={sy(RANGE)} stroke="var(--color-text-tertiary)" strokeWidth={2} />
 
         {/* Achsenbeschriftung (jede 2. Einheit, ohne 0) */}
         {ticks
           .filter((t) => t !== 0 && t % 2 === 0)
           .map((t) => (
-            <g key={`lbl-${t}`} fill="var(--text-muted)" fontSize="11">
+            <g key={`lbl-${t}`} fill="var(--color-text-tertiary)" fontSize="11">
               <text x={sx(t)} y={sy(0) + 14} textAnchor="middle">
                 {t}
               </text>
@@ -113,7 +113,7 @@ export function CoordinateSystem({ functions, size = 420 }: Props): JSX.Element 
                 className="inline-block h-3 w-6 rounded-full"
                 style={{ background: f.color }}
               />
-              <span className="text-[var(--text-secondary)]">{f.label}</span>
+              <span className="text-[var(--color-text-secondary)]">{f.label}</span>
             </span>
           ))}
         </div>

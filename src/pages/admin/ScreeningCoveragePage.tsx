@@ -27,7 +27,7 @@ import type {
 } from '@/types'
 
 const SELECT_CLASS =
-  'h-10 rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 text-sm'
+  'h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 text-sm'
 
 const STATUS_LABEL: Record<CoverageStatus, string> = {
   missing: 'fehlt',
@@ -36,9 +36,9 @@ const STATUS_LABEL: Record<CoverageStatus, string> = {
 }
 
 const STATUS_DOT: Record<CoverageStatus, string> = {
-  missing: 'bg-[var(--destructive)]',
-  thin: 'bg-[var(--warning)]',
-  ok: 'bg-[var(--success)]',
+  missing: 'bg-[var(--color-error-exam)]',
+  thin: 'bg-[var(--color-gold-warning)]',
+  ok: 'bg-[var(--color-success)]',
 }
 
 const PHASE_LABEL: Record<ScreeningPhase, string> = {
@@ -58,10 +58,10 @@ function ClusterRow({
   return (
     <EdvanceCard className="flex flex-col gap-4 p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-base font-semibold text-[var(--text-primary)]">
+        <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
           {cluster.name}
         </h3>
-        <span className="text-xs text-[var(--text-muted)]">
+        <span className="text-xs text-[var(--color-text-tertiary)]">
           {items.filter((i) => i.afb && i.phase).length} v2-Items
         </span>
       </div>
@@ -70,7 +70,7 @@ function ClusterRow({
         {AFB_VALUES.map((afb) => (
           <div
             key={`h-${afb}`}
-            className="text-center text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]"
+            className="text-center text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]"
           >
             AFB {afb}
           </div>
@@ -99,7 +99,7 @@ function PhaseRow({
 }): JSX.Element {
   return (
     <>
-      <div className="flex items-center text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <div className="flex items-center text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         {PHASE_LABEL[phase]}
       </div>
       {AFB_VALUES.map((afb) => (
@@ -129,18 +129,18 @@ function CoverageCellView({
   const cell = getCell(matrix, clusterId, phase, afb)
   const status = cellStatus(cell)
   return (
-    <div className="flex flex-col items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 py-2">
+    <div className="flex flex-col items-center gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 py-2">
       <div className="flex items-center gap-1.5">
         <span className={`h-2 w-2 rounded-full ${STATUS_DOT[status]}`} />
-        <span className="text-xs text-[var(--text-muted)]">
+        <span className="text-xs text-[var(--color-text-tertiary)]">
           {STATUS_LABEL[status]}
         </span>
       </div>
-      <span className="text-base font-bold text-[var(--text-primary)]">
+      <span className="text-base font-bold text-[var(--color-text-primary)]">
         {cell.activeCount}
       </span>
       {cell.draftCount > 0 && (
-        <span className="text-[10px] text-[var(--text-muted)]">
+        <span className="text-[10px] text-[var(--color-text-tertiary)]">
           +{cell.draftCount} Entwurf
         </span>
       )}
@@ -204,14 +204,14 @@ export function ScreeningCoveragePage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Screening-Coverage (v2)
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
             Lücken im Pool sichtbar machen: pro Cluster, Phase und AFB. Rot =
             fehlt, gelb = nur ein Item, grün = ausreichend.
           </p>
@@ -240,7 +240,7 @@ export function ScreeningCoveragePage(): JSX.Element {
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={4} />

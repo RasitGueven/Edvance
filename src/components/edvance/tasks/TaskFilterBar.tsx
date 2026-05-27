@@ -50,10 +50,10 @@ const CHIP_BASE =
   'rounded-[var(--radius-full)] border px-3 py-1 text-xs font-semibold transition-colors'
 const CHIP_ACTIVE =
   CHIP_BASE +
-  ' border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-foreground)]'
+  ' border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-bg-surface)]'
 const CHIP_INACTIVE =
   CHIP_BASE +
-  ' border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:border-[var(--primary-light)]'
+  ' border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-primary-light)]'
 
 export function TaskFilterBar({
   state,
@@ -70,20 +70,20 @@ export function TaskFilterBar({
 }): JSX.Element {
   const active = isFilterActive(state)
   return (
-    <div className="sticky top-0 z-10 flex flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card">
+    <div className="sticky top-0 z-10 flex flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-4 shadow-card">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
         <input
           type="search"
           value={state.search}
           onChange={(e) => onChange({ ...state, search: e.target.value })}
           placeholder="Titel oder Quellen-Referenz suchen…"
-          className="w-full rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] py-2 pl-9 pr-3 text-sm text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--primary)]"
+          className="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] py-2 pl-9 pr-3 text-sm text-[var(--color-text-primary)] outline-none transition-colors focus:border-[var(--color-primary)]"
         />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Typ
         </span>
         {CONTENT_TYPES.map((ct) => {
@@ -104,7 +104,7 @@ export function TaskFilterBar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Kognitiv
         </span>
         {COGNITIVE_TYPES.map((ct) => {
@@ -126,7 +126,7 @@ export function TaskFilterBar({
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Schwierigkeit
           </span>
           <div className="flex items-center gap-1.5">
@@ -141,8 +141,8 @@ export function TaskFilterBar({
                   }
                   className={
                     selected
-                      ? 'h-7 w-7 rounded-[var(--radius-full)] border border-[var(--primary)] bg-[var(--primary)] text-xs font-bold text-[var(--primary-foreground)]'
-                      : 'h-7 w-7 rounded-[var(--radius-full)] border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold text-[var(--text-muted)] hover:border-[var(--primary-light)]'
+                      ? 'h-7 w-7 rounded-[var(--radius-full)] border border-[var(--color-primary)] bg-[var(--color-primary)] text-xs font-bold text-[var(--color-bg-surface)]'
+                      : 'h-7 w-7 rounded-[var(--radius-full)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] text-xs font-semibold text-[var(--color-text-tertiary)] hover:border-[var(--color-primary-light)]'
                   }
                   aria-label={`Schwierigkeit ${level}`}
                   aria-pressed={selected}
@@ -154,27 +154,27 @@ export function TaskFilterBar({
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text-secondary)]">
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-text-secondary)]">
           <input
             type="checkbox"
             checked={state.hasAssets}
             onChange={(e) => onChange({ ...state, hasAssets: e.target.checked })}
-            className="h-4 w-4 cursor-pointer accent-[var(--primary)]"
+            className="h-4 w-4 cursor-pointer accent-[var(--color-primary)]"
           />
           Nur mit Bildern
         </label>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border)] pt-3">
-        <span className="text-xs text-[var(--text-muted)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--color-border)] pt-3">
+        <span className="text-xs text-[var(--color-text-tertiary)]">
           {active ? (
             <>
-              <strong className="text-[var(--text-primary)]">{filteredCount}</strong> von{' '}
+              <strong className="text-[var(--color-text-primary)]">{filteredCount}</strong> von{' '}
               {totalCount} Aufgaben
             </>
           ) : (
             <>
-              <strong className="text-[var(--text-primary)]">{totalCount}</strong> Aufgaben
+              <strong className="text-[var(--color-text-primary)]">{totalCount}</strong> Aufgaben
             </>
           )}
         </span>
@@ -182,7 +182,7 @@ export function TaskFilterBar({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--primary)] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-primary)] hover:underline"
           >
             <X className="h-3 w-3" />
             Filter zurücksetzen

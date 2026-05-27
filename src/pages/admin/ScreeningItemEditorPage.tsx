@@ -139,7 +139,7 @@ export function ScreeningItemEditorPage(): JSX.Element {
       <main className="mx-auto max-w-5xl px-4 pb-32 pt-6">
         <Link
           to="/admin/screening-items"
-          className="mb-2 inline-flex items-center gap-1 text-sm text-[var(--text-muted)]"
+          className="mb-2 inline-flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
         >
           <ArrowLeft className="h-4 w-4" /> {t('page.backToList')}
         </Link>
@@ -147,7 +147,7 @@ export function ScreeningItemEditorPage(): JSX.Element {
         <header className="mb-6 flex flex-col gap-3">
           <div className="flex items-start gap-3">
             <Input
-              className="flex-1 border-transparent bg-transparent text-xl font-bold focus-visible:border-[var(--border)] focus-visible:bg-[var(--card)]"
+              className="flex-1 border-transparent bg-transparent text-xl font-bold focus-visible:border-[var(--color-border)] focus-visible:bg-[var(--color-bg-surface)]"
               value={state.skill_label}
               onChange={(e) => set('skill_label', e.target.value)}
               placeholder={
@@ -165,7 +165,7 @@ export function ScreeningItemEditorPage(): JSX.Element {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--color-text-tertiary)]">
             <UsageToggle
               value={state.usage}
               onChange={(v) => set('usage', v)}
@@ -213,8 +213,8 @@ export function ScreeningItemEditorPage(): JSX.Element {
                     onClick={() => set('input_type', tp)}
                     className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                       state.input_type === tp
-                        ? 'border-[var(--primary)] bg-[var(--primary)] text-white'
-                        : 'border-[var(--border)] bg-[var(--card)] text-[var(--text-secondary)]'
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
+                        : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]'
                     }`}
                   >
                     {t(`inputTypes.${tp}`)}
@@ -224,7 +224,7 @@ export function ScreeningItemEditorPage(): JSX.Element {
             </Section>
 
             <Section title={t('sections.antwortoptionen')}>
-              <p className="mb-2 text-xs text-[var(--text-muted)]">
+              <p className="mb-2 text-xs text-[var(--color-text-tertiary)]">
                 v1: JSON-Edit. Visuelle Builder pro Typ folgen.
               </p>
               <Field label="payload (JSON)">

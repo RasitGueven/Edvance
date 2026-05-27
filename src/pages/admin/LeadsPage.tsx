@@ -107,11 +107,11 @@ export function LeadsPage(): JSX.Element {
           <div>
             <Link
               to="/admin"
-              className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+              className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
             >
               <ArrowLeft className="h-4 w-4" /> Admin
             </Link>
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Leads</h1>
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Leads</h1>
           </div>
           <Button onClick={() => setShowForm((v) => !v)}>
             <span className="flex items-center gap-1.5">
@@ -129,7 +129,7 @@ export function LeadsPage(): JSX.Element {
           />
         )}
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={4} />
@@ -144,14 +144,14 @@ export function LeadsPage(): JSX.Element {
             {leads.map((lead) => (
               <EdvanceCard key={lead.id} className="flex flex-col gap-3 p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-base font-semibold text-[var(--text-primary)]">
+                  <span className="text-base font-semibold text-[var(--color-text-primary)]">
                     {lead.full_name}
                   </span>
                   <EdvanceBadge variant={STATUS_VARIANT[lead.status]}>
                     {STATUS_LABEL[lead.status]}
                   </EdvanceBadge>
                 </div>
-                <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--text-secondary)]">
+                <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--color-text-secondary)]">
                   {lead.contact_email && <span>{lead.contact_email}</span>}
                   {lead.contact_phone && <span>{lead.contact_phone}</span>}
                   {lead.class_level && <span>Kl. {lead.class_level}</span>}

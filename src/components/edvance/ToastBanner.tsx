@@ -45,7 +45,7 @@ export function ToastBanner({ type, message, xpAmount, onClose }: ToastBannerPro
         'flex items-center gap-3 px-5 py-3',
         'rounded-[var(--radius-lg)] font-semibold border-[1.5px]',
         '-translate-x-1/2 min-w-[280px] max-w-[480px]',
-        'shadow-elevation-lg',
+        'shadow-lg',
         TOAST_CLASS[type],
         exiting ? 'animate-toast-out' : 'animate-toast-in',
       )}
@@ -58,7 +58,7 @@ export function ToastBanner({ type, message, xpAmount, onClose }: ToastBannerPro
       <span className="flex-1 text-sm">{message}</span>
 
       {type === 'xp' && xpAmount !== undefined && (
-        <span className="text-xl font-bold leading-none animate-bounce-pop">
+        <span className="text-xl font-bold leading-none animate-xp-float">
           +{xpAmount} XP
         </span>
       )}

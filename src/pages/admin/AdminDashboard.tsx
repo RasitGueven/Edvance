@@ -46,10 +46,10 @@ export function AdminDashboard(): JSX.Element {
 
       <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10">
         <header className="flex flex-col gap-1 animate-fade-in">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Übersicht
           </h1>
-          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+          <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
             Steuere Onboarding, Leads, Tarife und Inhalte an einem Ort.
           </p>
         </header>

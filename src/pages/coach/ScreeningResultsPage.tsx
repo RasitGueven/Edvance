@@ -33,7 +33,7 @@ import type {
 } from '@/types'
 
 const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm text-[var(--text-primary)]'
+  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm text-[var(--color-text-primary)]'
 
 function formatCompleted(at: string | null): string {
   if (!at) return 'Datum unbekannt'
@@ -161,19 +161,19 @@ export function ScreeningResultsPage(): JSX.Element {
         <div>
           <Link
             to="/coach"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Coach-Dashboard
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Screening-Ergebnisse
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
             Abgeschlossene Lernstand-Diagnosen pro Schüler:in einsehen.
           </p>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={3} />
@@ -223,10 +223,10 @@ export function ScreeningResultsPage(): JSX.Element {
                       className="flex cursor-pointer items-center justify-between gap-3 p-5"
                     >
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-semibold text-[var(--text-primary)]">
+                        <span className="text-sm font-semibold text-[var(--color-text-primary)]">
                           {t.subject}
                         </span>
-                        <span className="text-xs text-[var(--text-muted)]">
+                        <span className="text-xs text-[var(--color-text-tertiary)]">
                           {formatCompleted(t.completed_at)}
                         </span>
                       </div>
@@ -260,13 +260,13 @@ export function ScreeningResultsPage(): JSX.Element {
                           icon="⚡"
                           label="Trefferquote"
                           value={`${parsed.overallPct}%`}
-                          color="var(--success)"
+                          color="var(--color-success)"
                         />
                         <StatCard
                           icon="⏱️"
                           label="Ø Zeit / Aufgabe"
                           value={formatMedianSeconds(kpis.medianDurationMs)}
-                          color="var(--info)"
+                          color="var(--color-primary)"
                         />
                         <StatCard
                           icon="🧑‍🏫"
@@ -274,8 +274,8 @@ export function ScreeningResultsPage(): JSX.Element {
                           value={kpis.manualPending}
                           color={
                             kpis.manualPending > 0
-                              ? 'var(--warning)'
-                              : 'var(--text-muted)'
+                              ? 'var(--color-gold-warning)'
+                              : 'var(--color-text-tertiary)'
                           }
                         />
                       </div>
@@ -289,7 +289,7 @@ export function ScreeningResultsPage(): JSX.Element {
                       />
                     ) : (
                       <EdvanceCard className="flex flex-col items-center gap-2 p-6">
-                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                           Kompetenz-Profil
                         </h2>
                         <CompetencyRadar
@@ -304,7 +304,7 @@ export function ScreeningResultsPage(): JSX.Element {
 
                     {parsed.clusters.length > 0 && (
                       <div className="flex flex-col gap-4">
-                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                           Kompetenzbereiche
                         </h2>
                         {parsed.clusters.map((c) => {
@@ -316,7 +316,7 @@ export function ScreeningResultsPage(): JSX.Element {
                               className="flex flex-col gap-3 p-5"
                             >
                               <div className="flex flex-wrap items-center justify-between gap-2">
-                                <span className="text-base font-semibold text-[var(--text-primary)]">
+                                <span className="text-base font-semibold text-[var(--color-text-primary)]">
                                   {clusterNames.get(c.clusterId) ?? c.clusterId}
                                 </span>
                                 <div className="flex flex-wrap items-center gap-2">
@@ -339,7 +339,7 @@ export function ScreeningResultsPage(): JSX.Element {
                                 </div>
                               </div>
                               <MasteryBar level={c.displayLevel} showLabel />
-                              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[var(--text-secondary)]">
+                              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[var(--color-text-secondary)]">
                                 <span>Beantwortet: {c.answered}</span>
                                 <span>Richtig: {c.correct}</span>
                                 <span>Trefferquote: {Math.round(c.mastery * 100)}%</span>

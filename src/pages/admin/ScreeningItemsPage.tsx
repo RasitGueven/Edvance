@@ -17,7 +17,7 @@ import {
 import type { ScreeningItem, SkillCluster, Subject } from '@/types'
 
 const SELECT_CLASS =
-  'h-10 rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 text-sm'
+  'h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 text-sm'
 
 type Filter = 'all' | 'active' | 'inactive'
 type V2Filter = 'all' | 'v2' | 'legacy'
@@ -41,9 +41,9 @@ function ItemCard({
   return (
     <EdvanceCard className="flex flex-col gap-2 p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-sm font-semibold text-[var(--text-primary)]">
+        <span className="text-sm font-semibold text-[var(--color-text-primary)]">
           {item.skill_label}{' '}
-          <span className="text-[var(--text-muted)]">· {item.topic}</span>
+          <span className="text-[var(--color-text-tertiary)]">· {item.topic}</span>
         </span>
         <div className="flex flex-wrap items-center gap-2">
           {item.afb && (
@@ -59,7 +59,7 @@ function ItemCard({
           </EdvanceBadge>
         </div>
       </div>
-      <p className="line-clamp-2 text-sm text-[var(--text-secondary)]">
+      <p className="line-clamp-2 text-sm text-[var(--color-text-secondary)]">
         {item.prompt}
       </p>
       <div className="flex flex-wrap gap-2">
@@ -149,14 +149,14 @@ export function ScreeningItemsPage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Screening-Items
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
             Items reviewen, freigeben und neu anlegen. v2-Items haben AFB +
             Phase gesetzt.
           </p>
@@ -215,9 +215,9 @@ export function ScreeningItemsPage(): JSX.Element {
           </Button>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           {shown.length} von {items.length} Items
           {clusterId ? ' (Cluster gefiltert)' : ' (alle Cluster)'}
         </p>

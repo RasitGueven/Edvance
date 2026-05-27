@@ -77,9 +77,9 @@ export function ParentDashboard(): JSX.Element {
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle="Eltern-Dashboard" sticky />
       <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Mein Kind</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Mein Kind</h1>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={4} />
@@ -93,7 +93,7 @@ export function ParentDashboard(): JSX.Element {
           <>
             {children.length > 1 && (
               <>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                   Schnellzugriff
                 </h2>
                 <DashboardTiles
@@ -115,7 +115,7 @@ export function ParentDashboard(): JSX.Element {
             >
             <EdvanceCard className="flex flex-col gap-4 p-6">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-base font-semibold text-[var(--text-primary)]">
+                <span className="text-base font-semibold text-[var(--color-text-primary)]">
                   {student.full_name ?? 'Unbenannt'}
                   {student.class_level ? ` · Kl. ${student.class_level}` : ''}
                 </span>
@@ -124,42 +124,42 @@ export function ParentDashboard(): JSX.Element {
                 </EdvanceBadge>
               </div>
 
-              <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm text-[var(--text-secondary)]">
+              <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm text-[var(--color-text-secondary)]">
                 <span>{progress?.xp_total ?? 0} XP</span>
-                <span>{progress?.streak_days ?? 0} Tage Streak</span>
+                <span>{progress?.presence_streak_weeks ?? 0} Wochen Präsenz</span>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                   Nächste Session
                 </p>
                 {nextSession ? (
-                  <p className="text-sm text-[var(--text-secondary)]">
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     {formatSessionDate(nextSession.scheduled_at)} Uhr
                     {nextSession.room ? ` · Raum ${nextSession.room}` : ''}
                   </p>
                 ) : (
-                  <p className="text-sm text-[var(--text-muted)]">
+                  <p className="text-sm text-[var(--color-text-tertiary)]">
                     Noch kein Termin geplant.
                   </p>
                 )}
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                   Reports
                 </p>
                 {reports.length === 0 ? (
-                  <p className="text-sm text-[var(--text-muted)]">
+                  <p className="text-sm text-[var(--color-text-tertiary)]">
                     Noch kein veröffentlichter Report.
                   </p>
                 ) : (
                   reports.map((r) => (
                     <div
                       key={r.id}
-                      className="rounded-xl border border-[var(--border)] p-4"
+                      className="rounded-xl border border-[var(--color-border)] p-4"
                     >
-                      <p className="text-sm font-semibold text-[var(--text-primary)]">
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">
                         {new Date(r.period_start).toLocaleDateString('de-DE')} –{' '}
                         {new Date(r.period_end).toLocaleDateString('de-DE')}
                       </p>
@@ -170,17 +170,17 @@ export function ParentDashboard(): JSX.Element {
                         if (typeof v !== 'string' || v.trim() === '') return null
                         return (
                           <div key={key} className="mt-2">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                               {label}
                             </p>
-                            <p className="mt-0.5 text-sm leading-relaxed text-[var(--text-secondary)]">
+                            <p className="mt-0.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
                               {v}
                             </p>
                           </div>
                         )
                       })}
                       {r.coach_note && (
-                        <p className="mt-2 text-sm italic leading-relaxed text-[var(--text-secondary)]">
+                        <p className="mt-2 text-sm italic leading-relaxed text-[var(--color-text-secondary)]">
                           {r.coach_note}
                         </p>
                       )}

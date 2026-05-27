@@ -15,16 +15,16 @@ function TileBody({ tile }: { tile: DashboardTile }): JSX.Element {
   return (
     <EdvanceCard className="flex h-full items-start gap-4 p-5">
       <span
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--primary)] bg-[color-mix(in_srgb,var(--primary)_12%,transparent)]"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
         aria-hidden="true"
       >
         {tile.icon}
       </span>
       <span className="flex flex-col gap-1">
-        <span className="text-base font-semibold text-[var(--text-primary)]">
+        <span className="text-base font-semibold text-[var(--color-text-primary)]">
           {tile.title}
         </span>
-        <span className="text-xs leading-relaxed text-[var(--text-muted)]">
+        <span className="text-xs leading-relaxed text-[var(--color-text-tertiary)]">
           {tile.description}
         </span>
       </span>
