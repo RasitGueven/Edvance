@@ -40,12 +40,6 @@ screening_ratings   → id, created_at, behavior_snapshot_id, screening_test_id,
                       (APPEND-ONLY – Coach-Bewertung separat, haelt behavior_snapshots append-only)
 behavior_snapshots  → + screening_test_id (additive nullable FK, Migration 014)
 
-### Adaptive Screening-Item-Bank (Migration 022)
-screening_items        → id, created_at, cluster_id, class_level, topic, skill_code, skill_label, level(1-3), curriculum_seq, input_type(MC|NUMERIC|MATCHING|STEPS_FINAL), prompt, payload(jsonb), canonical(jsonb), check_type(mc_index|numeric|matching_set|normalized), tolerance, typical_errors[], explanation, source, active
-                         (eigene autogradebare Items, getrennt von tasks; nur active sichtbar fuer Schueler)
-screening_item_results → id, created_at, screening_test_id, screening_item_id, cluster_id, level, correct, answer(jsonb), duration_ms
-                         (APPEND-ONLY Auto-Grade-Ergebnis pro Item/Lauf)
-
 ### Tarif / Zuordnung / Fortschritt (Migrationen 015,016,018)
 tiers                  → id, name, price_cents, features(jsonb), sort_order, active (Katalog, seed Basic/Standard/Premium)
 student_subscriptions  → id, created_at, student_id, tier_id, status, started_at, ended_at
@@ -58,7 +52,6 @@ session_students       → session_id, student_id, attendance (PK session_id+stu
 student_progress       → student_id(PK), xp_total, streak_days, level, last_activity (nur via Trigger)
 xp_events              → id, created_at, student_id, task_id, xp, reason (APPEND-ONLY; speist student_progress)
 parent_reports         → id, created_at, student_id, period_start, period_end, summary(jsonb), coach_note, status, published_at
-parent_report_generations → id, created_at, coach_id, student_id, model (APPEND-ONLY; Kosten-Guardrail KI-Report, Migration 027)
 
 ## Beziehungen
 
@@ -88,11 +81,9 @@ student | parent | coach | admin
   Migration 011 (vorher RLS aktiv, aber policy-los = default-deny)
 - `leads`: nur Coach/Admin (interne PII, kein anon-Zugriff)
 - `intake_sessions`: Coach/Admin Vollzugriff; Eltern lesen Protokoll eigenes Kind
-- `screening_tests`: Schueler liest+schreibt eigene (Migration 023: insert/update für stillen /screening-Lauf); Eltern lesen eigenes Kind; Coach/Admin alles
+- `screening_tests`: Schueler liest eigene; Eltern lesen eigenes Kind; Coach/Admin alles
 - `screening_ratings`: append-only; Insert Coach/Admin; Lesen eigener Schueler/Eltern/Coach/Admin
 - `behavior_snapshots`: weiterhin append-only (Migration 014 nur additive FK)
-- `screening_items`: Schueler/Coach sehen nur `active=true`; Admin r/w alles (Review/Aktivierung)
-- `screening_item_results`: append-only; Schueler insert/select eigene (via screening_tests), Eltern/Coach/Admin lesen
 - `tiers`: alle authentifizierten lesen; nur Admin schreibt
 - `student_subscriptions` / `student_task_progress`: Schueler eigene; Eltern/Coach/Admin lesen
 - `student_coach`: Zuweisung nur Admin; Coach liest eigene; Schueler/Eltern eigene
@@ -100,7 +91,6 @@ student | parent | coach | admin
 - `student_progress`: read-only fuer Clients; Schreiben nur via Security-Definer-Trigger apply_xp_event
 - `xp_events`: append-only; Schueler insert/select eigene; Eltern/Coach/Admin lesen
 - `parent_reports`: Eltern/Schueler lesen nur 'published' eigenes Kind; Coach/Admin r/w
-- `parent_report_generations`: append-only; Insert nur via Service-Role (Edge Function); Coach/Admin nur lesen; Schueler/Eltern kein Zugriff
 
 ### Security-Definer-Helper (nicht-rekursiv, programmweit)
 
@@ -131,12 +121,11 @@ student | parent | coach | admin
 - `migrations/019_gamification.sql`         – student_progress + xp_events (+ Trigger apply_xp_event)
 - `migrations/020_parent_reports.sql`       – Elternreport (draft/published)
 - `migrations/021_provision_student_fn.sql` – atomare Lead->Student-Conversion (nur service_role; via Edge Function provision_student)
-- `migrations/022_screening_items.sql`      – adaptive Screening-Item-Bank + Auto-Grade-Ergebnisse
-- `migrations/023_screening_tests_student_write.sql` – RLS: Schüler insert/update eigene screening_tests (stiller /screening-Lauf)
-- `migrations/024_coaching_sessions_parent_read.sql` – RLS: Eltern lesen Sessions des eigenen Kindes
-- `migrations/025_interventions.sql`        – Eingriff-Tracking (Coach r/w eigene Sessions, Eltern read)
-- `migrations/026_xp_completion.sql`        – `xp_rules` + RPC `complete_task` (atomarer XP-/Task-Abschluss)
-- `migrations/027_parent_report_generations.sql` – append-only Log + RLS: Kosten-Guardrail KI-Elternreport
+- `migrations/032_two_streaks.sql`           – presence_streak_weeks + home_streak_sessions + multiplier (ersetzt streak_days), Helper calc_presence_multiplier
+- `migrations/033_mastery_five_stages.sql`   – SQL-Helper mastery_stage(score) / mastery_stage_from_level(lvl)
+- `migrations/034_badge_rarity.sql`          – Enums badge_rarity / badge_form, badge_catalog (13 MVP-Badges), student_badges + RLS
+- `migrations/035_streak_repair_inventory.sql` – Repair-Token-Inventory pro Schüler, RLS für Self-Read und Admin-Write
+- `migrations/036_drop_streak_days.sql`      – Final-Cleanup: streak_days/streak_last_at gedroppt (durch 032 ersetzt)
 
 ## Edge Functions
 
@@ -145,14 +134,3 @@ student | parent | coach | admin
   RPC `app_provision_student` (Migration 021). Deploy via
   `supabase functions deploy provision_student`. Aufruf nur ueber
   `src/lib/supabase/provision.ts` (nie direkt aus Komponenten).
-- `supabase/functions/generate_parent_report` – KI-Elternreport-Entwurf
-  (Anthropic, Modell claude-sonnet-4-6). Aufruf nur ueber
-  `src/lib/supabase/generateParentReport.ts`. Deploy via
-  `supabase functions deploy generate_parent_report`.
-  Secrets (Edge-Function, nie im Repo/Frontend):
-  - `ANTHROPIC_API_KEY` – Pflicht, sonst 500 "ANTHROPIC_API_KEY fehlt".
-  - Kosten-Guardrail-Limits (optional, Default in Klammern), zaehlt
-    erfolgreiche Generierungen aus `parent_report_generations`, blockt
-    fail-closed mit 429: `PR_COACH_DAILY_LIMIT` (30),
-    `PR_STUDENT_WINDOW_DAYS` (7), `PR_STUDENT_WINDOW_LIMIT` (5),
-    `PR_GLOBAL_MONTHLY_LIMIT` (3000).

@@ -29,6 +29,9 @@ import { DiagnosisProvider } from '@/context/DiagnosisContext'
 import { DiagnosisSession } from '@/pages/DiagnosisSession'
 import { DiagnosisResult } from '@/pages/DiagnosisResult'
 import { TaskWidgetDemo } from '@/pages/student/TaskWidgetDemo'
+import { V2Kit } from '@/pages/demo/v2/V2Kit'
+import { V2Student } from '@/pages/demo/v2/V2Student'
+import { V2Parent } from '@/pages/demo/v2/V2Parent'
 import { DesignDemo } from '@/pages/demo/DesignDemo'
 
 export default function App(): JSX.Element {
@@ -161,6 +164,9 @@ export default function App(): JSX.Element {
         <Route path="/showcase" element={<DesignShowcase />} />
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
         <Route path="/demo/design" element={<DesignDemo />} />
+        <Route path="/demo/v2/kit" element={<V2Kit />} />
+        <Route path="/demo/v2/student" element={<V2Student />} />
+        <Route path="/demo/v2/parent" element={<V2Parent />} />
 
         {/* Diagnose-Engine (lokal, ohne Login – Tablet-Sicht).
             Coach erreicht den Coach-View über ?view=coach. */}

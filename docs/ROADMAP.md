@@ -17,6 +17,18 @@
   - Diagnose-/Screening-Engine de-mockt (echter Generator + Content)
   - Coach-/Student-/Parent-Dashboard auf Echtdaten; alle Mock-Daten entfernt
 
+- **v2 Design-System Big-Bang Migration (Branch `feature/v2-migration`, Retro 2026-05-27):**
+  - Token-Cutover (tokens.css + globals.css komplett auf v2)
+  - 13 Atom-Komponenten in eigene Dateien gesplittet, Badge/Card mit Kontext-Varianten (24 Badge-, 4 Card-Varianten + 10 Akzente)
+  - 5 Mastery-Stufen-Mapping in `src/lib/mastery.ts` + SQL-Helper
+  - StreakPill (zwei unabhängige Streaks: presence + home, Multiplikator, Ferien-Snowflake)
+  - RarityBadge (bronze/silver/gold/platinum × round/shield)
+  - 3 Effekt-Moment-Komponenten (LevelUpModal, BossChallengeModal, StreakRepairFlow)
+  - DB-Migrationen 032-036 + Lib-Layer (`badges.ts`, `streakRepair.ts`, `mastery.ts`)
+  - Alle 4 Rollen-Flows migriert (Eltern, Schüler, Coach, Admin)
+  - Inline-Style-Blocker aus EdvanceLogo/AdminDashboard/CoachDashboard gefixt
+  - Türkis-Level-Up + Premium-Shadows + Gradients endgültig entfernt
+
 ## In Arbeit
 - Aufgaben-DB-Befüllung (Diagnostik-Content `is_diagnostic=true` fehlt → Screening leer)
 

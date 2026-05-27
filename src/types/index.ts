@@ -316,8 +316,6 @@ export type StudentProgress = {
   xp_total: number
   level: number
   last_activity: string | null
-  /** @deprecated wird in Migration 036 gedroppt — Frontend nutzt presence_streak_weeks + home_streak_sessions */
-  streak_days?: number
   presence_streak_weeks: number
   presence_streak_last_week_start: string | null
   presence_streak_multiplier: number

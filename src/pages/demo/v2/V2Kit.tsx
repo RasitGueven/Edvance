@@ -1,216 +1,163 @@
-/**
- * Edvance Design-System v2 — UI-Kit
- *
- * SCHRITT 3 — Basis-Komponenten visuell auf v2-Tokens gemappt.
- * Greift nur unter `[data-design="v2"]`. Keine Aenderung an
- * produktiven Komponenten unter `src/components`.
- *
- * KRITISCHE REGELN (siehe Schritt 7):
- *  1. `--color-accent` (#E8A020) NIE als Textfarbe auf Weiss — WCAG fail.
- *  2. Celebration-Farben (`--color-moment-*`) nur in Animations-Modals.
- *  3. Glaseffekte nur auf dunklem Hintergrund (Header/Hero) — nie auf #FFF.
- *  4. Level-Up/Boss max. 1x pro Session.
- *  5. Streak-Rot kurz, danach Repair-Lila anbieten.
- *  6. Mastered-Status nur via Coach-Bestaetigung im Backend.
- *  7. Alle Schatten ueber `--shadow-*` (blau getoent) — kein neutrales Grau.
- *  8. Rundungen aus `--radius-*` — kein hardcodiertes `rounded-full` ausser Kreisen.
- */
 import type { JSX, ReactNode } from 'react'
-import { cn } from '@/lib/utils'
+import { Star } from 'lucide-react'
+import {
+  EdvanceCard,
+  EdvanceBadge,
+  MasteryBar,
+  StreakPill,
+  RarityBadge,
+  StatCard,
+  AvatarInitials,
+  ProgressStep,
+  EmptyState,
+  LoadingPulse,
+} from '@/components/edvance'
 
-function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }): JSX.Element {
-  return (
-    <section className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">{title}</h3>
-        {hint ? <span className="text-[10px] text-[var(--color-text-tertiary)]">{hint}</span> : null}
-      </div>
-      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg p-5 shadow-md flex flex-col gap-4">
-        {children}
-      </div>
-    </section>
-  )
-}
-
-function ButtonRow(): JSX.Element {
-  return (
-    <Section title="Button" hint="primary · secondary · ghost · disabled">
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md shadow-md hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 transition-all duration-fast ease-out text-sm font-medium"
-        >
-          Primary
-        </button>
-        <button
-          type="button"
-          className="border border-[var(--color-primary)] text-[var(--color-primary)] px-4 py-2 rounded-md hover:bg-[var(--color-primary-light)] transition-all duration-fast text-sm font-medium"
-        >
-          Secondary
-        </button>
-        <button
-          type="button"
-          className="text-[var(--color-primary)] px-4 py-2 rounded-md hover:bg-[var(--color-primary-light)] transition-all duration-fast text-sm font-medium"
-        >
-          Ghost
-        </button>
-        <button
-          type="button"
-          disabled
-          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md opacity-40 cursor-not-allowed text-sm font-medium"
-        >
-          Disabled
-        </button>
-      </div>
-    </Section>
-  )
-}
-
-function Pill({ className, children }: { className: string; children: ReactNode }): JSX.Element {
-  return (
-    <span className={cn('inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-sm', className)}>
-      {children}
-    </span>
-  )
-}
-
-function BadgeRow(): JSX.Element {
-  return (
-    <Section title="Badge / Chip" hint="status-sprachfarben">
-      <div className="flex flex-wrap gap-2">
-        <Pill className="bg-[var(--color-success-light)] text-[var(--color-success)]">success</Pill>
-        <Pill className="bg-[var(--color-error-gap-light)] text-[var(--color-error-gap)]">error-gap</Pill>
-        <Pill className="bg-[var(--color-error-exam-light)] text-[var(--color-error-exam)]">error-exam</Pill>
-        <Pill className="bg-[var(--color-gold-warning-light)] text-[var(--color-gold-warning)]">warning</Pill>
-        {/* XP-Pill: dunkler Text auf Gold, NIE Accent als Textfarbe auf Weiss */}
-        <Pill className="bg-[var(--color-gold-altgold)] text-[var(--color-accent-on)]">+25 XP</Pill>
-        <Pill className="bg-[var(--color-repair-light)] text-[var(--color-repair)]">streak-repair</Pill>
-      </div>
-    </Section>
-  )
-}
-
-function CardRow(): JSX.Element {
-  return (
-    <Section title="Card" hint="default · subtle">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg shadow-md p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-base ease-bounce">
-          <p className="text-base font-semibold">Default Card</p>
-          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mt-1">
-            Hover hebt um 0.5px an und wechselt auf `shadow-lg`.
-          </p>
-        </div>
-        <div className="bg-[var(--color-bg-subtle)] rounded-lg p-5">
-          <p className="text-base font-semibold">Subtle</p>
-          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mt-1">
-            Eingebettete Metrik-Box ohne eigenen Schatten.
-          </p>
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-function InputRow(): JSX.Element {
-  return (
-    <Section title="Input / Textarea" hint="focus-ring in primary/10">
-      <div className="flex flex-col gap-3 max-w-sm">
-        <input
-          type="text"
-          placeholder="Name eingeben"
-          className="border border-[var(--color-border)] rounded-md px-3 py-2 text-sm text-[var(--color-text-primary)] bg-[var(--color-bg-surface)] shadow-xs transition-all duration-instant focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 focus:outline-none"
-        />
-        <textarea
-          rows={2}
-          placeholder="Beobachtung notieren ..."
-          className="border border-[var(--color-border)] rounded-md px-3 py-2 text-sm text-[var(--color-text-primary)] bg-[var(--color-bg-surface)] shadow-xs transition-all duration-instant focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 focus:outline-none"
-        />
-      </div>
-    </Section>
-  )
-}
-
-function ProgressRow(): JSX.Element {
-  return (
-    <Section title="Fortschrittsbalken" hint="normal · success · grow (Session-Ende)">
-      <div className="flex flex-col gap-3">
-        <div>
-          <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Normal · primary</p>
-          <div className="bg-[var(--color-bg-subtle)] rounded-full h-1.5 overflow-hidden">
-            <div className="bg-[var(--color-primary)] h-full rounded-full" style={{ width: '60%' }} />
-          </div>
-        </div>
-        <div>
-          <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Success · gemeistert</p>
-          <div className="bg-[var(--color-bg-subtle)] rounded-full h-1.5 overflow-hidden">
-            <div className="bg-[var(--color-success)] h-full rounded-full" style={{ width: '90%' }} />
-          </div>
-        </div>
-        <div>
-          <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Grow · waechst am Session-Ende</p>
-          <div className="bg-[var(--color-bg-subtle)] rounded-full h-1.5 overflow-hidden">
-            <div
-              className="bg-[var(--color-success-grow)] h-full rounded-full animate-bar-grow"
-              style={{ ['--bar-target' as string]: '75%' }}
-            />
-          </div>
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-function NavRow(): JSX.Element {
-  const items = ['Lernpfad', 'Faecher', 'Profil']
-  return (
-    <Section title="Navigation" hint="hell auf weiss · hell auf navy">
-      <div className="flex flex-col gap-3">
-        <div className="flex gap-1 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-md p-1">
-          {items.map((item, idx) => (
-            <button
-              key={item}
-              type="button"
-              className={cn(
-                'flex-1 px-3 py-1.5 text-sm rounded-md transition-colors duration-instant',
-                idx === 0
-                  ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)] font-medium'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]',
-              )}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-        <div className="v2-student-header rounded-md p-1 flex gap-1">
-          {items.map((item, idx) => (
-            <button
-              key={item}
-              type="button"
-              className={cn(
-                'flex-1 px-3 py-1.5 text-sm rounded-md transition-colors duration-instant',
-                idx === 0
-                  ? 'bg-white/15 text-white font-medium'
-                  : 'text-white/70 hover:text-white',
-              )}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
+/**
+ * V2Kit — Vollständige Demonstration aller v2-Atom-Komponenten.
+ * Showcase ohne Demo-Scope-Trick — direkt auf produktivem Token-Set.
+ */
 export function V2Kit(): JSX.Element {
   return (
-    <div className="flex flex-col gap-6">
-      <ButtonRow />
-      <BadgeRow />
-      <CardRow />
-      <InputRow />
-      <ProgressRow />
-      <NavRow />
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
+      <header className="student-hero light-source px-4 py-8 text-white">
+        <div className="mx-auto max-w-4xl">
+          <p className="text-eyebrow opacity-70">Edvance · v2 Showcase</p>
+          <h1 className="text-display text-3xl mt-1 leading-none">V2 Kit</h1>
+          <p className="mt-2 text-sm opacity-80">Alle Atom-Komponenten auf einen Blick.</p>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-4xl px-4 py-8 flex flex-col gap-8">
+        <Section title="EdvanceCard">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <EdvanceCard>
+              <p className="text-sm">variant="default" (Standard, Surface + Border)</p>
+            </EdvanceCard>
+            <EdvanceCard variant="subtle">
+              <p className="text-sm">variant="subtle" (Bg-Subtle)</p>
+            </EdvanceCard>
+            <EdvanceCard variant="hero-parent">
+              <p className="text-sm">variant="hero-parent" (flach, Eltern-Energie)</p>
+            </EdvanceCard>
+            <EdvanceCard variant="hero-student" className="!p-6">
+              <p className="text-sm">variant="hero-student" (Verlauf + Light-Source)</p>
+            </EdvanceCard>
+          </div>
+          <p className="mt-2 text-xs text-[var(--color-text-tertiary)]">
+            10 Accent-Prop-Werte: primary, gap, exam, answer-wrong, streak-lost,
+            coach-emergency, strength, answer-right, mastered, skilltree
+          </p>
+        </Section>
+
+        <Section title="EdvanceBadge — Rot-Familie (5)">
+          <div className="flex flex-wrap gap-2">
+            <EdvanceBadge variant="gap">Lücke (Eltern)</EdvanceBadge>
+            <EdvanceBadge variant="exam">Klassenarbeit</EdvanceBadge>
+            <EdvanceBadge variant="streak-lost">Streak unterbrochen</EdvanceBadge>
+            <EdvanceBadge variant="coach-emergency">Notfall</EdvanceBadge>
+            <EdvanceBadge variant="answer-wrong">Falsch</EdvanceBadge>
+          </div>
+        </Section>
+
+        <Section title="EdvanceBadge — Grün-Familie (4 für Badges)">
+          <div className="flex flex-wrap gap-2">
+            <EdvanceBadge variant="strength">Stärke</EdvanceBadge>
+            <EdvanceBadge variant="answer-right">Richtig</EdvanceBadge>
+            <EdvanceBadge variant="mastered">Gemeistert</EdvanceBadge>
+            <EdvanceBadge variant="skilltree">Skill-Tree</EdvanceBadge>
+          </div>
+        </Section>
+
+        <Section title="EdvanceBadge — XP & Streak (4)">
+          <div className="flex flex-wrap gap-2">
+            <EdvanceBadge variant="xp-day">+25 XP</EdvanceBadge>
+            <EdvanceBadge variant="xp-levelup">Level Up</EdvanceBadge>
+            <EdvanceBadge variant="streak-presence">3 W Präsenz</EdvanceBadge>
+            <EdvanceBadge variant="streak-home">5 Home</EdvanceBadge>
+          </div>
+        </Section>
+
+        <Section title="EdvanceBadge — Mastery-Stufen (5)">
+          <div className="flex flex-wrap gap-2">
+            <EdvanceBadge variant="mastery-introduced">Einführung</EdvanceBadge>
+            <EdvanceBadge variant="mastery-developing">In Entwicklung</EdvanceBadge>
+            <EdvanceBadge variant="mastery-progressing">Fortschreitend</EdvanceBadge>
+            <EdvanceBadge variant="mastery-proficient">Geübt</EdvanceBadge>
+            <EdvanceBadge variant="mastery-mastered">Gemeistert</EdvanceBadge>
+          </div>
+        </Section>
+
+        <Section title="MasteryBar — 5 Stufen via Score 0-100">
+          <div className="flex flex-col gap-3 max-w-md">
+            {[10, 50, 65, 80, 92].map((score) => (
+              <MasteryBar key={score} score={score} showLabel />
+            ))}
+          </div>
+        </Section>
+
+        <Section title="StreakPill — Presence + Home + Multiplikator">
+          <div className="flex flex-wrap gap-2">
+            <StreakPill variant="presence" count={1} />
+            <StreakPill variant="presence" count={3} multiplier={1.1} />
+            <StreakPill variant="presence" count={5} multiplier={1.2} />
+            <StreakPill variant="presence" count={8} multiplier={1.3} />
+            <StreakPill variant="home" count={12} />
+            <StreakPill variant="home" count={5} frozen />
+          </div>
+        </Section>
+
+        <Section title="RarityBadge — 4 Stufen × 2 Formen">
+          <div className="flex flex-wrap items-end gap-6">
+            <RarityBadge rarity="bronze" label="Bronze"><Star fill="currentColor" /></RarityBadge>
+            <RarityBadge rarity="silver" label="Silber"><Star fill="currentColor" /></RarityBadge>
+            <RarityBadge rarity="gold" label="Gold"><Star fill="currentColor" /></RarityBadge>
+            <RarityBadge rarity="platinum" label="Platin"><Star fill="currentColor" /></RarityBadge>
+            <RarityBadge rarity="platinum" form="shield" label="Klasse 10" size="lg">10</RarityBadge>
+          </div>
+        </Section>
+
+        <Section title="StatCard">
+          <div className="grid grid-cols-3 gap-3">
+            <StatCard value="42" label="Aufgaben heute" icon="📘" color="var(--color-primary)" />
+            <StatCard value="+12 %" label="Mastery Δ" icon="📈" color="var(--color-success-eltern)" trend="+12 %" />
+            <StatCard value="3" label="Lücken" icon="⚠️" color="var(--color-error-gap)" trend="-1" />
+          </div>
+        </Section>
+
+        <Section title="AvatarInitials">
+          <div className="flex gap-3">
+            {['Lena Fischer', 'Mehmet Yılmaz', 'Sophie Becker', 'Tom Hartmann'].map((n) => (
+              <AvatarInitials key={n} name={n} size="lg" />
+            ))}
+          </div>
+        </Section>
+
+        <Section title="ProgressStep">
+          <ProgressStep steps={['Daten', 'Fächer', 'Tarif', 'Coach', 'Summary']} current={2} />
+        </Section>
+
+        <Section title="EmptyState">
+          <EdvanceCard>
+            <EmptyState icon="🌱" title="Noch leer" description="Beispiel-Empty-State." />
+          </EdvanceCard>
+        </Section>
+
+        <Section title="LoadingPulse">
+          <LoadingPulse type="list" lines={3} />
+        </Section>
+      </main>
     </div>
+  )
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }): JSX.Element {
+  return (
+    <section>
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-2">
+        {title}
+      </h2>
+      {children}
+    </section>
   )
 }
