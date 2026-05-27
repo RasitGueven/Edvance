@@ -20,7 +20,10 @@ export function StepsWidget({ steps, answers, onChange, disabled }: Props): JSX.
     <div className="flex flex-col gap-5">
       {steps.map((step, i) => (
         <div key={i} className="flex gap-3">
-          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white bg-[var(--primary)]">
+          <span
+            className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+            style={{ background: 'var(--color-primary)' }}
+          >
             {i + 1}
           </span>
           <div className="flex flex-1 flex-col gap-1.5">
@@ -31,7 +34,7 @@ export function StepsWidget({ steps, answers, onChange, disabled }: Props): JSX.
               onChange={(e: ChangeEvent<HTMLInputElement>) => update(i, e.target.value)}
               placeholder={step.placeholder ?? 'Lösung …'}
               disabled={disabled}
-              className="w-full rounded-xl border-2 border-[var(--border)] bg-card px-3 py-2.5 text-sm focus:border-[var(--primary)] focus:outline-none disabled:opacity-60"
+              className="w-full rounded-xl border-2 border-[var(--color-border)] bg-card px-3 py-2.5 text-sm focus:border-[var(--color-primary)] focus:outline-none disabled:opacity-60"
             />
           </div>
         </div>

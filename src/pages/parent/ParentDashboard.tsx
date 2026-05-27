@@ -7,28 +7,13 @@ import { useAuth } from '@/hooks/useAuth'
 import { listStudentsWithName } from '@/lib/supabase/students'
 import { getStudentProgress } from '@/lib/supabase/progress'
 import { listReportsForStudent } from '@/lib/supabase/parentReports'
-import { listUpcomingSessionsForStudent } from '@/lib/supabase/sessions'
-import { formatSessionDate } from '@/lib/datetime'
-import type {
-  CoachingSession,
-  ParentReport,
-  StudentProgress,
-  StudentWithName,
-} from '@/types'
+import type { ParentReport, StudentProgress, StudentWithName } from '@/types'
 
 type ChildVM = {
   student: StudentWithName
   progress: StudentProgress | null
   reports: ParentReport[]
-  nextSession: CoachingSession | null
 }
-
-const REPORT_SECTIONS: [string, string][] = [
-  ['lernfortschritt', 'Lernfortschritt'],
-  ['anwesenheit', 'Anwesenheit'],
-  ['eingriffe', 'Eingriffe'],
-  ['empfehlung', 'Empfehlung'],
-]
 
 export function ParentDashboard(): JSX.Element {
   const { user } = useAuth()
@@ -50,18 +35,11 @@ export function ParentDashboard(): JSX.Element {
       }
       const vms: ChildVM[] = []
       for (const student of students ?? []) {
-        const [{ data: progress }, { data: reports }, { data: sessions }] =
-          await Promise.all([
-            getStudentProgress(student.id),
-            listReportsForStudent(student.id),
-            listUpcomingSessionsForStudent(student.id),
-          ])
-        vms.push({
-          student,
-          progress,
-          reports: reports ?? [],
-          nextSession: sessions && sessions.length > 0 ? sessions[0] : null,
-        })
+        const [{ data: progress }, { data: reports }] = await Promise.all([
+          getStudentProgress(student.id),
+          listReportsForStudent(student.id),
+        ])
+        vms.push({ student, progress, reports: reports ?? [] })
       }
       if (!cancelled) {
         setChildren(vms)
@@ -77,9 +55,9 @@ export function ParentDashboard(): JSX.Element {
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle="Eltern-Dashboard" sticky />
       <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Mein Kind</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Mein Kind</h1>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={4} />
@@ -93,7 +71,7 @@ export function ParentDashboard(): JSX.Element {
           <>
             {children.length > 1 && (
               <>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                   Schnellzugriff
                 </h2>
                 <DashboardTiles
@@ -107,7 +85,7 @@ export function ParentDashboard(): JSX.Element {
                 />
               </>
             )}
-            {children.map(({ student, progress, reports, nextSession }) => (
+            {children.map(({ student, progress, reports }) => (
             <div
               key={student.id}
               id={`child-${student.id}`}
@@ -115,7 +93,7 @@ export function ParentDashboard(): JSX.Element {
             >
             <EdvanceCard className="flex flex-col gap-4 p-6">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-base font-semibold text-[var(--text-primary)]">
+                <span className="text-base font-semibold text-[var(--color-text-primary)]">
                   {student.full_name ?? 'Unbenannt'}
                   {student.class_level ? ` · Kl. ${student.class_level}` : ''}
                 </span>
@@ -124,63 +102,31 @@ export function ParentDashboard(): JSX.Element {
                 </EdvanceBadge>
               </div>
 
-              <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm text-[var(--text-secondary)]">
+              <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm text-[var(--color-text-secondary)]">
                 <span>{progress?.xp_total ?? 0} XP</span>
                 <span>{progress?.streak_days ?? 0} Tage Streak</span>
               </div>
 
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                  Nächste Session
-                </p>
-                {nextSession ? (
-                  <p className="text-sm text-[var(--text-secondary)]">
-                    {formatSessionDate(nextSession.scheduled_at)} Uhr
-                    {nextSession.room ? ` · Raum ${nextSession.room}` : ''}
-                  </p>
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)]">
-                    Noch kein Termin geplant.
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                   Reports
                 </p>
                 {reports.length === 0 ? (
-                  <p className="text-sm text-[var(--text-muted)]">
+                  <p className="text-sm text-[var(--color-text-tertiary)]">
                     Noch kein veröffentlichter Report.
                   </p>
                 ) : (
                   reports.map((r) => (
                     <div
                       key={r.id}
-                      className="rounded-xl border border-[var(--border)] p-4"
+                      className="rounded-xl border border-[var(--color-border)] p-4"
                     >
-                      <p className="text-sm font-semibold text-[var(--text-primary)]">
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">
                         {new Date(r.period_start).toLocaleDateString('de-DE')} –{' '}
                         {new Date(r.period_end).toLocaleDateString('de-DE')}
                       </p>
-                      {REPORT_SECTIONS.map(([key, label]) => {
-                        const v = (r.summary as Record<string, unknown> | null)?.[
-                          key
-                        ]
-                        if (typeof v !== 'string' || v.trim() === '') return null
-                        return (
-                          <div key={key} className="mt-2">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                              {label}
-                            </p>
-                            <p className="mt-0.5 text-sm leading-relaxed text-[var(--text-secondary)]">
-                              {v}
-                            </p>
-                          </div>
-                        )
-                      })}
                       {r.coach_note && (
-                        <p className="mt-2 text-sm italic leading-relaxed text-[var(--text-secondary)]">
+                        <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
                           {r.coach_note}
                         </p>
                       )}

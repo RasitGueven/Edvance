@@ -1,12 +1,11 @@
-import { useRef, useState, type JSX } from 'react'
+import { useState, type JSX } from 'react'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { MCWidget } from '@/components/edvance/tasks/MCWidget'
 import { MatchingWidget, type MatchPairs } from '@/components/edvance/tasks/MatchingWidget'
 import { StepsWidget } from '@/components/edvance/tasks/StepsWidget'
-import { DrawCanvas } from '@/components/edvance/DrawCanvas'
-import { MathToolbar } from '@/components/edvance/MathToolbar'
 import { Card, CardContent } from '@/components/ui/card'
-import type { InputType } from '@/types'
+
+// ─── Demo-Daten ─────────────────────────────────────────────────────────────
 
 const MC_DEMO = {
   question: 'Ein Würfel wird dreimal geworfen. Was ist die Wahrscheinlichkeit, dass mindestens eine 6 fällt?',
@@ -38,38 +37,25 @@ const STEPS_DEMO = {
   ],
 }
 
-const FREE_DEMO = {
-  question: 'Erkläre in eigenen Worten, warum die Summe der Wahrscheinlichkeiten aller Ergebnisse eines Zufallsexperiments immer 1 ergibt.',
-}
-
-const DRAW_DEMO = {
-  question: 'Zeichne ein Baumdiagramm für zweimaliges Werfen einer Münze (Kopf / Zahl).',
-}
-
-const TYPE_META: Record<InputType, { label: string; color: string }> = {
-  MC: { label: 'Multiple Choice', color: 'var(--primary)' },
-  MATCHING: { label: 'Zuordnung', color: 'var(--info)' },
-  STEPS: { label: 'Rechnen (Schritte)', color: 'var(--success)' },
-  FREE_INPUT: { label: 'Freitext', color: 'var(--warning)' },
-  DRAW: { label: 'Zeichnen', color: 'var(--brand-navy)' },
-}
+// ─── Sektion ─────────────────────────────────────────────────────────────────
 
 function Section({
-  type,
+  label,
+  color,
   question,
   children,
   submitted,
   onSubmit,
   onReset,
 }: {
-  type: InputType
+  label: string
+  color: string
   question: string
   children: JSX.Element
   submitted: boolean
   onSubmit: () => void
   onReset: () => void
 }): JSX.Element {
-  const { label, color } = TYPE_META[type]
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
@@ -79,11 +65,8 @@ function Section({
         >
           {label}
         </span>
-        <code className="rounded bg-[var(--surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--text-muted)]">
-          {type}
-        </code>
         {submitted && (
-          <span className="text-xs font-semibold" style={{ color: 'var(--success)' }}>
+          <span className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>
             ✓ Eingereicht
           </span>
         )}
@@ -108,7 +91,7 @@ function Section({
             <button
               type="button"
               onClick={onReset}
-              className="rounded-xl border-2 border-[var(--border)] px-4 py-2 text-sm font-semibold text-muted hover:border-[var(--primary-light)]"
+              className="rounded-xl border-2 border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-muted hover:border-[var(--color-primary-light)]"
             >
               Reset
             </button>
@@ -119,53 +102,40 @@ function Section({
   )
 }
 
+// ─── Page ────────────────────────────────────────────────────────────────────
+
 export function TaskWidgetDemo(): JSX.Element {
+  // MC state
   const [mcSel, setMcSel] = useState<number | null>(null)
   const [mcDone, setMcDone] = useState(false)
 
+  // Matching state
   const [pairs, setPairs] = useState<MatchPairs>(new Map())
   const [matchDone, setMatchDone] = useState(false)
+  // right items shuffled once
   const shuffled = ['Menge aller möglichen Ergebnisse', 'Anzahl Treffer ÷ Gesamtanzahl', 'Alles außer dem betrachteten Ereignis', 'Alle Ergebnisse gleich wahrscheinlich']
 
+  // Steps state
   const [stepAns, setStepAns] = useState<string[]>([])
   const [stepsDone, setStepsDone] = useState(false)
 
-  const [freeText, setFreeText] = useState('')
-  const [freeDone, setFreeDone] = useState(false)
-  const freeRef = useRef<HTMLTextAreaElement>(null)
-
-  const [drawing, setDrawing] = useState<string | null>(null)
-  const [drawDone, setDrawDone] = useState(false)
-
-  const insertSymbol = (sym: string): void => {
-    const ta = freeRef.current
-    if (!ta) { setFreeText(freeText + sym); return }
-    const s = ta.selectionStart, en = ta.selectionEnd
-    const next = freeText.slice(0, s) + sym + freeText.slice(en)
-    setFreeText(next)
-    requestAnimationFrame(() => {
-      ta.focus()
-      const pos = s + sym.length
-      ta.setSelectionRange(pos, pos)
-    })
-  }
-
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Widget-Demo" />
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Aufgaben-Widgets</h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            Demo-Seite ohne Login — zeigt alle 5 Eingabe-Typen für Schüler-Aufgaben.
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Aufgaben-Widgets</h1>
+          <p className="mt-1 text-sm text-[var(--color-text-tertiary)]">
+            Demo-Seite ohne Login — zeigt alle Eingabe-Typen für Schüler-Aufgaben.
           </p>
         </div>
 
         <div className="flex flex-col gap-8">
           {/* Multiple Choice */}
           <Section
-            type="MC"
+            label="Multiple Choice"
+            color="var(--color-primary)"
             question={MC_DEMO.question}
             submitted={mcDone}
             onSubmit={() => mcSel !== null && setMcDone(true)}
@@ -181,7 +151,8 @@ export function TaskWidgetDemo(): JSX.Element {
 
           {/* Matching / Zuordnung */}
           <Section
-            type="MATCHING"
+            label="Zuordnung"
+            color="#7c3aed"
             question={MATCHING_DEMO.question}
             submitted={matchDone}
             onSubmit={() => pairs.size === MATCHING_DEMO.pairs.length && setMatchDone(true)}
@@ -198,7 +169,8 @@ export function TaskWidgetDemo(): JSX.Element {
 
           {/* Steps / Rechnen */}
           <Section
-            type="STEPS"
+            label="Rechnen (Schritte)"
+            color="var(--color-success)"
             question={STEPS_DEMO.question}
             submitted={stepsDone}
             onSubmit={() => {
@@ -213,39 +185,6 @@ export function TaskWidgetDemo(): JSX.Element {
               onChange={setStepAns}
               disabled={stepsDone}
             />
-          </Section>
-
-          {/* Freitext */}
-          <Section
-            type="FREE_INPUT"
-            question={FREE_DEMO.question}
-            submitted={freeDone}
-            onSubmit={() => freeText.trim().length > 0 && setFreeDone(true)}
-            onReset={() => { setFreeText(''); setFreeDone(false) }}
-          >
-            <div className="flex flex-col gap-3">
-              <textarea
-                ref={freeRef}
-                value={freeText}
-                onChange={(e) => setFreeText(e.target.value)}
-                placeholder="Zeige deinen Lösungsweg …"
-                rows={5}
-                disabled={freeDone}
-                className="min-h-[120px] w-full resize-y rounded-xl border-2 border-[var(--border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--primary)] focus:outline-none"
-              />
-              <MathToolbar onInsert={insertSymbol} />
-            </div>
-          </Section>
-
-          {/* Zeichnen */}
-          <Section
-            type="DRAW"
-            question={DRAW_DEMO.question}
-            submitted={drawDone}
-            onSubmit={() => drawing !== null && setDrawDone(true)}
-            onReset={() => { setDrawing(null); setDrawDone(false) }}
-          >
-            <DrawCanvas onChange={setDrawing} />
           </Section>
         </div>
       </main>

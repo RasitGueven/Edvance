@@ -57,8 +57,8 @@ export function ScenarioCoach(): JSX.Element {
               <div className="flex items-center gap-3 min-w-0">
                 <AvatarInitials name={s.name} size="md" />
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{s.name}</p>
-                  <p className="text-xs text-[var(--text-muted)] truncate">{s.task}</p>
+                  <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{s.name}</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] truncate">{s.task}</p>
                 </div>
               </div>
               {STATUS_BADGE[s.status]}
@@ -66,7 +66,7 @@ export function ScenarioCoach(): JSX.Element {
 
             {/* Mastery + Zeit */}
             <MasteryBar level={s.mastery} showLabel size="sm" />
-            <p className="mt-2 text-xs text-[var(--text-muted)]">
+            <p className="mt-2 text-xs text-[var(--color-text-tertiary)]">
               {s.minutes < 5
                 ? `Seit ${s.minutes} Min. an dieser Aufgabe`
                 : `⚠ ${s.minutes} Min. ohne Fortschritt`}
@@ -74,7 +74,7 @@ export function ScenarioCoach(): JSX.Element {
 
             {/* Intervention */}
             {s.status === 'needs-help' && (
-              <div className="mt-3 pt-3 border-t border-[var(--border)]">
+              <div className="mt-3 pt-3 border-t border-[var(--color-border)]">
                 <Button
                   variant="destructive"
                   size="sm"

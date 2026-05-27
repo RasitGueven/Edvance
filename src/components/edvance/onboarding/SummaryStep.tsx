@@ -1,6 +1,8 @@
 import type { Coach, OnboardingFormData, SummaryStepProps } from '@/types'
 
 const PLACEHOLDER_DASH = '–'
+const SUCCESS_BG = 'color-mix(in srgb, var(--color-success) 10%, transparent)'
+const SUCCESS_BORDER = '1px solid color-mix(in srgb, var(--color-success) 30%, transparent)'
 const ROW_ALT_BG = 'color-mix(in srgb, var(--muted) 5%, transparent)'
 
 function buildRows(data: OnboardingFormData, coaches: Coach[]): Array<[string, string]> {
@@ -22,7 +24,7 @@ export function SummaryStep({ data, coaches }: SummaryStepProps): JSX.Element {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl p-4 text-sm bg-[color-mix(in_srgb,var(--success)_10%,transparent)] border border-[color-mix(in_srgb,var(--success)_30%,transparent)]">
+      <div className="rounded-xl p-4 text-sm" style={{ background: SUCCESS_BG, border: SUCCESS_BORDER }}>
         <p className="font-semibold text-success">Alles bereit zum Anlegen</p>
         <p className="mt-0.5 text-muted">Bitte prüfe die Angaben und bestätige das Onboarding.</p>
       </div>

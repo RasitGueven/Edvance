@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { TaskAnswerArea } from '@/components/edvance/tasks/TaskAnswerArea'
-import { ToastBanner } from '@/components/edvance'
 import { useAuth } from '@/hooks/useAuth'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
 import {
@@ -14,16 +13,26 @@ import {
   getTasksByClusterOrdered,
 } from '@/lib/supabase/tasks'
 import { persistBehaviorSnapshot } from '@/lib/supabase/behavior'
-import { completeTask } from '@/lib/supabase/taskProgress'
 import { MathContent } from '@/lib/render/MathContent'
 import type { SkillCluster, Task } from '@/types'
-import {
-  TypeBadge,
-  DifficultyBadge,
-  VideoBlock,
-  UnsupportedBlock,
-  TYPE_LABEL,
-} from './TaskPlayerBlocks'
+
+type ContentType = Task['content_type']
+
+const TYPE_LABEL: Record<ContentType, string> = {
+  exercise: 'Aufgabe',
+  exercise_group: 'Mini-Test',
+  article: 'Artikel',
+  video: 'Video',
+  course: 'Kurs',
+}
+
+const TYPE_BADGE: Record<ContentType, { bg: string; fg: string }> = {
+  exercise: { bg: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', fg: 'var(--color-primary)' },
+  exercise_group: { bg: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', fg: 'var(--color-primary)' },
+  article: { bg: 'color-mix(in srgb, var(--color-success) 12%, transparent)', fg: 'var(--color-success)' },
+  video: { bg: 'color-mix(in srgb, var(--color-gold-warning) 12%, transparent)', fg: 'var(--color-gold-warning)' },
+  course: { bg: 'color-mix(in srgb, var(--color-repair) 12%, transparent)', fg: 'var(--color-repair)' },
+}
 
 export function TaskPlayer(): JSX.Element {
   const { taskId } = useParams<{ taskId: string }>()
@@ -37,13 +46,12 @@ export function TaskPlayer(): JSX.Element {
 
   const [hintShown, setHintShown] = useState<boolean>(false)
   const [submitted, setSubmitted] = useState<boolean>(false)
-  const [xpToast, setXpToast] = useState<number | null>(null)
 
   const tracker = useBehaviorTracker()
   const startedTaskRef = useRef<string | null>(null)
-  const completedRef = useRef<string | null>(null)
   const { user } = useAuth()
 
+  // Task + Cluster + Siblings laden bei taskId-Aenderung.
   useEffect(() => {
     if (!taskId) return
     let cancelled = false
@@ -54,8 +62,6 @@ export function TaskPlayer(): JSX.Element {
     setSiblings([])
     setHintShown(false)
     setSubmitted(false)
-    setXpToast(null)
-    completedRef.current = null
 
     void (async () => {
       const taskResult = await getTaskById(taskId)
@@ -95,6 +101,7 @@ export function TaskPlayer(): JSX.Element {
     }
   }, [taskId])
 
+  // Behavior-Tracking starten bei Aufgaben-Wechsel (nur exercise).
   useEffect(() => {
     if (!task || task.content_type !== 'exercise') return
     if (startedTaskRef.current === task.id) return
@@ -121,22 +128,6 @@ export function TaskPlayer(): JSX.Element {
     tracker.onHintRequested()
   }
 
-  // Abschluss persistieren (idempotent serverseitig; Ref schuetzt zusaetzlich
-  // vor Doppel-RPC bei Doppelklick im selben Mount). XP-Toast nur bei
-  // Erst-Abschluss – fuer Aufwand/Abschluss, NICHT an Korrektheit gekoppelt.
-  const recordCompletion = async (): Promise<void> => {
-    if (!task || completedRef.current === task.id) return
-    completedRef.current = task.id
-    const { data, error } = await completeTask(task.id)
-    if (error) {
-      console.error('[TaskPlayer] completeTask failed:', error)
-      return
-    }
-    if (data?.newly_completed && data.awarded_xp > 0) {
-      setXpToast(data.awarded_xp)
-    }
-  }
-
   const handleAnswerSubmit = async (answer: string): Promise<void> => {
     if (!task) return
     tracker.onLastKeystroke()
@@ -146,15 +137,11 @@ export function TaskPlayer(): JSX.Element {
       const { error } = await persistBehaviorSnapshot(task.id, user.id, snapshot)
       if (error) console.error('[TaskPlayer] BehaviorSnapshot persist failed:', error, snapshot)
     }
-    await recordCompletion()
   }
 
   const handleTextChange = (v: string): void => { tracker.onChange(v) }
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => { tracker.onKeyDown(e) }
-  const handleAcknowledgeNonExercise = async (): Promise<void> => {
-    setSubmitted(true)
-    await recordCompletion()
-  }
+  const handleAcknowledgeNonExercise = (): void => { setSubmitted(true) }
 
   if (loading) {
     return (
@@ -188,14 +175,6 @@ export function TaskPlayer(): JSX.Element {
   return (
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle={TYPE_LABEL[task.content_type]} />
-      {xpToast != null && (
-        <ToastBanner
-          type="xp"
-          message="Stark gemacht!"
-          xpAmount={xpToast}
-          onClose={() => setXpToast(null)}
-        />
-      )}
       <main className="mx-auto max-w-3xl px-4 py-6">
         {/* Breadcrumb */}
         <div className="mb-4 flex items-center gap-3 text-sm">
@@ -319,3 +298,60 @@ export function TaskPlayer(): JSX.Element {
   )
 }
 
+function TypeBadge({ type }: { type: ContentType }): JSX.Element {
+  const { bg, fg } = TYPE_BADGE[type]
+  return (
+    <span
+      className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+      style={{ background: bg, color: fg }}
+    >
+      {TYPE_LABEL[type]}
+    </span>
+  )
+}
+
+function DifficultyBadge({ difficulty }: { difficulty: number }): JSX.Element {
+  const dots = [1, 2, 3, 4, 5].map((i) => (
+    <span
+      key={i}
+      className="inline-block h-1.5 w-1.5 rounded-full"
+      style={{
+        background: i <= difficulty ? 'var(--color-primary)' : 'var(--color-neutral-unknown)',
+      }}
+    />
+  ))
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-muted">
+      {dots}
+    </span>
+  )
+}
+
+function VideoBlock({ task }: { task: Task }): JSX.Element {
+  const url = task.question
+  if (!url) return <p className="text-sm text-muted">– kein Video-Link –</p>
+  return (
+    <div className="flex flex-col gap-4">
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-2 self-start rounded-lg border-2 border-border bg-card px-4 py-3 text-sm font-semibold text-primary hover:bg-primary/5"
+      >
+        {task.title ?? 'Video oeffnen'}
+      </a>
+      {task.solution && <MathContent text={task.solution} />}
+    </div>
+  )
+}
+
+function UnsupportedBlock({ type }: { type: ContentType }): JSX.Element {
+  return (
+    <div className="rounded-lg border-2 border-dashed border-border p-6 text-center">
+      <p className="text-sm font-semibold text-muted">
+        Inhaltstyp <code className="rounded bg-border-strong/40 px-1.5 py-0.5">{type}</code>{' '}
+        ist noch nicht unterstuetzt.
+      </p>
+    </div>
+  )
+}

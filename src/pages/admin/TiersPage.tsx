@@ -97,17 +97,17 @@ export function TiersPage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Tarife</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Tarife</h1>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         <EdvanceCard className="flex flex-col gap-4 p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             {editingId ? 'Tarif bearbeiten' : 'Neuer Tarif'}
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -140,7 +140,7 @@ export function TiersPage(): JSX.Element {
             <Label htmlFor="t-feat">Features (eine pro Zeile)</Label>
             <textarea
               id="t-feat"
-              className="min-h-[96px] rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text-primary)]"
+              className="min-h-[96px] rounded-xl border border-[var(--color-border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--color-text-primary)]"
               value={form.features_text}
               onChange={(e) => setForm({ ...form, features_text: e.target.value })}
             />
@@ -176,14 +176,14 @@ export function TiersPage(): JSX.Element {
             {tiers.map((t) => (
               <EdvanceCard key={t.id} className="flex flex-col gap-3 p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-base font-semibold text-[var(--text-primary)]">
+                  <span className="text-base font-semibold text-[var(--color-text-primary)]">
                     {t.name} · {(t.price_cents / 100).toLocaleString('de-DE')} €
                   </span>
                   <EdvanceBadge variant={t.active ? 'success' : 'muted'}>
                     {t.active ? 'Aktiv' : 'Inaktiv'}
                   </EdvanceBadge>
                 </div>
-                <ul className="flex flex-col gap-0.5 text-sm text-[var(--text-secondary)]">
+                <ul className="flex flex-col gap-0.5 text-sm text-[var(--color-text-secondary)]">
                   {t.features.map((f) => (
                     <li key={f}>· {f}</li>
                   ))}

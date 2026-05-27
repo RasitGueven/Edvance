@@ -26,8 +26,8 @@ export function TaskPreviewCard({
 }): JSX.Element {
   return (
     <EdvanceCard className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--border)] pb-3">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-[var(--text-muted)]">
+      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--color-border)] pb-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-[var(--color-text-tertiary)]">
           {task.source_ref && <span>{task.source_ref}</span>}
           {task.source_ref && task.curriculum_ref && <span aria-hidden="true">·</span>}
           {task.curriculum_ref && <span>{task.curriculum_ref}</span>}
@@ -38,12 +38,12 @@ export function TaskPreviewCard({
       </header>
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-bold leading-tight text-[var(--text-primary)]">
+        <h2 className="text-xl font-bold leading-tight text-[var(--color-text-primary)]">
           {task.title ?? 'Ohne Titel'}
         </h2>
         {microskillName && (
-          <div className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--primary-pale)] px-3 py-1 text-xs text-[var(--primary)]">
-            <span className="uppercase tracking-widest text-[var(--text-muted)]">Microskill</span>
+          <div className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-light)] px-3 py-1 text-xs text-[var(--color-primary)]">
+            <span className="uppercase tracking-widest text-[var(--color-text-tertiary)]">Microskill</span>
             <span className="font-semibold">{microskillName}</span>
           </div>
         )}

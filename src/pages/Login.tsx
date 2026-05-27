@@ -41,12 +41,12 @@ export function Login(): JSX.Element {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-hero noise-overlay px-4 py-12">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden student-hero  px-4 py-12">
       {/* Goldene Glow-Akzente */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-30 blur-3xl"
-        style={{ background: 'var(--color-moment-gold)' }}
+        style={{ background: 'var(--color-gold-altgold)' }}
       />
       <div
         aria-hidden="true"
@@ -56,19 +56,19 @@ export function Login(): JSX.Element {
 
       {/* Glass-Card */}
       <div className="relative w-full max-w-md">
-        <div className="glass-light rounded-[var(--radius-xl)] shadow-premium-xl p-8">
+        <div className="glass-card rounded-[var(--radius-xl)] shadow-xl p-8">
           {/* Logo + Headline */}
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="relative">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-gold blur-xl opacity-50" aria-hidden="true" />
-              <EdvanceAppIcon size={64} className="relative shadow-premium-md" />
+              <div className="absolute inset-0 rounded-2xl xp-bar-fill blur-xl opacity-50" aria-hidden="true" />
+              <EdvanceAppIcon size={64} className="relative shadow-md" />
             </div>
 
             <div className="text-center">
               <h1 className="text-display text-3xl text-[var(--color-text-primary)]">
                 Edvance
               </h1>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">
+              <p className="mt-1 text-sm text-[var(--color-text-tertiary)]">
                 Hybride Lernakademie · Kleingruppen · Tablet-Lernpfad
               </p>
             </div>
@@ -119,7 +119,7 @@ export function Login(): JSX.Element {
             </Button>
           </form>
 
-          <div className="mt-6 flex items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
+          <div className="mt-6 flex items-center justify-center gap-2 text-xs text-[var(--color-text-tertiary)]">
             <Sparkles className="h-3.5 w-3.5" />
             <span>Klasse 5 – 13 · Köln · Pre-Launch</span>
           </div>

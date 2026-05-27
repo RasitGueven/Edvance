@@ -19,7 +19,7 @@ import type {
 } from '@/types'
 
 const TEXTAREA_CLASS =
-  'min-h-[80px] rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text-primary)]'
+  'min-h-[80px] rounded-xl border border-[var(--color-border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--color-text-primary)]'
 
 type FormState = Omit<IntakeInput, 'student_id'> & { known_weak_topics_text: string }
 
@@ -163,16 +163,16 @@ export function IntakePage(): JSX.Element {
         <div>
           <Link
             to="/coach"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Coach-Dashboard
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Erstgespräch-Protokoll
           </h1>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="list" lines={3} />
@@ -188,7 +188,7 @@ export function IntakePage(): JSX.Element {
               <Label htmlFor="intake-student">Schüler</Label>
               <select
                 id="intake-student"
-                className="h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm"
+                className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--card)] px-3 text-sm"
                 value={studentId}
                 onChange={(e) => selectStudent(e.target.value)}
               >
@@ -205,13 +205,13 @@ export function IntakePage(): JSX.Element {
               <>
                 {sessions.length > 0 && (
                   <div className="flex flex-col gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                       Bisherige Protokolle
                     </p>
                     {sessions.map((s) => (
                       <EdvanceCard key={s.id} className="flex flex-col gap-2 p-5">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-[var(--text-secondary)]">
+                          <span className="text-sm text-[var(--color-text-secondary)]">
                             {new Date(s.created_at).toLocaleDateString('de-DE')}
                           </span>
                           <EdvanceBadge
@@ -221,7 +221,7 @@ export function IntakePage(): JSX.Element {
                           </EdvanceBadge>
                         </div>
                         {s.goals && (
-                          <p className="text-sm text-[var(--text-secondary)]">
+                          <p className="text-sm text-[var(--color-text-secondary)]">
                             {s.goals}
                           </p>
                         )}
@@ -241,7 +241,7 @@ export function IntakePage(): JSX.Element {
                 )}
 
                 <EdvanceCard className="flex flex-col gap-4 p-6">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
                     {editingId ? 'Protokoll bearbeiten' : 'Neues Protokoll'}
                   </p>
                   <div className="flex flex-col gap-2">
@@ -249,7 +249,7 @@ export function IntakePage(): JSX.Element {
                     <input
                       id="conducted"
                       type="date"
-                      className="h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm"
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--card)] px-3 text-sm"
                       value={form.conducted_at ?? ''}
                       onChange={(e) =>
                         setForm({ ...form, conducted_at: e.target.value })
@@ -280,7 +280,7 @@ export function IntakePage(): JSX.Element {
                     <Label htmlFor="weak">Bekannte Schwächen (kommagetrennt)</Label>
                     <input
                       id="weak"
-                      className="h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm"
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--card)] px-3 text-sm"
                       value={form.known_weak_topics_text}
                       onChange={(e) =>
                         setForm({ ...form, known_weak_topics_text: e.target.value })

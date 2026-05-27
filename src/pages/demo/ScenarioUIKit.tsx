@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card'
 function Section({ title, children }: { title: string; children: ReactNode }): JSX.Element {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         {title}
       </p>
       {children}
@@ -102,17 +102,17 @@ export function ScenarioUIKit(): JSX.Element {
 
       {/* ── Card ────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Card — Varianten
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Card variant="default" title="Default">
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-[var(--color-text-secondary)]">
               Weißer Hintergrund, dezenter Rahmen. Standard für alle strukturierten Inhalte.
             </p>
           </Card>
           <Card variant="subtle" title="Subtle">
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-[var(--color-text-secondary)]">
               Leicht getönter Hintergrund. Gut für eingebettete Blöcke innerhalb einer Seite.
             </p>
           </Card>
@@ -140,10 +140,10 @@ export function ScenarioUIKit(): JSX.Element {
             ].map(({ token, label }) => (
               <div key={token} className="flex items-center gap-2">
                 <div
-                  className="h-8 w-8 flex-none rounded-lg border border-[var(--border)] shadow-card"
+                  className="h-8 w-8 flex-none rounded-lg border border-[var(--color-border)] shadow-card"
                   style={{ backgroundColor: `var(${token})` }}
                 />
-                <span className="text-xs font-mono text-[var(--text-secondary)] truncate">{label}</span>
+                <span className="text-xs font-mono text-[var(--color-text-secondary)] truncate">{label}</span>
               </div>
             ))}
           </div>

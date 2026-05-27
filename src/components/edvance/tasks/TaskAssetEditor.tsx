@@ -71,16 +71,16 @@ export function TaskAssetEditor({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-dashed border-[var(--border-strong)] p-4">
+    <div className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-dashed border-[var(--color-neutral-unknown)] p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Abbildungen verwalten ({assets.length})
         </p>
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy !== null}
-          className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-semibold text-[var(--primary)] transition-colors hover:border-[var(--primary)] disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--color-primary)] transition-colors hover:border-[var(--color-primary)] disabled:opacity-60"
         >
           {busy === 'add' ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -107,22 +107,22 @@ export function TaskAssetEditor({
           {assets.map((a, i) => (
             <li
               key={`${a.url}-${i}`}
-              className="flex items-center gap-3 rounded-[var(--radius-md)] bg-[var(--surface)] p-2"
+              className="flex items-center gap-3 rounded-[var(--radius-md)] bg-[var(--color-bg-surface)] p-2"
             >
               <img
                 src={a.url}
                 alt={a.alt}
                 loading="lazy"
-                className="h-12 w-12 flex-none rounded-[var(--radius-sm)] border border-[var(--border)] object-cover"
+                className="h-12 w-12 flex-none rounded-[var(--radius-sm)] border border-[var(--color-border)] object-cover"
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                <p className="truncate text-sm font-semibold text-[var(--color-text-primary)]">
                   {a.alt}
                 </p>
                 {a.caption && (
-                  <p className="truncate text-xs text-[var(--text-muted)]">{a.caption}</p>
+                  <p className="truncate text-xs text-[var(--color-text-tertiary)]">{a.caption}</p>
                 )}
-                <p className="truncate font-mono text-xs text-[var(--text-muted)]">{a.url}</p>
+                <p className="truncate font-mono text-xs text-[var(--color-text-tertiary)]">{a.url}</p>
               </div>
               <button
                 type="button"
@@ -130,7 +130,7 @@ export function TaskAssetEditor({
                 disabled={busy !== null}
                 title="Bild entfernen"
                 aria-label="Bild entfernen"
-                className="flex h-7 w-7 flex-none items-center justify-center rounded-[var(--radius-md)] text-[var(--text-muted)] transition-colors hover:bg-[var(--destructive-light)] hover:text-[var(--destructive)] disabled:opacity-60"
+                className="flex h-7 w-7 flex-none items-center justify-center rounded-[var(--radius-md)] text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-error-exam-light)] hover:text-[var(--color-error-exam)] disabled:opacity-60"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -139,7 +139,7 @@ export function TaskAssetEditor({
         </ul>
       )}
 
-      {error && <p className="text-xs text-[var(--destructive)]">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-error-exam)]">{error}</p>}
     </div>
   )
 }

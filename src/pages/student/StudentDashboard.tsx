@@ -1,21 +1,18 @@
 import { useEffect, useMemo, useState, type JSX } from 'react'
-import { Search, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Search, X, Flame } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { EmptyState, LoadingPulse, EdvanceCard, EdvanceBadge } from '@/components/edvance'
-import { StudentBentoGrid } from '@/components/edvance/StudentWidgetGrid'
-import { ClusterGrid, FilterResults, RecommendationBanner, type ClusterProgress } from '@/pages/student/ClusterGrid'
+import { XPBar } from '@/components/edvance'
+import { DashboardTiles } from '@/components/edvance/DashboardTiles'
 import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
 import { getStudentByProfile } from '@/lib/supabase/students'
 import { getStudentProgress } from '@/lib/supabase/progress'
-import { getCompletedTaskIds } from '@/lib/supabase/taskProgress'
-import { listUpcomingSessionsForStudent } from '@/lib/supabase/sessions'
-import { formatSessionDate } from '@/lib/datetime'
-import { getResumePoint, type ResumePoint } from '@/lib/supabase/resume'
-import { useScreeningRecommendation } from '@/pages/student/useScreeningRecommendation'
-import { StudentHero } from '@/pages/student/StudentHero'
-import type { CoachingSession, SkillCluster, Student, Subject, Task } from '@/types'
+import type { SkillCluster, Subject, Task } from '@/types'
+
+const XP_PER_LEVEL = 500
 
 type ContentType = Task['content_type']
 type TypeFilter = 'all' | ContentType
@@ -31,33 +28,23 @@ export function StudentDashboard(): JSX.Element {
   const { user } = useAuth()
   const firstName = (user?.email?.split('@')[0] ?? 'Lernender').split('.')[0]
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1)
-
-  const [student, setStudent] = useState<Student | null>(null)
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null)
   const [clusters, setClusters] = useState<SkillCluster[]>([])
-  const [clusterProgress, setClusterProgress] = useState<ClusterProgress>({})
   const [loadingClusters, setLoadingClusters] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
   const [xpTotal, setXpTotal] = useState<number>(0)
   const [streakDays, setStreakDays] = useState<number>(0)
   const [level, setLevel] = useState<number>(1)
-  const [resume, setResume] = useState<ResumePoint | null>(null)
-  const [nextSession, setNextSession] = useState<CoachingSession | null>(null)
-  const [sessionLoading, setSessionLoading] = useState<boolean>(true)
 
   useEffect(() => {
     if (!user) return
     let cancelled = false
     void (async () => {
-      const { data: s } = await getStudentByProfile(user.id)
-      if (cancelled || !s) return
-      setStudent(s)
-      void getResumePoint(s.id).then(({ data }) => {
-        if (!cancelled) setResume(data ?? null)
-      })
-      const { data: progress } = await getStudentProgress(s.id)
+      const { data: student } = await getStudentByProfile(user.id)
+      if (cancelled || !student) return
+      const { data: progress } = await getStudentProgress(student.id)
       if (cancelled || !progress) return
       setXpTotal(progress.xp_total)
       setStreakDays(progress.streak_days)
@@ -68,20 +55,6 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [user])
 
-  useEffect(() => {
-    if (!student) return
-    let cancelled = false
-    setSessionLoading(true)
-    void listUpcomingSessionsForStudent(student.id).then(({ data }) => {
-      if (cancelled) return
-      setNextSession(data && data.length > 0 ? data[0] : null)
-      setSessionLoading(false)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [student])
-
   const [search, setSearch] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [allTasks, setAllTasks] = useState<Task[] | null>(null)
@@ -90,6 +63,7 @@ export function StudentDashboard(): JSX.Element {
   const lowerSearch = search.trim().toLowerCase()
   const isFiltering = lowerSearch.length > 0 || typeFilter !== 'all'
 
+  // Subjects beim Mount.
   useEffect(() => {
     let cancelled = false
     void getSubjects().then(({ data, error: e }) => {
@@ -107,6 +81,7 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [])
 
+  // Cluster bei Subject-Wechsel.
   useEffect(() => {
     if (!selectedSubjectId) return
     let cancelled = false
@@ -126,6 +101,7 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [selectedSubjectId])
 
+  // Tasks lazy laden, sobald Filter erstmals aktiv wird.
   useEffect(() => {
     if (!isFiltering || allTasks !== null || clusters.length === 0) return
     let cancelled = false
@@ -144,48 +120,11 @@ export function StudentDashboard(): JSX.Element {
     }
   }, [isFiltering, allTasks, clusters])
 
-  useEffect(() => {
-    if (!student || clusters.length === 0) return
-    let cancelled = false
-    void (async () => {
-      const { data: completedIds } = await getCompletedTaskIds(student.id)
-      const completedSet = new Set(completedIds ?? [])
-      const taskResults = await Promise.all(
-        clusters.map((c) => getTasksByCluster(c.id))
-      )
-      if (cancelled) return
-      const prog: ClusterProgress = {}
-      clusters.forEach((c, i) => {
-        const tasks = taskResults[i].data ?? []
-        prog[c.id] = {
-          total: tasks.length,
-          completed: tasks.filter((t) => completedSet.has(t.id)).length,
-        }
-      })
-      setClusterProgress(prog)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [student, clusters])
-
   const clusterNameById = useMemo(() => {
     const m: Record<string, string> = {}
     for (const c of clusters) m[c.id] = c.name
     return m
   }, [clusters])
-
-  const {
-    clusterStatusById,
-    recommendedClusterId,
-    orderedClusters,
-    showRecommendation,
-  } = useScreeningRecommendation(
-    student?.id ?? null,
-    clusters,
-    clusterProgress,
-    resume,
-  )
 
   const filteredTasks = useMemo(() => {
     if (!allTasks) return []
@@ -204,77 +143,86 @@ export function StudentDashboard(): JSX.Element {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Mein Lernplan" />
 
-      <div aria-hidden="true" className="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-[0.07] blur-3xl bg-[var(--xp-gold)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute -left-24 bottom-1/4 h-80 w-80 rounded-full opacity-[0.08] blur-3xl bg-[var(--color-levelup)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute right-1/4 top-2/3 h-64 w-64 rounded-full opacity-[0.06] blur-3xl bg-[var(--color-primary)]" />
+      {/* Hero-Section */}
+      <section className="relative overflow-hidden student-hero ">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
+          style={{ background: 'var(--color-gold-altgold)' }}
+        />
+        <div className="mx-auto max-w-3xl px-4 py-8 text-white">
+          <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+            <div className="min-w-0">
+              <p className="text-eyebrow opacity-70">Heute · Mein Lernplan</p>
+              <h1 className="text-display text-3xl mt-1.5 leading-none">
+                Hi {displayName} 👋
+              </h1>
+              <p className="mt-2 text-sm opacity-80 max-w-md">
+                Wähle ein Thema oder suche direkt nach einer Aufgabe.
+              </p>
+            </div>
 
-      <StudentHero
-        displayName={displayName}
-        xpTotal={xpTotal}
-        streakDays={streakDays}
-        level={level}
-      />
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold">
+              <Flame className="h-3.5 w-3.5 text-[var(--color-gold-altgold)]" />
+              {streakDays} Tage Streak
+            </div>
+          </div>
 
-      <div aria-hidden="true" className="h-8 bg-gradient-to-b from-[var(--color-primary)] to-[var(--background)] opacity-20" />
+          {/* XP-Card mit Glass-Effekt */}
+          <div className="glass-card rounded-[var(--radius-xl)] p-5">
+            <XPBar
+              current={xpTotal % XP_PER_LEVEL}
+              max={XP_PER_LEVEL}
+              level={level}
+              levelName={`Level ${level}`}
+            />
+          </div>
+        </div>
+      </section>
 
       <main className="mx-auto max-w-3xl px-4 py-8">
         {error && (
-          <EdvanceCard className="mb-6">
-            <p className="text-sm text-[var(--destructive)]">{error}</p>
-          </EdvanceCard>
+          <Card className="mb-6">
+            <CardContent className="pt-6 text-sm text-destructive">{error}</CardContent>
+          </Card>
         )}
 
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+          Schnellzugriff
+        </h2>
         <div className="mb-8">
-          <StudentBentoGrid
-            xpTotal={xpTotal}
-            streakDays={streakDays}
-            level={level}
-            resume={resume}
-            loading={!student}
+          <DashboardTiles
+            tiles={[
+              {
+                to: '/screening',
+                icon: <FlaskConical className="h-5 w-5" />,
+                title: 'Screening starten',
+                description: 'Zeig, was du kannst – wir finden deinen Lernstand',
+              },
+              {
+                to: '#lernpfad',
+                anchor: true,
+                icon: <BookOpen className="h-5 w-5" />,
+                title: 'Lernpfad',
+                description: 'Themen durchsuchen und üben',
+              },
+            ]}
           />
         </div>
 
-        <div className="mb-8 flex flex-col gap-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-            Nächste Session
-          </p>
-          {sessionLoading ? (
-            <LoadingPulse type="card" />
-          ) : nextSession ? (
-            <EdvanceCard className="flex flex-wrap items-center justify-between gap-3 p-6">
-              <div className="flex flex-col gap-1">
-                <span className="text-base font-semibold text-[var(--text-primary)]">
-                  {formatSessionDate(nextSession.scheduled_at)} Uhr
-                </span>
-                {nextSession.room && (
-                  <span className="text-sm text-[var(--text-secondary)]">
-                    Raum {nextSession.room}
-                  </span>
-                )}
-              </div>
-              <EdvanceBadge variant="primary">Geplant</EdvanceBadge>
-            </EdvanceCard>
-          ) : (
-            <EmptyState
-              icon="📅"
-              title="Noch keine Session geplant"
-              description="Dein Coach trägt deinen nächsten Termin bald hier ein."
-            />
-          )}
-        </div>
-
+        {/* Search + Filters */}
         <div id="lernpfad" className="flex flex-col gap-3">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Suche nach Aufgabe, Video, Artikel …"
-              className="h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] pl-11 pr-11 text-sm shadow-premium-sm focus:border-[var(--color-primary)] focus:shadow-glow-primary focus:outline-none transition-all"
+              className="h-12 w-full rounded-xl border border-[var(--color-border)] bg-white pl-11 pr-11 text-sm shadow-xs focus:border-[var(--color-primary)]  focus:outline-none transition-all"
             />
             {search && (
               <button
@@ -310,6 +258,7 @@ export function StudentDashboard(): JSX.Element {
           </div>
         </div>
 
+        {/* Subject Tabs (nur wenn >1) */}
         {subjects.length > 1 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {subjects.map((s) => (
@@ -325,6 +274,7 @@ export function StudentDashboard(): JSX.Element {
           </div>
         )}
 
+        {/* Body */}
         {isFiltering ? (
           <FilterResults
             loading={loadingTasks}
@@ -332,34 +282,138 @@ export function StudentDashboard(): JSX.Element {
             clusterNameById={clusterNameById}
           />
         ) : loadingClusters ? (
-          <div className="mt-6">
-            <LoadingPulse type="card" />
-          </div>
+          <p className="mt-6 text-sm text-muted">Lade Themen …</p>
         ) : clusters.length === 0 ? (
-          <EmptyState
-            icon="📚"
-            title="Noch keine Themen"
-            description="Frag deinen Coach – er richtet deinen Lernpfad ein."
-          />
+          <Card className="mt-6">
+            <CardContent className="pt-6 text-center text-sm text-muted">
+              Noch keine Themen verfuegbar. Frag deinen Coach.
+            </CardContent>
+          </Card>
         ) : (
-          <>
-            {showRecommendation && recommendedClusterId && (
-              <RecommendationBanner
-                clusterId={recommendedClusterId}
-                clusterName={
-                  clusterNameById[recommendedClusterId] ?? 'Dein Lernpfad'
-                }
-              />
-            )}
-            <ClusterGrid
-              clusters={orderedClusters}
-              clusterProgress={clusterProgress}
-              clusterStatusById={clusterStatusById}
-              recommendedClusterId={recommendedClusterId}
-            />
-          </>
+          <ClusterGrid clusters={clusters} />
         )}
       </main>
     </div>
   )
+}
+
+const CLUSTER_TINTS = [
+  { bg: 'var(--color-primary-light)',     fg: 'var(--color-primary)' },
+  { bg: 'var(--color-success-light)',     fg: 'var(--color-success)' },
+  { bg: 'var(--color-warning-light)',     fg: 'var(--color-warning)' },
+  { bg: 'var(--color-info-light)',        fg: 'var(--color-info)' },
+  { bg: 'color-mix(in srgb, var(--color-accent) 14%, white)', fg: '#9A6B00' },
+]
+
+function ClusterGrid({ clusters }: { clusters: SkillCluster[] }): JSX.Element {
+  return (
+    <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      {clusters.map((c, idx) => {
+        const tint = CLUSTER_TINTS[idx % CLUSTER_TINTS.length]
+        return (
+          <Link
+            key={c.id}
+            to={`/student/cluster/${c.id}`}
+            className="group block rounded-[var(--radius-xl)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+          >
+            <div className="relative h-full overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-5 shadow-xs transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-0.5">
+              {/* Decorative blob */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-60 blur-2xl transition-opacity duration-300 group-hover:opacity-90"
+                style={{ background: tint.fg }}
+              />
+
+              <div className="relative flex items-start gap-4">
+                <span
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] shadow-xs"
+                  style={{ background: tint.bg, color: tint.fg }}
+                >
+                  <BookOpen className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-base font-bold tracking-tight text-[var(--color-text-primary)]">
+                    {c.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[var(--color-text-tertiary)]">
+                    Klasse {c.class_level_min}
+                    {c.class_level_min !== c.class_level_max && ` – ${c.class_level_max}`}
+                  </p>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-[var(--color-text-tertiary)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)]" />
+              </div>
+            </div>
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
+
+function FilterResults({
+  loading,
+  tasks,
+  clusterNameById,
+}: {
+  loading: boolean
+  tasks: Task[]
+  clusterNameById: Record<string, string>
+}): JSX.Element {
+  if (loading) {
+    return <p className="mt-6 text-sm text-muted">Suche …</p>
+  }
+  if (tasks.length === 0) {
+    return (
+      <Card className="mt-6">
+        <CardContent className="pt-6 text-center text-sm text-muted">
+          Keine Treffer.
+        </CardContent>
+      </Card>
+    )
+  }
+  return (
+    <div className="mt-6 flex flex-col gap-1.5">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted">
+        {tasks.length} Treffer
+      </p>
+      <Card>
+        <CardContent className="p-0">
+          <ul className="divide-y divide-border">
+            {tasks.slice(0, 50).map((t) => (
+              <li key={t.id}>
+                <Link
+                  to={`/student/task/${t.id}`}
+                  className="flex min-h-[56px] items-center gap-3 px-4 py-3 transition-colors hover:bg-background"
+                >
+                  <RowIcon type={t.content_type} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {t.title ?? t.question?.slice(0, 80) ?? `task:${t.id.slice(0, 8)}`}
+                    </p>
+                    {t.cluster_id && clusterNameById[t.cluster_id] && (
+                      <p className="text-xs text-muted">{clusterNameById[t.cluster_id]}</p>
+                    )}
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted" />
+                </Link>
+              </li>
+            ))}
+            {tasks.length > 50 && (
+              <li className="px-4 py-2 text-xs text-muted">
+                … und {tasks.length - 50} weitere – Suche praeziser, um sie zu sehen.
+              </li>
+            )}
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+function RowIcon({ type }: { type: ContentType }): JSX.Element {
+  if (type === 'video') return <PlayCircle className="h-5 w-5 shrink-0 text-warning" />
+  if (type === 'article') return <FileText className="h-5 w-5 shrink-0 text-success" />
+  if (type === 'exercise_group' || type === 'course')
+    return <FlaskConical className="h-5 w-5 shrink-0 text-primary" />
+  return <BookOpen className="h-5 w-5 shrink-0 text-primary" />
 }

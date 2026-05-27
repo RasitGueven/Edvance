@@ -1,5 +1,4 @@
 import type { JSX } from 'react'
-import { Check } from 'lucide-react'
 
 type Props = {
   options: string[]
@@ -12,11 +11,7 @@ const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 
 export function MCWidget({ options, selected, onChange, disabled }: Props): JSX.Element {
   return (
-    <div
-      className="grid grid-cols-2 gap-3"
-      role="radiogroup"
-      aria-label="Antwortoptionen"
-    >
+    <div className="flex flex-col gap-3" role="radiogroup" aria-label="Antwortoptionen">
       {options.map((opt, i) => {
         const active = selected === i
         return (
@@ -28,30 +23,23 @@ export function MCWidget({ options, selected, onChange, disabled }: Props): JSX.
             disabled={disabled}
             onClick={() => onChange(i)}
             className={[
-              'group flex min-h-[56px] w-full items-center gap-3 rounded-[var(--radius-lg)] border-2 p-3 text-left transition-all duration-fast',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2',
+              'flex min-h-[52px] w-full items-start gap-3 rounded-xl border-2 p-3 text-left transition-all',
               active
-                ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] shadow-md'
-                : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] shadow-sm hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-md',
-              disabled ? 'cursor-not-allowed opacity-60 hover:translate-y-0' : 'cursor-pointer',
+                ? 'border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_8%,white)]'
+                : 'border-[var(--color-border)] bg-card hover:border-[var(--color-primary-light)]',
+              disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
             ].join(' ')}
           >
             <span
-              className={[
-                'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors',
-                active
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] group-hover:bg-[var(--color-primary-light)] group-hover:text-[var(--color-primary)]',
-              ].join(' ')}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+              style={{
+                background: active ? 'var(--color-primary)' : 'var(--color-primary-light)',
+                color: active ? '#fff' : 'var(--color-primary)',
+              }}
             >
               {LETTERS[i] ?? i + 1}
             </span>
-            <span className="flex-1 text-sm leading-relaxed text-[var(--color-text-primary)]">
-              {opt}
-            </span>
-            {active && (
-              <Check className="h-5 w-5 shrink-0 text-[var(--color-primary)]" />
-            )}
+            <span className="flex-1 pt-0.5 text-sm leading-relaxed text-foreground">{opt}</span>
           </button>
         )
       })}
