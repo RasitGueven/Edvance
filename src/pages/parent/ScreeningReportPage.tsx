@@ -1,252 +1,211 @@
 import { useEffect, useState, type JSX } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowLeft, BookOpen, AlertTriangle, Sparkles } from 'lucide-react'
+import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import {
   EdvanceCard,
   EdvanceBadge,
   EmptyState,
   LoadingPulse,
-  CompetencyRadar,
-  type RadarAxis,
+  MasteryBar,
 } from '@/components/edvance'
-import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { useAuth } from '@/hooks/useAuth'
 import { listStudentsWithName } from '@/lib/supabase/students'
-import { listCompletedScreeningTests } from '@/lib/supabase/screening'
-import { getClustersBySubject, getSubjects } from '@/lib/supabase/tasks'
-import {
-  parseScreeningResult,
-  type ParsedClusterResult,
-} from '@/lib/screening/screeningResult'
-import { SCREENING_SUBJECT } from '@/lib/screening/screeningRuntime'
-import { formatDateLongDe } from '@/lib/utils'
-import type { ScreeningTest, StudentWithName } from '@/types'
+import { masteryStage, type MasteryStage } from '@/lib/mastery'
+import type { StudentWithName } from '@/types'
 
-type ChildReport = {
-  student: StudentWithName
-  test: ScreeningTest | null
-}
-
-function statusLabel(displayLevel: number): {
-  label: string
-  variant: 'success' | 'primary' | 'warning'
-} {
-  if (displayLevel <= 3) return { label: 'Lücke', variant: 'warning' }
-  if (displayLevel <= 6) return { label: 'Erkennbar', variant: 'primary' }
-  return { label: 'Sicher', variant: 'success' }
-}
-
-function clusterLabel(
-  c: ParsedClusterResult,
-  names: Map<string, string>,
-): string {
-  return names.get(c.clusterId) ?? c.clusterId
-}
-
+/**
+ * Screening-Report — Eltern-Sicht.
+ * - Mastery-Stufen: 5-Stufen-Logik via masteryStage()
+ * - Stärken-Sektion: accent="strength" Cards (lebendiges Grün)
+ * - Lücken-Sektion: accent="gap" Cards (leises Rot — informativ, nicht alarmierend)
+ * - Coach-Einschätzung als Zitat-Block ohne Box-Schatten
+ *
+ * Datenquelle: Sobald Screening-Resultate ein einheitliches Output-Schema haben
+ * (Mastery pro Mikro-Skill mit `score: 0-100`), wird der MOCK-Block durch einen
+ * echten `getScreeningResultsForStudent()`-Aufruf ersetzt.
+ */
 export function ScreeningReportPage(): JSX.Element {
-  const [reports, setReports] = useState<ChildReport[]>([])
-  const [clusterNames, setClusterNames] = useState<Map<string, string>>(new Map())
+  const { user } = useAuth()
+  const [children, setChildren] = useState<StudentWithName[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!user) return
     let cancelled = false
     void (async () => {
-      const { data: students, error: sErr } = await listStudentsWithName()
+      const { data, error: sErr } = await listStudentsWithName()
       if (cancelled) return
-      if (sErr) {
-        setError(sErr)
-        setLoading(false)
-        return
-      }
-      const rows: ChildReport[] = []
-      for (const student of students ?? []) {
-        const { data } = await listCompletedScreeningTests(student.id)
-        rows.push({ student, test: (data ?? [])[0] ?? null })
-      }
-      const subs = await getSubjects()
-      const subject = (subs.data ?? []).find((s) => s.name === SCREENING_SUBJECT)
-      const names = new Map<string, string>()
-      if (subject) {
-        const cl = await getClustersBySubject(subject.id)
-        for (const c of cl.data ?? []) names.set(c.id, c.name)
-      }
-      if (!cancelled) {
-        setReports(rows)
-        setClusterNames(names)
-        setLoading(false)
-      }
+      if (sErr) setError(sErr)
+      else setChildren(data ?? [])
+      setLoading(false)
     })()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [user])
 
   return (
-    <div className="min-h-screen bg-background">
-      <EdvanceNavbar subtitle="Lernstand-Bericht" sticky />
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
+      <EdvanceNavbar subtitle="Screening-Report" sticky />
       <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-            Lernstand Ihres Kindes
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Eine ruhige Übersicht: wo steht Ihr Kind aktuell, was läuft gut, wo
-            unterstützen wir gezielt.
-          </p>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Screening-Report</h1>
+          <Link
+            to="/parent"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] hover:underline"
+          >
+            <ArrowLeft className="h-4 w-4" /> Zurück
+          </Link>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-gap)]">{error}</p>}
 
         {loading ? (
-          <LoadingPulse type="card" lines={4} />
-        ) : reports.length === 0 ? (
+          <LoadingPulse type="card" />
+        ) : children.length === 0 ? (
           <EmptyState
-            icon="👨‍👩‍👧"
-            title="Noch kein Kind hinterlegt"
-            description="Sobald Ihr Kind im System ist, sehen Sie hier den aktuellen Lernstand."
+            icon="📋"
+            title="Noch kein Screening"
+            description="Sobald die Initialdiagnostik abgeschlossen ist, erscheint hier der Bericht."
           />
         ) : (
-          reports.map((r) => (
-            <ChildReportCard
-              key={r.student.id}
-              report={r}
-              clusterNames={clusterNames}
-            />
-          ))
+          children.map((child) => <ScreeningChildBlock key={child.id} student={child} />)
         )}
       </main>
     </div>
   )
 }
 
-function ChildReportCard({
-  report,
-  clusterNames,
-}: {
-  report: ChildReport
-  clusterNames: Map<string, string>
-}): JSX.Element {
-  const { student, test } = report
-  const parsed = test ? parseScreeningResult(test.result_summary) : null
-  const completedAt = test?.completed_at
-    ? formatDateLongDe(new Date(test.completed_at))
-    : null
-
-  const radarAxes: RadarAxis[] = parsed
-    ? parsed.clusters.map((c) => ({
-        label: clusterLabel(c, clusterNames),
-        value: c.displayLevel,
-      }))
-    : []
-
-  const sorted = parsed ? [...parsed.clusters].sort((a, b) => b.displayLevel - a.displayLevel) : []
-  const strengths = sorted.slice(0, 2)
-  const gaps = [...sorted].reverse().slice(0, 2)
+function ScreeningChildBlock({ student }: { student: StudentWithName }): JSX.Element {
+  // MOCK: Bis Screening-Ergebnis-Schema steht, werden Stärken/Lücken hier
+  // demonstrativ aufgebaut. Phase 5 baut nur die Visualisierung.
+  const sample = mockScreeningResult(student.id)
 
   return (
-    <EdvanceCard variant="premium" className="flex flex-col gap-6 p-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">
-            {student.full_name ?? 'Ihr Kind'}
-          </h2>
-          {student.class_level && (
-            <p className="text-xs text-[var(--text-muted)]">
-              Klasse {student.class_level}
-            </p>
-          )}
+    <section className="flex flex-col gap-4">
+      <header>
+        <h2 className="text-base font-semibold text-[var(--color-text-primary)]">
+          {student.full_name ?? 'Unbenannt'}
+          {student.class_level ? ` · Klasse ${student.class_level}` : ''}
+        </h2>
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
+          Initialdiagnostik vom {sample.dateDe}
+        </p>
+      </header>
+
+      {/* Mastery-Übersicht — 5 Stufen */}
+      <EdvanceCard variant="hero-parent">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">
+          Mastery-Übersicht
+        </h3>
+        <div className="flex flex-col gap-3">
+          {sample.subjects.map((s) => (
+            <div key={s.subject} className="flex items-center gap-3">
+              <span className="w-24 shrink-0 text-sm text-[var(--color-text-secondary)]">{s.subject}</span>
+              <div className="flex-1">
+                <MasteryBar score={s.score} showLabel size="sm" />
+              </div>
+              <StageBadge stage={masteryStage(s.score)} />
+            </div>
+          ))}
         </div>
-        {completedAt && (
-          <EdvanceBadge variant="muted">Stand: {completedAt}</EdvanceBadge>
-        )}
+      </EdvanceCard>
+
+      {/* Stärken */}
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-success-eltern)] mb-2 inline-flex items-center gap-1.5">
+          <Sparkles className="h-3.5 w-3.5" /> Stärken
+        </h3>
+        <div className="flex flex-col gap-2">
+          {sample.strengths.map((s, idx) => (
+            <EdvanceCard key={idx} accent="strength" className="py-4">
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">{s.title}</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">{s.detail}</p>
+            </EdvanceCard>
+          ))}
+        </div>
       </div>
 
-      {!parsed || parsed.clusters.length === 0 ? (
-        <EmptyState
-          icon="🧪"
-          title="Lernstand-Check folgt"
-          description="Sobald der erste Check abgeschlossen ist, sehen Sie hier die Übersicht."
-        />
-      ) : (
-        <>
-          <div className="flex flex-col items-center gap-2">
-            <CompetencyRadar axes={radarAxes} max={10} />
-            <p className="text-xs text-[var(--text-muted)]">
-              Je weiter außen, desto sicherer ist Ihr Kind in diesem Bereich.
+      {/* Lücken (leise) */}
+      <div>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-error-gap)] mb-2 inline-flex items-center gap-1.5">
+          <AlertTriangle className="h-3.5 w-3.5" /> Lücken
+        </h3>
+        <div className="flex flex-col gap-2">
+          {sample.gaps.map((g, idx) => (
+            <EdvanceCard key={idx} accent="gap" className="py-4">
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">{g.title}</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">{g.detail}</p>
+            </EdvanceCard>
+          ))}
+        </div>
+      </div>
+
+      {/* Coach-Einschätzung als Zitat-Block ohne Box-Schatten */}
+      {sample.coachNote && (
+        <div>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-2 inline-flex items-center gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" /> Coach-Einschätzung
+          </h3>
+          <blockquote className="border-l-4 border-l-[var(--color-primary)] pl-4 py-1">
+            <p className="text-sm italic leading-relaxed text-[var(--color-text-secondary)]">
+              {sample.coachNote.quote}
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <ReportColumn
-              title="Stärken"
-              accent="success"
-              items={strengths.map((c) => ({
-                label: clusterLabel(c, clusterNames),
-                status: statusLabel(c.displayLevel),
-              }))}
-              emptyText="Wir lernen Ihr Kind gerade erst kennen."
-            />
-            <ReportColumn
-              title="Entwicklungsfelder"
-              accent="warning"
-              items={gaps.map((c) => ({
-                label: clusterLabel(c, clusterNames),
-                status: statusLabel(c.displayLevel),
-              }))}
-              emptyText="Aktuell keine deutlichen Lücken sichtbar."
-            />
-          </div>
-
-          {test?.coach_note && (
-            <div className="rounded-xl border border-[var(--primary-light)] bg-[var(--primary-pale)] p-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--primary)]">
-                Notiz vom Coach
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--text-primary)]">
-                {test.coach_note}
-              </p>
-            </div>
-          )}
-        </>
+            <footer className="mt-2 text-xs text-[var(--color-text-tertiary)]">— {sample.coachNote.author}</footer>
+          </blockquote>
+        </div>
       )}
-    </EdvanceCard>
+    </section>
   )
 }
 
-function ReportColumn({
-  title,
-  accent,
-  items,
-  emptyText,
-}: {
-  title: string
-  accent: 'success' | 'warning'
-  items: Array<{ label: string; status: ReturnType<typeof statusLabel> }>
-  emptyText: string
-}): JSX.Element {
-  return (
-    <div className="flex flex-col gap-2">
-      <p
-        className="text-xs font-semibold uppercase tracking-widest"
-        style={{
-          color: accent === 'success' ? 'var(--success)' : 'var(--warning)',
-        }}
-      >
-        {title}
-      </p>
-      {items.length === 0 ? (
-        <p className="text-sm text-[var(--text-muted)]">{emptyText}</p>
-      ) : (
-        items.map((it) => (
-          <EdvanceCard
-            key={it.label}
-            className="flex items-center justify-between gap-2 p-3 border border-[var(--border)]"
-          >
-            <span className="text-sm text-[var(--text-primary)]">{it.label}</span>
-            <EdvanceBadge variant={it.status.variant}>
-              {it.status.label}
-            </EdvanceBadge>
-          </EdvanceCard>
-        ))
-      )}
-    </div>
-  )
+function StageBadge({ stage }: { stage: MasteryStage }): JSX.Element {
+  const variant: Record<MasteryStage, 'mastery-introduced' | 'mastery-developing' | 'mastery-progressing' | 'mastery-proficient' | 'mastery-mastered'> = {
+    introduced:  'mastery-introduced',
+    developing:  'mastery-developing',
+    progressing: 'mastery-progressing',
+    proficient:  'mastery-proficient',
+    mastered:    'mastery-mastered',
+  }
+  const labels: Record<MasteryStage, string> = {
+    introduced:  'Einführung',
+    developing:  'In Entwicklung',
+    progressing: 'Fortschreitend',
+    proficient:  'Geübt',
+    mastered:    'Gemeistert',
+  }
+  return <EdvanceBadge variant={variant[stage]}>{labels[stage]}</EdvanceBadge>
+}
+
+function mockScreeningResult(studentId: string): {
+  dateDe: string
+  subjects: Array<{ subject: string; score: number }>
+  strengths: Array<{ title: string; detail: string }>
+  gaps: Array<{ title: string; detail: string }>
+  coachNote: { quote: string; author: string } | null
+} {
+  void studentId
+  return {
+    dateDe: new Date().toLocaleDateString('de-DE'),
+    subjects: [
+      { subject: 'Mathematik', score: 72 },
+      { subject: 'Deutsch',    score: 58 },
+      { subject: 'Englisch',   score: 85 },
+    ],
+    strengths: [
+      { title: 'Bruchrechnen sicher', detail: 'Erweitern, Kürzen, Vergleichen auf Klasse-7-Niveau routiniert.' },
+      { title: 'Textverständnis Englisch', detail: 'Sinnentnahme aus mittelschweren Texten ohne Lücken.' },
+    ],
+    gaps: [
+      { title: 'Lineare Funktionen', detail: 'Schwierigkeiten bei Steigung & y-Achsen-Abschnitt aus Tabelle.' },
+      { title: 'Rechtschreibung Komposita', detail: 'Zusammen-/Getrenntschreibung mit 38 % korrekt.' },
+    ],
+    coachNote: {
+      quote:
+        'Wir setzen den Fokus die kommenden 4 Wochen auf lineare Funktionen — ein klar abgegrenzter Block, der schnell sichtbare Erfolge bringt.',
+      author: 'Sarah K., Coach',
+    },
+  }
 }

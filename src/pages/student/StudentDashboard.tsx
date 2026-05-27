@@ -47,7 +47,7 @@ export function StudentDashboard(): JSX.Element {
       const { data: progress } = await getStudentProgress(student.id)
       if (cancelled || !progress) return
       setXpTotal(progress.xp_total)
-      setStreakDays(progress.streak_days)
+      setStreakDays(progress.presence_streak_weeks)
       setLevel(progress.level)
     })()
     return () => {

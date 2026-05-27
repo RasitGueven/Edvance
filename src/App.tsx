@@ -1,40 +1,25 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Login } from '@/pages/Login'
 import { DesignShowcase } from '@/pages/DesignShowcase'
-import { MockIndex } from '@/pages/mock/MockIndex'
-import { MockScreeningCoach } from '@/pages/mock/MockScreeningCoach'
-import { MockDndWidgets } from '@/pages/mock/MockDndWidgets'
-import { MockTaskWidgets } from '@/pages/mock/MockTaskWidgets'
-import { MockScreeningParent } from '@/pages/mock/MockScreeningParent'
 import { StudentDashboard } from '@/pages/student/StudentDashboard'
 import { CoachDashboard } from '@/pages/coach/CoachDashboard'
 import { ParentDashboard } from '@/pages/parent/ParentDashboard'
-import { ScreeningReportPage as ParentScreeningReportPage } from '@/pages/parent/ScreeningReportPage'
+import { ScreeningReportPage } from '@/pages/parent/ScreeningReportPage'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
-import { OnboardingPage } from '@/pages/admin/OnboardingPage'
 import { LambacherPreview } from '@/pages/admin/LambacherPreview'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
-import { SchedulePage } from '@/pages/admin/SchedulePage'
-import { CoachesPage } from '@/pages/admin/CoachesPage'
-import { AssignmentsPage } from '@/pages/admin/AssignmentsPage'
-import { XpRulesPage } from '@/pages/admin/XpRulesPage'
 import { TiersPage } from '@/pages/admin/TiersPage'
 import { DiagnosticsPage } from '@/pages/admin/DiagnosticsPage'
-import { ScreeningItemsPage } from '@/pages/admin/ScreeningItemsPage'
-import { ScreeningItemEditorPage } from '@/pages/admin/ScreeningItemEditorPage'
-import { ScreeningCoveragePage } from '@/pages/admin/ScreeningCoveragePage'
 import { IntakePage } from '@/pages/coach/IntakePage'
-import { ScreeningResultsPage } from '@/pages/coach/ScreeningResultsPage'
-import { ReportsPage } from '@/pages/coach/ReportsPage'
 import { ClusterView } from '@/pages/student/ClusterView'
 import { TaskPlayer } from '@/pages/student/TaskPlayer'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
 import { ThemePanel } from '@/components/edvance/ThemePanel'
 import { DiagnosisProvider } from '@/context/DiagnosisContext'
-import { ScreeningSession } from '@/pages/ScreeningSession'
+import { DiagnosisSession } from '@/pages/DiagnosisSession'
+import { DiagnosisResult } from '@/pages/DiagnosisResult'
 import { TaskWidgetDemo } from '@/pages/student/TaskWidgetDemo'
 import { DesignDemo } from '@/pages/demo/DesignDemo'
-import { GraphDemo } from '@/pages/demo/GraphDemo'
 
 export default function App(): JSX.Element {
   return (
@@ -83,22 +68,6 @@ export default function App(): JSX.Element {
           }
         />
         <Route
-          path="/coach/screening-results"
-          element={
-            <ProtectedRoute allowedRoles={['coach', 'admin']}>
-              <ScreeningResultsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/coach/reports"
-          element={
-            <ProtectedRoute allowedRoles={['coach', 'admin']}>
-              <ReportsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/parent"
           element={
             <ProtectedRoute allowedRoles={['parent']}>
@@ -110,7 +79,7 @@ export default function App(): JSX.Element {
           path="/parent/screening"
           element={
             <ProtectedRoute allowedRoles={['parent']}>
-              <ParentScreeningReportPage />
+              <ScreeningReportPage />
             </ProtectedRoute>
           }
         />
@@ -119,14 +88,6 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/onboarding"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <OnboardingPage />
             </ProtectedRoute>
           }
         />
@@ -147,38 +108,6 @@ export default function App(): JSX.Element {
           }
         />
         <Route
-          path="/admin/schedule"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <SchedulePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/coaches"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <CoachesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/assignments"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AssignmentsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/xp-rules"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <XpRulesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/admin/tiers"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
@@ -194,56 +123,30 @@ export default function App(): JSX.Element {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin/screening-items"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <ScreeningItemsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/screening-items/:id/edit"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <ScreeningItemEditorPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/screening-items/new"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <ScreeningItemEditorPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/screening-coverage"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <ScreeningCoveragePage />
-            </ProtectedRoute>
-          }
-        />
 
         <Route path="/showcase" element={<DesignShowcase />} />
-        <Route path="/mock" element={<MockIndex />} />
-        <Route path="/mock/screening-coach" element={<MockScreeningCoach />} />
-        <Route path="/mock/screening-parent" element={<MockScreeningParent />} />
-        <Route path="/mock/dnd-widgets" element={<MockDndWidgets />} />
-        <Route path="/mock/task-widgets" element={<MockTaskWidgets />} />
         <Route path="/demo/widgets" element={<TaskWidgetDemo />} />
         <Route path="/demo/design" element={<DesignDemo />} />
-        <Route path="/demo/graph" element={<GraphDemo />} />
 
-        {/* Screening: stiller, adaptiver, auto-bewerteter Lauf (eingeloggt).
-            Coach = Beobachter (kein Rating in diesem Flow). */}
+        {/* Diagnose-Engine (lokal, ohne Login – Tablet-Sicht).
+            Coach erreicht den Coach-View über ?view=coach. */}
+        <Route path="/diagnosis" element={<DiagnosisSession />} />
+        <Route path="/diagnosis/result" element={<DiagnosisResult />} />
+
+        {/* Screening: produktisierter, DB-gestützter Lauf (eingeloggt). */}
         <Route
           path="/screening"
           element={
             <ProtectedRoute allowedRoles={['student', 'coach', 'admin']}>
-              <ScreeningSession />
+              <DiagnosisSession screening />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/screening/result"
+          element={
+            <ProtectedRoute allowedRoles={['student', 'coach', 'admin']}>
+              <DiagnosisResult />
             </ProtectedRoute>
           }
         />

@@ -97,6 +97,7 @@
   --color-muted:                      var(--color-text-tertiary);
   --color-card:                       var(--color-bg-surface);
   --color-ring:                       var(--color-primary);
+  --color-background:                 var(--color-bg-app);
 }
 
 /* ─── Shadow & Surface utility classes ───────────────────────────────────────── */
