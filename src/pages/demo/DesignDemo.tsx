@@ -5,7 +5,7 @@ import { ScenarioCoach } from './ScenarioCoach'
 import { ScenarioCelebration } from './ScenarioCelebration'
 import { ScenarioSessionEnd } from './ScenarioSessionEnd'
 import { ScenarioUIKit } from './ScenarioUIKit'
-import { ScenarioV2 } from './v2/ScenarioV2'
+import { ScenarioV2Foundations } from './ScenarioV2Foundations'
 
 type TabId = 'student' | 'coach' | 'celebration' | 'session' | 'uikit' | 'v2'
 
@@ -22,7 +22,7 @@ const TABS: Tab[] = [
   { id: 'celebration', label: 'C',      sublabel: 'Level-Up',      component: ScenarioCelebration },
   { id: 'session',     label: 'D',      sublabel: 'Session-Ende',  component: ScenarioSessionEnd  },
   { id: 'uikit',       label: 'UI-Kit', sublabel: 'Komponenten',   component: ScenarioUIKit       },
-  { id: 'v2',          label: 'v2',     sublabel: 'Design v2',     component: ScenarioV2          },
+  { id: 'v2',          label: 'v2',     sublabel: 'Foundations',   component: ScenarioV2Foundations },
 ]
 
 function TabBar({
@@ -79,7 +79,7 @@ export function DesignDemo(): JSX.Element {
     celebration: 'Szenario C — Level-Up-Moment (max. 1× pro Session, moment-bg)',
     session:     'Szenario D — Session-Abschluss mit Fortschritt-Rückblick',
     uikit:       'Alle Basis-Komponenten auf einen Blick — Button, Badge, Card, Tokens',
-    v2:          'Design-System v2 — Tokens scoped via [data-design="v2"], Schueler/Eltern/UI-Kit',
+    v2:          'v2 Foundations — Animationen, Glas-Effekte, Light-Source, Schatten, Mastery-Stufen',
   }
 
   return (
@@ -100,8 +100,8 @@ export function DesignDemo(): JSX.Element {
         </div>
       </div>
 
-      {/* Tab-Navigation */}
-      <div className="mx-auto max-w-3xl glass-card">
+      {/* Tab-Navigation (kein Glas: Hard Rule §3 — Glas nur auf dunklen Flächen) */}
+      <div className="mx-auto max-w-3xl">
         <TabBar active={active} onChange={setActive} />
       </div>
 
