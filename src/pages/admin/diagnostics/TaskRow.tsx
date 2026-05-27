@@ -49,7 +49,7 @@ export function TaskRow({
         <p className="text-sm text-[var(--text-primary)] line-clamp-2">
           {task.title ?? task.question ?? `Aufgabe ${task.id.slice(0, 8)}`}
         </p>
-        <EdvanceBadge variant={edit.is_diagnostic ? 'success' : 'muted'}>
+        <EdvanceBadge variant={edit.is_diagnostic ? 'mastered' : 'muted'}>
           {edit.is_diagnostic ? 'In Diagnose aktiv' : 'Nicht in Diagnose'}
         </EdvanceBadge>
       </div>

@@ -34,10 +34,10 @@ export function ScenarioCelebration(): JSX.Element {
           {/* Level-Badge mit bounce-pop */}
           <div
             key={animKey}
-            className="flex h-24 w-24 items-center justify-center rounded-full text-4xl font-black animate-xp-float"
+            className="flex h-24 w-24 items-center justify-center rounded-full text-4xl font-black animate-bounce-pop"
             style={{
-              background: 'var(--color-primary)',
-              color: 'var(--color-bg-surface)',
+              background: 'var(--gradient-levelup)',
+              color: 'var(--color-levelup-on)',
               boxShadow: 'var(--shadow-lg)',
             }}
           >

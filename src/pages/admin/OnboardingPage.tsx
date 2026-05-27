@@ -61,9 +61,9 @@ type SuccessStateProps = {
 function SuccessState({ data, coaches, onReset }: SuccessStateProps): JSX.Element {
   const coachName = coaches.find((entry) => entry.id === data.coachId)?.full_name
   return (
-    <EdvanceCard variant="hero">
+    <EdvanceCard variant="hero-parent">
       <div className="flex flex-col items-center gap-5 py-6 text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--success)_15%,transparent)]">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-success)_15%,transparent)]">
           <Check className="h-10 w-10 text-white" />
         </div>
         <div className="flex flex-col gap-2">
@@ -150,7 +150,7 @@ export function OnboardingPage(): JSX.Element {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Admin · Schüler-Onboarding" />
 
       {/* Ambient background blobs */}
@@ -158,7 +158,7 @@ export function OnboardingPage(): JSX.Element {
       <div aria-hidden="true" className="pointer-events-none absolute -left-16 bottom-1/3 h-64 w-64 rounded-full opacity-[0.06] blur-3xl bg-[var(--color-primary)]" />
 
       {/* Hero header band */}
-      <div className="bg-gradient-hero noise-overlay">
+      <div className="student-hero ">
         <div className="mx-auto max-w-2xl px-4 py-6 text-white">
           <p className="text-xs font-semibold uppercase tracking-widest opacity-70">
             Admin · Schüler-Onboarding
@@ -175,13 +175,13 @@ export function OnboardingPage(): JSX.Element {
       </div>
       <div
         aria-hidden="true"
-        className="h-6 bg-gradient-to-b from-[var(--color-primary)] to-[var(--background)] opacity-20"
+        className="h-6 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-bg-app)] opacity-20"
       />
 
       <main className="mx-auto max-w-2xl px-4 pb-12 pt-4">
         <Link
           to="/admin"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] hover:underline"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)] hover:underline"
         >
           <ChevronLeft className="h-4 w-4" /> Zurück zum Dashboard
         </Link>
@@ -194,7 +194,7 @@ export function OnboardingPage(): JSX.Element {
             <div
               className="px-6 py-4 text-white"
               style={{
-                background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--primary) 100%)',
+                background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary) 100%)',
               }}
             >
               <p className="text-xs font-semibold uppercase tracking-widest opacity-70">
@@ -215,7 +215,7 @@ export function OnboardingPage(): JSX.Element {
               />
 
               {submitError && (
-                <p className="mt-4 text-sm text-[var(--destructive)]">{submitError}</p>
+                <p className="mt-4 text-sm text-[var(--color-error-exam)]">{submitError}</p>
               )}
 
               <div className="mt-8 flex items-center justify-between">

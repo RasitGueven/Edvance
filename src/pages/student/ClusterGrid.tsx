@@ -11,11 +11,11 @@ import type { SkillCluster, Task } from '@/types'
 
 const STATUS_VARIANT: Record<
   ClusterStatusLabel,
-  'success' | 'warning' | 'destructive'
+  'mastered' | 'warning' | 'exam'
 > = {
-  Sicher: 'success',
+  Sicher: 'mastered',
   Erkennbar: 'warning',
-  Lücke: 'destructive',
+  Lücke: 'exam',
 }
 
 export type ClusterProgress = Record<string, { completed: number; total: number }>
@@ -59,32 +59,32 @@ export function FilterResults({
   }
   return (
     <div className="mt-6 flex flex-col gap-1.5">
-      <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         {tasks.length} Treffer
       </p>
-      <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--surface)] shadow-premium-sm overflow-hidden">
-        <ul className="divide-y divide-[var(--border)]">
+      <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] shadow-xs overflow-hidden">
+        <ul className="divide-y divide-[var(--color-border)]">
           {tasks.slice(0, 50).map((t) => (
             <li key={t.id}>
               <Link
                 to={`/student/task/${t.id}`}
-                className="flex min-h-[56px] items-center gap-3 px-4 py-3 transition-colors hover:bg-[var(--background)]"
+                className="flex min-h-[56px] items-center gap-3 px-4 py-3 transition-colors hover:bg-[var(--color-bg-app)]"
               >
                 <RowIcon type={t.content_type} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                  <p className="truncate text-sm font-semibold text-[var(--color-text-primary)]">
                     {t.title ?? t.question?.slice(0, 80) ?? `task:${t.id.slice(0, 8)}`}
                   </p>
                   {t.cluster_id && clusterNameById[t.cluster_id] && (
-                    <p className="text-xs text-[var(--text-muted)]">{clusterNameById[t.cluster_id]}</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)]">{clusterNameById[t.cluster_id]}</p>
                   )}
                 </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+                <ChevronRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
               </Link>
             </li>
           ))}
           {tasks.length > 50 && (
-            <li className="px-4 py-2 text-xs text-[var(--text-muted)]">
+            <li className="px-4 py-2 text-xs text-[var(--color-text-tertiary)]">
               … und {tasks.length - 50} weitere – Suche präziser, um sie zu sehen.
             </li>
           )}
@@ -114,13 +114,13 @@ export function RecommendationBanner({
           <Sparkles className="h-5 w-5" />
         </span>
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Empfohlener Start
           </p>
-          <p className="mt-0.5 text-base font-semibold text-[var(--text-primary)]">
+          <p className="mt-0.5 text-base font-semibold text-[var(--color-text-primary)]">
             {clusterName}
           </p>
-          <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
             Aus deinem Lernstand-Check – hier macht Üben gerade den größten
             Unterschied.
           </p>
@@ -167,10 +167,10 @@ export function ClusterGrid({
             className="group block rounded-[var(--radius-xl)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
           >
             <div
-              className={`relative h-full overflow-hidden rounded-[var(--radius-xl)] border bg-gradient-surface p-5 shadow-premium-sm transition-all duration-300 group-hover:shadow-premium-lg group-hover:-translate-y-0.5 min-h-[140px] flex flex-col justify-between ${
+              className={`relative h-full overflow-hidden rounded-[var(--radius-xl)] border bg-[var(--color-bg-surface)] p-5 shadow-xs transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-0.5 min-h-[140px] flex flex-col justify-between ${
                 isRecommended
                   ? 'border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]'
-                  : 'border-[var(--border)]'
+                  : 'border-[var(--color-border)]'
               }`}
             >
               {/* Decorative blob */}
@@ -183,16 +183,16 @@ export function ClusterGrid({
               {/* Top: icon + name + chevron */}
               <div className="relative flex items-start gap-4 flex-1">
                 <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] shadow-premium-sm"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] shadow-xs"
                   style={iconStyle}
                 >
                   <BookOpen className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-base font-bold tracking-tight text-[var(--text-primary)]">
+                  <p className="text-base font-bold tracking-tight text-[var(--color-text-primary)]">
                     {c.name}
                   </p>
-                  <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+                  <p className="mt-0.5 text-xs text-[var(--color-text-tertiary)]">
                     Klasse {c.class_level_min}
                     {c.class_level_min !== c.class_level_max && ` – ${c.class_level_max}`}
                   </p>
@@ -209,14 +209,14 @@ export function ClusterGrid({
                     </div>
                   )}
                 </div>
-                <ChevronRight className="h-5 w-5 shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)]" />
+                <ChevronRight className="h-5 w-5 shrink-0 text-[var(--color-text-tertiary)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)]" />
               </div>
 
               {/* Bottom: Screening-Lernstand + Fortschritt */}
               <div className="mt-4 flex flex-col gap-3">
                 {status && (
                   <div>
-                    <p className="mb-1.5 text-xs text-[var(--text-muted)]">
+                    <p className="mb-1.5 text-xs text-[var(--color-text-tertiary)]">
                       Lernstand-Check
                     </p>
                     <MasteryBar level={status.displayLevel} />
@@ -224,10 +224,10 @@ export function ClusterGrid({
                 )}
                 {prog.total > 0 && (
                   <>
-                    <p className="mb-1.5 text-xs text-[var(--text-muted)]">
+                    <p className="mb-1.5 text-xs text-[var(--color-text-tertiary)]">
                       {prog.completed} von {prog.total} Aufgaben
                     </p>
-                    <div className="h-1.5 w-full overflow-hidden rounded-[var(--radius-full)] bg-[var(--border)]">
+                    <div className="h-1.5 w-full overflow-hidden rounded-[var(--radius-full)] bg-[var(--color-border)]">
                       <div
                         className="h-full rounded-[var(--radius-full)] transition-all duration-500"
                         style={barStyle}

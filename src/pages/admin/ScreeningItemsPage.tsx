@@ -54,7 +54,7 @@ function ItemCard({
           )}
           <EdvanceBadge variant="muted">L{item.level}</EdvanceBadge>
           <EdvanceBadge variant="muted">{item.input_type}</EdvanceBadge>
-          <EdvanceBadge variant={item.active ? 'success' : 'muted'}>
+          <EdvanceBadge variant={item.active ? 'mastered' : 'muted'}>
             {item.active ? 'Aktiv' : 'Inaktiv'}
           </EdvanceBadge>
         </div>

@@ -25,10 +25,10 @@ import type {
 const SELECT_CLASS =
   'h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm'
 
-const STATUS_VARIANT: Record<SessionStatus, 'primary' | 'warning' | 'success'> = {
+const STATUS_VARIANT: Record<SessionStatus, 'primary' | 'warning' | 'mastered'> = {
   upcoming: 'primary',
   active: 'warning',
-  done: 'success',
+  done: 'mastered',
 }
 
 const STATUS_LABEL: Record<SessionStatus, string> = {

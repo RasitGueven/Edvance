@@ -12,7 +12,7 @@ interface StudentHeroProps {
 
 export function StudentHero({ displayName, xpTotal, streakDays, level }: StudentHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-hero noise-overlay">
+    <section className="relative overflow-hidden student-hero ">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl"

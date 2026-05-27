@@ -51,7 +51,7 @@ export function AdminKpiBar({
     { value: stats?.tiersActive ?? 0, label: 'Aktive Tarife' },
   ]
   return (
-    <EdvanceCard variant="hero" className="animate-fade-in">
+    <EdvanceCard variant="hero-student" className="animate-fade-in">
       <div className="flex flex-col gap-5">
         <div className="flex items-center justify-between gap-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-white/70">
@@ -71,7 +71,7 @@ export function AdminKpiBar({
 
 type TileBadge = {
   label: string
-  variant: 'primary' | 'success' | 'warning' | 'destructive' | 'muted'
+  variant: 'primary' | 'mastered' | 'warning' | 'exam' | 'muted'
 }
 
 export type AdminTileProps = {

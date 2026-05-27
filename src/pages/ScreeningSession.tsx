@@ -161,7 +161,7 @@ export function ScreeningSession(): JSX.Element {
         {phase === 'running' && item && (
           <EdvanceCard
             key={item.id}
-            variant="premium"
+            variant="default"
             className="flex animate-fade-in flex-col gap-6 p-8"
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
@@ -192,7 +192,7 @@ export function ScreeningSession(): JSX.Element {
 
         {phase === 'done' && (
           <EdvanceCard
-            variant="hero"
+            variant="hero-student"
             className="flex animate-scale-in flex-col items-center gap-4 p-10 text-center"
           >
             <div className="select-none text-6xl leading-none">🎉</div>

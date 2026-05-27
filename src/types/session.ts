@@ -38,9 +38,13 @@ export type StudentTaskProgress = {
 export type StudentProgress = {
   student_id: string
   xp_total: number
-  streak_days: number
   level: number
   last_activity: string | null
+  presence_streak_weeks: number
+  presence_streak_last_week_start: string | null
+  presence_streak_multiplier: number
+  home_streak_sessions: number
+  home_streak_last_completed_at: string | null
 }
 
 export type XpRule = {

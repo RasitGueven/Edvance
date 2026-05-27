@@ -26,8 +26,7 @@ import { TaskPlayer } from '@/pages/student/TaskPlayer'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
 import { ThemePanel } from '@/components/edvance/ThemePanel'
 import { DiagnosisProvider } from '@/context/DiagnosisContext'
-import { DiagnosisSession } from '@/pages/DiagnosisSession'
-import { DiagnosisResult } from '@/pages/DiagnosisResult'
+import { ScreeningSession } from '@/pages/ScreeningSession'
 import { TaskWidgetDemo } from '@/pages/student/TaskWidgetDemo'
 import { V2Kit } from '@/pages/demo/v2/V2Kit'
 import { V2Student } from '@/pages/demo/v2/V2Student'
@@ -168,25 +167,12 @@ export default function App(): JSX.Element {
         <Route path="/demo/v2/student" element={<V2Student />} />
         <Route path="/demo/v2/parent" element={<V2Parent />} />
 
-        {/* Diagnose-Engine (lokal, ohne Login – Tablet-Sicht).
-            Coach erreicht den Coach-View über ?view=coach. */}
-        <Route path="/diagnosis" element={<DiagnosisSession />} />
-        <Route path="/diagnosis/result" element={<DiagnosisResult />} />
-
         {/* Screening: produktisierter, DB-gestützter Lauf (eingeloggt). */}
         <Route
           path="/screening"
           element={
             <ProtectedRoute allowedRoles={['student', 'coach', 'admin']}>
-              <DiagnosisSession screening />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/screening/result"
-          element={
-            <ProtectedRoute allowedRoles={['student', 'coach', 'admin']}>
-              <DiagnosisResult />
+              <ScreeningSession />
             </ProtectedRoute>
           }
         />

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { EdvanceCard } from './Card'
+import { EdvanceCard } from './EdvanceCard'
 
 interface StatCardProps {
   value: string | number

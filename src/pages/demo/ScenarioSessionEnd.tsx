@@ -18,7 +18,7 @@ export function ScenarioSessionEnd(): JSX.Element {
 
       {/* Session-Phasen */}
       <EdvanceCard>
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-5">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-5">
           Session abgeschlossen · Di 13. Mai · 45 Min
         </p>
         <ProgressStep steps={SESSION_STEPS} current={5} />
@@ -31,7 +31,7 @@ export function ScenarioSessionEnd(): JSX.Element {
           label="XP heute verdient"
           icon="⚡"
           trend="+15 vs. letzte Session"
-          color="var(--color-accent)"
+          color="var(--xp-gold)"
         />
         <StatCard
           value={7}
@@ -44,18 +44,18 @@ export function ScenarioSessionEnd(): JSX.Element {
           value="5 🔥"
           label="Tage Streak"
           icon="🔥"
-          color="var(--color-accent-streak)"
+          color="var(--streak-orange)"
         />
       </div>
 
       {/* Mastery Before / After */}
       <EdvanceCard>
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-4">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-4">
           Daten &amp; Zufall — Fortschritt heute
         </p>
         <div className="grid grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-[var(--color-text-tertiary)]">Beginn der Session</span>
+            <span className="text-xs text-[var(--text-muted)]">Beginn der Session</span>
             <MasteryBar level={4} showLabel size="md" />
           </div>
           <div className="flex flex-col gap-2">
@@ -67,7 +67,7 @@ export function ScenarioSessionEnd(): JSX.Element {
 
       {/* Achievements */}
       <EdvanceCard>
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-3">
           Heute verdient
         </p>
         <div className="flex flex-wrap gap-2">
@@ -81,12 +81,12 @@ export function ScenarioSessionEnd(): JSX.Element {
       <EdvanceCard accent="primary">
         <div className="flex items-start gap-3">
           <EdvanceBadge variant="primary">Coach</EdvanceBadge>
-          <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
             „Lena, du hast heute einen deutlichen Sprung bei Wahrscheinlichkeiten gemacht —
             besonders die Aufgaben mit Baumdiagrammen saßen am Ende richtig sicher. Weiter so!"
           </p>
         </div>
-        <p className="mt-2 text-xs text-[var(--color-text-tertiary)]">
+        <p className="mt-2 text-xs text-[var(--text-muted)]">
           — Sarah B., Coach · Di 13. Mai
         </p>
       </EdvanceCard>

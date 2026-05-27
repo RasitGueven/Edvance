@@ -1,9 +1,7 @@
 /**
- * Edvance Design-System v2 — Demo-Szene
- *
- * Einzige Stelle, an der der v2-Scope aktiv ist (data-design="v2").
- * Damit greifen tokens-demo.css und alle v2-Utility-Aliase aus
- * @theme inline. Produktive Routen bleiben unberuehrt.
+ * Edvance Design-System v2 — Demo-Szene.
+ * v2 ist produktiv — der frühere data-design="v2"-Scope und tokens-demo.css
+ * sind entfallen; alle v2-Tokens und -Klassen wirken global.
  */
 import { useState, type JSX } from 'react'
 import { cn } from '@/lib/utils'
@@ -23,7 +21,7 @@ export function ScenarioV2(): JSX.Element {
   const [view, setView] = useState<View>('kit')
 
   return (
-    <div data-design="v2" className="flex flex-col gap-4 -mx-1 px-1 py-1">
+    <div className="flex flex-col gap-4 -mx-1 px-1 py-1">
       <div className="inline-flex gap-1 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-md p-1 self-start shadow-xs">
         {VIEWS.map((v) => (
           <button

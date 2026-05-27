@@ -140,7 +140,7 @@ export function AssignmentsPage(): JSX.Element {
                         </span>
                       )}
                       <EdvanceBadge
-                        variant={current ? 'success' : 'muted'}
+                        variant={current ? 'mastered' : 'muted'}
                       >
                         {current
                           ? coachName[current] ?? 'Coach'

@@ -1,15 +1,14 @@
 /**
  * Edvance UI-Komponenten — zentrale Re-Exports.
  *
- * Jede Atom-Komponente liegt in einer eigenen Datei (siehe CLAUDE.md §4
- * — Dateigröße max. 400 Zeilen). Composites bleiben gleichbenannt.
+ * Jede Atom-Komponente liegt in einer eigenen Datei (CLAUDE.md §4: max. 400 Z.).
  */
 
-export { EdvanceCard } from './Card'
-export type { EdvanceCardVariant, EdvanceCardAccent } from './Card'
+export { EdvanceCard } from './EdvanceCard'
+export type { EdvanceCardVariant, EdvanceCardAccent } from './EdvanceCard'
 
-export { EdvanceBadge } from './Badge'
-export type { EdvanceBadgeVariant } from './Badge'
+export { EdvanceBadge } from './EdvanceBadge'
+export type { EdvanceBadgeVariant } from './EdvanceBadge'
 
 export { MasteryBar } from './MasteryBar'
 export type { MasteryBarProps } from './MasteryBar'
@@ -29,3 +28,6 @@ export { EmptyState } from './EmptyState'
 export { LoadingPulse } from './LoadingPulse'
 export { ToastBanner } from './ToastBanner'
 export { Modal } from './Modal'
+
+export { CompetencyRadar } from './CompetencyRadar'
+export type { RadarAxis } from './CompetencyRadar'
