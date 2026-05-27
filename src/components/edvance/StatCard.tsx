@@ -14,7 +14,7 @@ export function StatCard({
   label,
   icon,
   trend = null,
-  color = 'var(--primary)',
+  color = 'var(--color-primary)',
 }: StatCardProps) {
   const isPositive = trend?.startsWith('+')
 
@@ -36,15 +36,15 @@ export function StatCard({
               className={cn(
                 'text-xs font-semibold rounded-[var(--radius-full)] px-2 py-0.5 shrink-0',
                 isPositive
-                  ? 'bg-[var(--success-light)] text-[var(--success)]'
-                  : 'bg-[var(--destructive-light)] text-[var(--destructive)]',
+                  ? 'bg-[var(--color-success-light)] text-[var(--color-success)]'
+                  : 'bg-[var(--color-error-exam-light)] text-[var(--color-error-exam)]',
               )}
             >
               {trend}
             </span>
           )}
         </div>
-        <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{label}</p>
+        <p className="text-sm text-[var(--color-text-tertiary)] mt-1 leading-relaxed">{label}</p>
       </div>
     </EdvanceCard>
   )

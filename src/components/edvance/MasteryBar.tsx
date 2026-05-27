@@ -8,10 +8,10 @@ interface MasteryBarProps {
 }
 
 function getMasteryColor(level: number): string {
-  if (level <= 3) return 'var(--destructive)'
-  if (level <= 5) return 'var(--warning)'
-  if (level <= 7) return 'var(--xp-gold)'
-  return 'var(--success)'
+  if (level <= 3) return 'var(--color-error-exam)'
+  if (level <= 5) return 'var(--color-gold-warning)'
+  if (level <= 7) return 'var(--color-accent)'
+  return 'var(--color-success)'
 }
 
 function getMasteryLabel(level: number): string {
@@ -44,7 +44,7 @@ export function MasteryBar({ level, showLabel = false, size = 'md' }: MasteryBar
     <div className="flex flex-col gap-1.5">
       {showLabel && (
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">
             Niveau {clamped}/10
           </span>
           <span className="text-xs font-bold" style={{ color }}>
@@ -54,7 +54,7 @@ export function MasteryBar({ level, showLabel = false, size = 'md' }: MasteryBar
       )}
       <div
         className={cn(
-          'w-full rounded-[var(--radius-full)] overflow-hidden bg-[var(--border)]',
+          'w-full rounded-[var(--radius-full)] overflow-hidden bg-[var(--color-border)]',
           trackHeights[size],
         )}
       >

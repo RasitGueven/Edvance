@@ -84,16 +84,16 @@ export function ScreeningReportPage(): JSX.Element {
       <EdvanceNavbar subtitle="Lernstand-Bericht" sticky />
       <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Lernstand Ihres Kindes
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
             Eine ruhige Übersicht: wo steht Ihr Kind aktuell, was läuft gut, wo
             unterstützen wir gezielt.
           </p>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
 
         {loading ? (
           <LoadingPulse type="card" lines={4} />
@@ -145,11 +145,11 @@ function ChildReportCard({
     <EdvanceCard variant="premium" className="flex flex-col gap-6 p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+          <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
             {student.full_name ?? 'Ihr Kind'}
           </h2>
           {student.class_level && (
-            <p className="text-xs text-[var(--text-muted)]">
+            <p className="text-xs text-[var(--color-text-tertiary)]">
               Klasse {student.class_level}
             </p>
           )}
@@ -169,7 +169,7 @@ function ChildReportCard({
         <>
           <div className="flex flex-col items-center gap-2">
             <CompetencyRadar axes={radarAxes} max={10} />
-            <p className="text-xs text-[var(--text-muted)]">
+            <p className="text-xs text-[var(--color-text-tertiary)]">
               Je weiter außen, desto sicherer ist Ihr Kind in diesem Bereich.
             </p>
           </div>
@@ -196,11 +196,11 @@ function ChildReportCard({
           </div>
 
           {test?.coach_note && (
-            <div className="rounded-xl border border-[var(--primary-light)] bg-[var(--primary-pale)] p-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--primary)]">
+            <div className="rounded-xl border border-[var(--color-primary-light)] bg-[var(--color-primary-light)] p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
                 Notiz vom Coach
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--text-primary)]">
+              <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-primary)]">
                 {test.coach_note}
               </p>
             </div>
@@ -227,20 +227,20 @@ function ReportColumn({
       <p
         className="text-xs font-semibold uppercase tracking-widest"
         style={{
-          color: accent === 'success' ? 'var(--success)' : 'var(--warning)',
+          color: accent === 'success' ? 'var(--color-success)' : 'var(--color-gold-warning)',
         }}
       >
         {title}
       </p>
       {items.length === 0 ? (
-        <p className="text-sm text-[var(--text-muted)]">{emptyText}</p>
+        <p className="text-sm text-[var(--color-text-tertiary)]">{emptyText}</p>
       ) : (
         items.map((it) => (
           <EdvanceCard
             key={it.label}
-            className="flex items-center justify-between gap-2 p-3 border border-[var(--border)]"
+            className="flex items-center justify-between gap-2 p-3 border border-[var(--color-border)]"
           >
-            <span className="text-sm text-[var(--text-primary)]">{it.label}</span>
+            <span className="text-sm text-[var(--color-text-primary)]">{it.label}</span>
             <EdvanceBadge variant={it.status.variant}>
               {it.status.label}
             </EdvanceBadge>

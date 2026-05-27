@@ -15,20 +15,20 @@ export function EdvanceNavbar({ subtitle, sticky = false }: EdvanceNavbarProps):
   return (
     <nav
       className={cn(
-        'glass-light flex items-center justify-between border-b border-[var(--border)] px-6 py-3',
+        'glass-card flex items-center justify-between border-b border-[var(--color-border)] px-6 py-3',
         sticky && 'sticky top-0 z-30',
       )}
     >
       <div className="flex items-center gap-3">
         <div>
           <EdvanceLogo size={20} />
-          <p className="mt-0.5 text-xs text-[var(--text-muted)] leading-tight">
+          <p className="mt-0.5 text-xs text-[var(--color-text-tertiary)] leading-tight">
             {subtitle}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <span className="hidden text-xs text-[var(--text-muted)] sm:block">{user?.email}</span>
+        <span className="hidden text-xs text-[var(--color-text-tertiary)] sm:block">{user?.email}</span>
         <Button variant="ghost" size="sm" onClick={signOut}>
           Abmelden
         </Button>

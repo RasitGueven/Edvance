@@ -21,9 +21,9 @@ import {
 import type { ParentReport, ParentReportDraft, StudentWithName } from '@/types'
 
 const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm'
+  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm'
 const TEXTAREA_CLASS =
-  'min-h-[90px] w-full resize-y rounded-xl border border-[var(--border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--primary)] focus:outline-none'
+  'min-h-[90px] w-full resize-y rounded-xl border border-[var(--color-border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--color-primary)] focus:outline-none'
 
 const FIELDS: { key: keyof ParentReportDraft; label: string }[] = [
   { key: 'lernfortschritt', label: 'Lernfortschritt' },
@@ -149,17 +149,17 @@ export function ReportsPage(): JSX.Element {
         <div>
           <Link
             to="/coach"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Coach
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Elternreport (KI-gestützt)
           </h1>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
-        {done && <p className="text-sm text-[var(--success)]">{done}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
+        {done && <p className="text-sm text-[var(--color-success)]">{done}</p>}
 
         <EdvanceCard className="flex flex-col gap-4 p-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -218,7 +218,7 @@ export function ReportsPage(): JSX.Element {
 
         {studentId && (
           <div className="flex flex-col gap-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
               Bestehende Reports
             </p>
             {reportsLoading ? (
@@ -236,7 +236,7 @@ export function ReportsPage(): JSX.Element {
                   className="flex flex-wrap items-center justify-between gap-3 p-6"
                 >
                   <div className="flex flex-col gap-1">
-                    <p className="text-base font-semibold text-[var(--text-primary)]">
+                    <p className="text-base font-semibold text-[var(--color-text-primary)]">
                       {r.period_start} – {r.period_end}
                     </p>
                     <EdvanceBadge
@@ -264,7 +264,7 @@ export function ReportsPage(): JSX.Element {
 
         {draft ? (
           <EdvanceCard className="flex flex-col gap-4 p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
               Entwurf — vor Freigabe prüfen und anpassen
             </p>
             {FIELDS.map((f) => (

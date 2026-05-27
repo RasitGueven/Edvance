@@ -5,9 +5,9 @@ import { cognitiveTypeLabel, inputTypeLabel } from '@/lib/taskLabels'
 import type { Task } from '@/types'
 
 function difficultyColor(value: number): string {
-  if (value <= 1) return 'var(--success)'
-  if (value <= 3) return 'var(--primary)'
-  return 'var(--warning)'
+  if (value <= 1) return 'var(--color-success)'
+  if (value <= 3) return 'var(--color-primary)'
+  return 'var(--color-gold-warning)'
 }
 
 function DifficultyScale({ value }: { value: number | null }): JSX.Element {
@@ -23,7 +23,7 @@ function DifficultyScale({ value }: { value: number | null }): JSX.Element {
         <span
           key={i}
           className="h-2 w-2 rounded-full"
-          style={{ backgroundColor: i <= v ? fill : 'var(--border)' }}
+          style={{ backgroundColor: i <= v ? fill : 'var(--color-border)' }}
         />
       ))}
     </span>
@@ -32,8 +32,8 @@ function DifficultyScale({ value }: { value: number | null }): JSX.Element {
 
 function MetaItem({ icon, children }: { icon: ReactNode; children: ReactNode }): JSX.Element {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
-      <span className="text-[var(--text-muted)]">{icon}</span>
+    <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+      <span className="text-[var(--color-text-tertiary)]">{icon}</span>
       {children}
     </span>
   )
@@ -48,8 +48,8 @@ export function TaskMetaRow({ task }: { task: Task }): JSX.Element {
       <MetaItem icon={<Clock className="h-3.5 w-3.5" />}>
         {task.estimated_minutes} Min
       </MetaItem>
-      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
-        <span className="text-[var(--text-muted)]">Schwierigkeit</span>
+      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+        <span className="text-[var(--color-text-tertiary)]">Schwierigkeit</span>
         <DifficultyScale value={task.difficulty} />
       </span>
       {task.cognitive_type && (

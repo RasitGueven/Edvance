@@ -2,17 +2,17 @@ import { Check } from 'lucide-react'
 import { STEP_LABELS } from '@/components/edvance/onboarding/constants'
 import type { StepIndicatorProps } from '@/types'
 
-const ACTIVE_BG = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)'
+const ACTIVE_BG = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)'
 
 function stepBackground(done: boolean, active: boolean): string {
-  if (done) return 'var(--success)'
+  if (done) return 'var(--color-success)'
   if (active) return ACTIVE_BG
-  return 'var(--border)'
+  return 'var(--color-border)'
 }
 
 function stepLabelColor(done: boolean, active: boolean): string {
-  if (active) return 'var(--primary)'
-  if (done) return 'var(--success)'
+  if (active) return 'var(--color-primary)'
+  if (done) return 'var(--color-success)'
   return 'var(--muted)'
 }
 
@@ -47,7 +47,7 @@ export function StepIndicator({ current }: StepIndicatorProps): JSX.Element {
               {index < STEP_LABELS.length - 1 && (
                 <div
                   className="mx-1 mb-4 h-1 w-10 transition-all duration-500 sm:w-14"
-                  style={{ background: done ? 'var(--success)' : 'var(--border)' }}
+                  style={{ background: done ? 'var(--color-success)' : 'var(--color-border)' }}
                 />
               )}
             </div>
@@ -56,12 +56,12 @@ export function StepIndicator({ current }: StepIndicatorProps): JSX.Element {
       </div>
 
       {/* Overall progress bar */}
-      <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]">
+      <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${Math.round(((current + 1) / STEP_LABELS.length) * 100)}%`,
-            background: 'linear-gradient(90deg, var(--primary) 0%, var(--color-levelup) 100%)',
+            background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary) 100%)',
           }}
         />
       </div>

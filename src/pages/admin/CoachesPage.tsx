@@ -64,22 +64,22 @@ export function CoachesPage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Coaches</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Coaches</h1>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
         {created && (
-          <p className="text-sm text-[var(--success)]">
+          <p className="text-sm text-[var(--color-success)]">
             Coach „{created}" angelegt. Zugangsdaten persönlich mitteilen.
           </p>
         )}
 
         <EdvanceCard className="flex flex-col gap-4 p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Neuer Coach
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -118,7 +118,7 @@ export function CoachesPage(): JSX.Element {
           </div>
         </EdvanceCard>
 
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Bestehende Coaches
         </p>
         {loading ? (
@@ -136,7 +136,7 @@ export function CoachesPage(): JSX.Element {
                 key={c.id}
                 className="flex flex-wrap items-center justify-between gap-2 p-6"
               >
-                <span className="text-base font-semibold text-[var(--text-primary)]">
+                <span className="text-base font-semibold text-[var(--color-text-primary)]">
                   {c.full_name ?? 'Unbenannt'}
                 </span>
                 <EdvanceBadge variant="success">Coach</EdvanceBadge>

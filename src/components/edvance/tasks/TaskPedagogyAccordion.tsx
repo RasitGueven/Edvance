@@ -6,9 +6,9 @@ import type { Task } from '@/types'
 type Accent = 'primary' | 'success' | 'warning'
 
 const ACCENT_STYLES: Record<Accent, { bg: string; text: string }> = {
-  primary: { bg: 'var(--primary-pale)', text: 'var(--primary)' },
-  success: { bg: 'var(--success-light)', text: 'var(--success)' },
-  warning: { bg: 'var(--warning-light)', text: 'var(--warning)' },
+  primary: { bg: 'var(--color-primary-light)', text: 'var(--color-primary)' },
+  success: { bg: 'var(--color-success-light)', text: 'var(--color-success)' },
+  warning: { bg: 'var(--color-gold-warning-light)', text: 'var(--color-gold-warning)' },
 }
 
 function Section({
@@ -27,12 +27,12 @@ function Section({
   const [open, setOpen] = useState(defaultOpen)
   const a = ACCENT_STYLES[accent]
   return (
-    <div className="rounded-[var(--radius-md)] border border-[var(--border)] overflow-hidden">
+    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-3 px-4 py-3 transition-colors"
-        style={{ backgroundColor: open ? a.bg : 'var(--surface)' }}
+        style={{ backgroundColor: open ? a.bg : 'var(--color-bg-surface)' }}
         aria-expanded={open}
       >
         <span className="inline-flex items-center gap-2">
@@ -50,7 +50,7 @@ function Section({
         />
       </button>
       {open && (
-        <div className="border-t border-[var(--border)] bg-[var(--surface)] p-4">{children}</div>
+        <div className="border-t border-[var(--color-border)] bg-[var(--color-bg-surface)] p-4">{children}</div>
       )}
     </div>
   )
@@ -85,7 +85,7 @@ export function TaskPedagogyAccordion({ task }: { task: Task }): JSX.Element | n
             </div>
           )}
           {task.typical_errors && task.typical_errors.length > 0 && (
-            <ul className="list-disc space-y-1 pl-5 text-sm text-[var(--text-secondary)]">
+            <ul className="list-disc space-y-1 pl-5 text-sm text-[var(--color-text-secondary)]">
               {task.typical_errors.map((err, i) => (
                 <li key={i}>{err}</li>
               ))}

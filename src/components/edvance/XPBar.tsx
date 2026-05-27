@@ -29,9 +29,9 @@ export function XPBar({ current, max, level, levelName }: XPBarProps) {
       <div
         className={cn(
           'flex-none flex items-center justify-center w-10 h-10',
-          'rounded-[var(--radius-full)] text-sm font-bold text-[var(--brand-navy)]',
-          'bg-[var(--xp-gold)] shadow-elevation-sm',
-          pulse && 'animate-bounce-pop',
+          'rounded-[var(--radius-full)] text-sm font-bold text-[var(--color-primary)]',
+          'bg-[var(--color-accent)] shadow-xs',
+          pulse && 'animate-xp-float',
         )}
       >
         {level}
@@ -39,17 +39,17 @@ export function XPBar({ current, max, level, levelName }: XPBarProps) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs font-semibold text-[var(--text-muted)]">{levelName}</span>
+          <span className="text-xs font-semibold text-[var(--color-text-tertiary)]">{levelName}</span>
           <span
             className={cn(
-              'text-xs font-bold text-[var(--xp-gold)]',
-              pulse && 'animate-xp-pulse',
+              'text-xs font-bold text-[var(--color-accent)]',
+              pulse && 'animate-xp-float',
             )}
           >
             {current.toLocaleString('de-DE')} / {max.toLocaleString('de-DE')} XP
           </span>
         </div>
-        <div className="h-2.5 w-full rounded-[var(--radius-full)] overflow-hidden bg-[var(--xp-gold-light)]">
+        <div className="h-2.5 w-full rounded-[var(--radius-full)] overflow-hidden bg-[var(--color-accent-streak-light)]">
           <div
             className="xp-bar-fill h-full rounded-[var(--radius-full)]"
             style={{ width: mounted ? `${pct}%` : '0%' }}

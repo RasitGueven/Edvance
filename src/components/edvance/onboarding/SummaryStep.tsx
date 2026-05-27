@@ -22,7 +22,7 @@ export function SummaryStep({ data, coaches }: SummaryStepProps): JSX.Element {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl p-4 text-sm bg-[color-mix(in_srgb,var(--success)_10%,transparent)] border border-[color-mix(in_srgb,var(--success)_30%,transparent)]">
+      <div className="rounded-xl p-4 text-sm bg-[color-mix(in_srgb,var(--color-success)_10%,transparent)] border border-[color-mix(in_srgb,var(--color-success)_30%,transparent)]">
         <p className="font-semibold text-success">Alles bereit zum Anlegen</p>
         <p className="mt-0.5 text-muted">Bitte prüfe die Angaben und bestätige das Onboarding.</p>
       </div>
@@ -31,7 +31,7 @@ export function SummaryStep({ data, coaches }: SummaryStepProps): JSX.Element {
           <div
             key={label}
             className="flex items-center justify-between px-4 py-3 text-sm"
-            style={{ background: index % 2 === 0 ? 'var(--card)' : ROW_ALT_BG }}
+            style={{ background: index % 2 === 0 ? 'var(--color-bg-surface)' : ROW_ALT_BG }}
           >
             <span className="text-muted font-medium w-28 shrink-0">{label}</span>
             <span className="text-foreground font-semibold text-right">{value}</span>

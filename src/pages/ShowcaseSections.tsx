@@ -13,7 +13,7 @@ import {
 export function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         {title}
       </h2>
       {children}
@@ -27,33 +27,33 @@ export function TypografieSection() {
       <EdvanceCard>
         <div className="flex flex-col gap-5">
           <div className="flex items-baseline gap-4">
-            <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-2xl font-bold</span>
-            <p className="text-2xl font-bold text-[var(--text-primary)]">Screen-Titel</p>
+            <span className="w-40 text-xs text-[var(--color-text-tertiary)] font-mono shrink-0">text-2xl font-bold</span>
+            <p className="text-2xl font-bold text-[var(--color-text-primary)]">Screen-Titel</p>
           </div>
-          <div className="h-px bg-[var(--border)]" />
+          <div className="h-px bg-[var(--color-border)]" />
           <div className="flex items-baseline gap-4">
-            <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-xs uppercase</span>
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">Section-Header</p>
+            <span className="w-40 text-xs text-[var(--color-text-tertiary)] font-mono shrink-0">text-xs uppercase</span>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">Section-Header</p>
           </div>
-          <div className="h-px bg-[var(--border)]" />
+          <div className="h-px bg-[var(--color-border)]" />
           <div className="flex items-baseline gap-4">
-            <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-base font-semibold</span>
-            <p className="text-base font-semibold text-[var(--text-primary)]">Card-Titel</p>
+            <span className="w-40 text-xs text-[var(--color-text-tertiary)] font-mono shrink-0">text-base font-semibold</span>
+            <p className="text-base font-semibold text-[var(--color-text-primary)]">Card-Titel</p>
           </div>
-          <div className="h-px bg-[var(--border)]" />
+          <div className="h-px bg-[var(--color-border)]" />
           <div className="flex items-baseline gap-4">
-            <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-sm leading-relaxed</span>
-            <p className="text-sm leading-relaxed text-[var(--text-secondary)]">Body-Text – fließend, gut lesbar, nie zu eng gesetzt.</p>
+            <span className="w-40 text-xs text-[var(--color-text-tertiary)] font-mono shrink-0">text-sm leading-relaxed</span>
+            <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">Body-Text – fließend, gut lesbar, nie zu eng gesetzt.</p>
           </div>
-          <div className="h-px bg-[var(--border)]" />
+          <div className="h-px bg-[var(--color-border)]" />
           <div className="flex items-baseline gap-4">
-            <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-3xl font-bold</span>
-            <p className="text-3xl font-bold text-[var(--primary)]">92%</p>
+            <span className="w-40 text-xs text-[var(--color-text-tertiary)] font-mono shrink-0">text-3xl font-bold</span>
+            <p className="text-3xl font-bold text-[var(--color-primary)]">92%</p>
           </div>
-          <div className="h-px bg-[var(--border)]" />
+          <div className="h-px bg-[var(--color-border)]" />
           <div className="flex items-baseline gap-4">
-            <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-xs</span>
-            <p className="text-xs text-[var(--text-muted)]">Caption – Zeitstempel, Metadaten, sekundäre Info</p>
+            <span className="w-40 text-xs text-[var(--color-text-tertiary)] font-mono shrink-0">text-xs</span>
+            <p className="text-xs text-[var(--color-text-tertiary)]">Caption – Zeitstempel, Metadaten, sekundäre Info</p>
           </div>
         </div>
       </EdvanceCard>
@@ -67,16 +67,16 @@ export function SchattenSection() {
       <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'shadow-card',        cls: 'shadow-card',         desc: 'Standard Cards' },
-          { label: 'shadow-elevation-sm', cls: 'shadow-elevation-sm', desc: 'Hover-Zustand' },
-          { label: 'shadow-elevation-md', cls: 'shadow-elevation-md', desc: 'Raised Cards' },
-          { label: 'shadow-elevation-lg', cls: 'shadow-elevation-lg', desc: 'Toasts, Modals' },
+          { label: 'shadow-xs', cls: 'shadow-xs', desc: 'Hover-Zustand' },
+          { label: 'shadow-md', cls: 'shadow-md', desc: 'Raised Cards' },
+          { label: 'shadow-lg', cls: 'shadow-lg', desc: 'Toasts, Modals' },
         ].map(({ label, cls, desc }) => (
           <div
             key={label}
-            className={`bg-[var(--surface)] rounded-[var(--radius-xl)] p-5 border border-[var(--border)] ${cls}`}
+            className={`bg-[var(--color-bg-surface)] rounded-[var(--radius-xl)] p-5 border border-[var(--color-border)] ${cls}`}
           >
-            <p className="text-xs font-mono font-semibold text-[var(--text-primary)] mb-1">{label}</p>
-            <p className="text-xs text-[var(--text-muted)]">{desc}</p>
+            <p className="text-xs font-mono font-semibold text-[var(--color-text-primary)] mb-1">{label}</p>
+            <p className="text-xs text-[var(--color-text-tertiary)]">{desc}</p>
           </div>
         ))}
       </div>
@@ -124,18 +124,18 @@ export function FarbTokensSection() {
       <div className="grid grid-cols-2 gap-4">
         {COLOR_GROUPS.map(({ group, tokens }) => (
           <EdvanceCard key={group}>
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-4">
               {group}
             </p>
             <div className="flex flex-col gap-3">
               {tokens.map(({ label, var: cssVar }) => (
                 <div key={cssVar} className="flex items-center gap-3">
                   <div
-                    className="w-8 h-8 rounded-[var(--radius-sm)] flex-none border border-[var(--border)]"
+                    className="w-8 h-8 rounded-[var(--radius-sm)] flex-none border border-[var(--color-border)]"
                     style={{ backgroundColor: `var(${cssVar})` }}
                   />
-                  <span className="text-sm font-semibold text-[var(--text-primary)] flex-1">{label}</span>
-                  <code className="text-xs text-[var(--text-muted)] font-mono">{cssVar}</code>
+                  <span className="text-sm font-semibold text-[var(--color-text-primary)] flex-1">{label}</span>
+                  <code className="text-xs text-[var(--color-text-tertiary)] font-mono">{cssVar}</code>
                 </div>
               ))}
             </div>
@@ -163,12 +163,12 @@ export function SpacingSection() {
         <div className="flex flex-col gap-3">
           {SPACING_TOKENS.map(({ token, px, label }) => (
             <div key={token} className="flex items-center gap-4">
-              <code className="text-xs font-mono text-[var(--text-muted)] w-24 shrink-0">{label}</code>
+              <code className="text-xs font-mono text-[var(--color-text-tertiary)] w-24 shrink-0">{label}</code>
               <div
-                className="h-5 rounded bg-[var(--primary-pale)] border border-[var(--primary-light)]"
+                className="h-5 rounded bg-[var(--color-primary-light)] border border-[var(--color-primary-light)]"
                 style={{ width: px }}
               />
-              <span className="text-xs text-[var(--text-muted)]">{px}</span>
+              <span className="text-xs text-[var(--color-text-tertiary)]">{px}</span>
             </div>
           ))}
         </div>
@@ -182,14 +182,14 @@ export function EdvanceCardSection() {
     <Section title="EdvanceCard – Varianten & Accents">
       <div className="grid grid-cols-2 gap-4">
         <EdvanceCard variant="default">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">variant: default</p>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2">variant: default</p>
+          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
             Standard-Card mit weißem Hintergrund. Für den meisten Content.
           </p>
         </EdvanceCard>
         <EdvanceCard variant="raised">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">variant: raised</p>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2">variant: raised</p>
+          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
             Erhöhte Card für prominenteren Content.
           </p>
         </EdvanceCard>
@@ -200,8 +200,8 @@ export function EdvanceCardSection() {
           </p>
         </EdvanceCard>
         <EdvanceCard variant="blue-pale">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">variant: blue-pale</p>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2">variant: blue-pale</p>
+          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
             Helles Blau. Für Info-Boxen oder Onboarding-Hinweise.
           </p>
         </EdvanceCard>
@@ -209,10 +209,10 @@ export function EdvanceCardSection() {
       <div className="grid grid-cols-2 gap-4">
         {(['left-primary', 'left-success', 'left-warning', 'left-destructive'] as const).map((accent) => (
           <EdvanceCard key={accent} accent={accent}>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1">
               accent: {accent}
             </p>
-            <p className="text-sm text-[var(--text-secondary)]">Farbiger linker Rand für Status-Indikation.</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">Farbiger linker Rand für Status-Indikation.</p>
           </EdvanceCard>
         ))}
       </div>
@@ -251,7 +251,7 @@ export function MasteryBarSection() {
       <div className="grid grid-cols-3 gap-4">
         {(['sm', 'md', 'lg'] as const).map((size) => (
           <EdvanceCard key={size}>
-            <p className="text-xs text-[var(--text-muted)] mb-3 font-semibold uppercase tracking-wider">size: {size}</p>
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-3 font-semibold uppercase tracking-wider">size: {size}</p>
             <MasteryBar level={7} size={size} />
           </EdvanceCard>
         ))}
@@ -278,12 +278,12 @@ export function StatCardSection() {
   return (
     <Section title="StatCard – Hover-Lift-Effekt">
       <div className="grid grid-cols-3 gap-4">
-        <StatCard value="92%"   label="Aufgaben abgeschlossen" icon="✅" trend="+8%"  color="var(--success)" />
-        <StatCard value="14"    label="Tage Streak aktiv"      icon="🔥" trend="+3"   color="var(--streak-orange)" />
-        <StatCard value="3.240" label="XP diese Woche"         icon="⚡" trend="+12%" color="var(--xp-gold)" />
-        <StatCard value="2"     label="Offene Aufgaben"        icon="📋" trend="-1"   color="var(--warning)" />
-        <StatCard value="18"    label="Aktive Schüler"         icon="👥"              color="var(--primary)" />
-        <StatCard value="4.8"   label="Coach-Bewertung"        icon="⭐" trend="+0.2" color="var(--level-purple)" />
+        <StatCard value="92%"   label="Aufgaben abgeschlossen" icon="✅" trend="+8%"  color="var(--color-success)" />
+        <StatCard value="14"    label="Tage Streak aktiv"      icon="🔥" trend="+3"   color="var(--color-accent-streak)" />
+        <StatCard value="3.240" label="XP diese Woche"         icon="⚡" trend="+12%" color="var(--color-accent)" />
+        <StatCard value="2"     label="Offene Aufgaben"        icon="📋" trend="-1"   color="var(--color-gold-warning)" />
+        <StatCard value="18"    label="Aktive Schüler"         icon="👥"              color="var(--color-primary)" />
+        <StatCard value="4.8"   label="Coach-Bewertung"        icon="⭐" trend="+0.2" color="var(--color-repair)" />
       </div>
     </Section>
   )
@@ -295,7 +295,7 @@ export function AvatarSection() {
       <EdvanceCard>
         <div className="flex flex-col gap-6">
           <div>
-            <p className="text-xs text-[var(--text-muted)] mb-3 font-semibold uppercase tracking-wider">Größen</p>
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-3 font-semibold uppercase tracking-wider">Größen</p>
             <div className="flex items-end gap-4">
               <AvatarInitials name="Maria Schmidt" size="sm" />
               <AvatarInitials name="Maria Schmidt" size="md" />
@@ -303,14 +303,14 @@ export function AvatarSection() {
             </div>
           </div>
           <div>
-            <p className="text-xs text-[var(--text-muted)] mb-3 font-semibold uppercase tracking-wider">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-3 font-semibold uppercase tracking-wider">
               Konsistente Hash-Farbe aus Namen
             </p>
             <div className="flex gap-4 flex-wrap">
               {['Anna Müller', 'Jonas Weber', 'Lena Fischer', 'Max Bauer', 'Sophie Klein', 'Tim Schulz'].map((name) => (
                 <div key={name} className="flex flex-col items-center gap-1.5">
                   <AvatarInitials name={name} />
-                  <span className="text-xs text-[var(--text-muted)] text-center max-w-[48px] leading-tight">
+                  <span className="text-xs text-[var(--color-text-tertiary)] text-center max-w-[48px] leading-tight">
                     {name.split(' ')[0]}
                   </span>
                 </div>
@@ -347,7 +347,7 @@ export function EmptyStateSection() {
             title="Noch keine Aufgaben"
             description="Dein Coach hat noch keine Aufgaben erstellt. Schau morgen wieder rein."
             action={
-              <button className="px-4 py-2 rounded-[var(--radius-lg)] text-sm font-semibold bg-[var(--primary)] text-white min-h-[44px]">
+              <button className="px-4 py-2 rounded-[var(--radius-lg)] text-sm font-semibold bg-[var(--color-primary)] text-white min-h-[44px]">
                 Aufgaben anfragen
               </button>
             }
@@ -370,15 +370,15 @@ export function LoadingPulseSection() {
     <Section title="LoadingPulse – Skeleton-Loader">
       <div className="flex flex-col gap-4">
         <div>
-          <p className="text-xs text-[var(--text-muted)] mb-3 font-semibold uppercase tracking-wider">type: list</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-3 font-semibold uppercase tracking-wider">type: list</p>
           <EdvanceCard><LoadingPulse type="list" lines={4} /></EdvanceCard>
         </div>
         <div>
-          <p className="text-xs text-[var(--text-muted)] mb-3 font-semibold uppercase tracking-wider">type: card</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-3 font-semibold uppercase tracking-wider">type: card</p>
           <LoadingPulse type="card" />
         </div>
         <div>
-          <p className="text-xs text-[var(--text-muted)] mb-3 font-semibold uppercase tracking-wider">type: stat</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-3 font-semibold uppercase tracking-wider">type: stat</p>
           <LoadingPulse type="stat" />
         </div>
       </div>

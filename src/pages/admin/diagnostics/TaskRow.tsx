@@ -46,7 +46,7 @@ export function TaskRow({
   return (
     <EdvanceCard className="flex flex-col gap-3 p-5">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm text-[var(--text-primary)] line-clamp-2">
+        <p className="text-sm text-[var(--color-text-primary)] line-clamp-2">
           {task.title ?? task.question ?? `Aufgabe ${task.id.slice(0, 8)}`}
         </p>
         <EdvanceBadge variant={edit.is_diagnostic ? 'success' : 'muted'}>
@@ -56,7 +56,7 @@ export function TaskRow({
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-[var(--text-muted)]">Schwierigkeit</Label>
+          <Label className="text-xs text-[var(--color-text-tertiary)]">Schwierigkeit</Label>
           <select
             className={SELECT_CLASS}
             value={edit.difficulty ?? ''}
@@ -73,7 +73,7 @@ export function TaskRow({
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-[var(--text-muted)]">Antwortformat</Label>
+          <Label className="text-xs text-[var(--color-text-tertiary)]">Antwortformat</Label>
           <select
             className={SELECT_CLASS}
             value={edit.input_type ?? ''}
@@ -90,7 +90,7 @@ export function TaskRow({
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-[var(--text-muted)]">Aufgaben-Anspruch</Label>
+          <Label className="text-xs text-[var(--color-text-tertiary)]">Aufgaben-Anspruch</Label>
           <select
             className={SELECT_CLASS}
             value={edit.cognitive_type ?? ''}
@@ -111,7 +111,7 @@ export function TaskRow({
         </div>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+      <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
         <input
           type="checkbox"
           className="h-4 w-4"
@@ -143,12 +143,12 @@ export function TaskRow({
       </div>
 
       {showPreview && (
-        <div className="animate-fade-in border-t border-[var(--border)] pt-4">
+        <div className="animate-fade-in border-t border-[var(--color-border)] pt-4">
           <TaskPreviewCard task={task} />
         </div>
       )}
 
-      {err && <p className="text-sm text-[var(--destructive)]">{err}</p>}
+      {err && <p className="text-sm text-[var(--color-error-exam)]">{err}</p>}
     </EdvanceCard>
   )
 }

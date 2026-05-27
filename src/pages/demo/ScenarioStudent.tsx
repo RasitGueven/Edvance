@@ -52,7 +52,7 @@ export function ScenarioStudent(): JSX.Element {
       {/* Kopfzeile: XP + Streak */}
       <EdvanceCard className="flex flex-col gap-4">
         <XPBar current={xp} max={500} level={4} levelName="Entdecker" />
-        <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
+        <div className="flex items-center justify-between text-xs text-[var(--color-text-tertiary)]">
           <span>Heutige Session · Kap. 1 Wahrscheinlichkeit</span>
           <EdvanceBadge variant="streak">5 Tage</EdvanceBadge>
         </div>
@@ -60,10 +60,10 @@ export function ScenarioStudent(): JSX.Element {
 
       {/* Aufgabe */}
       <EdvanceCard>
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-1">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-1">
           kap1.s10 · Multiple Choice
         </p>
-        <h2 className="text-base font-bold text-[var(--text-primary)] mb-4 leading-snug">
+        <h2 className="text-base font-bold text-[var(--color-text-primary)] mb-4 leading-snug">
           Beim einmaligen Würfeln mit einem fairen Würfel — wie groß ist P(gerade Zahl)?
         </h2>
 
@@ -94,7 +94,7 @@ export function ScenarioStudent(): JSX.Element {
       {/* Kompetenz-Niveau */}
       <EdvanceCard>
         <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Daten &amp; Zufall — Kompetenz-Niveau
           </p>
           {isDone && (

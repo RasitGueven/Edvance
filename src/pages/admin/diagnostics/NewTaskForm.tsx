@@ -63,7 +63,7 @@ export function NewTaskForm({
 
   return (
     <EdvanceCard className="flex flex-col gap-4 p-6">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
         Neue Diagnose-Aufgabe
       </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -168,7 +168,7 @@ export function NewTaskForm({
         <Label htmlFor="d-q">Frage</Label>
         <textarea
           id="d-q"
-          className="min-h-[80px] rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
+          className="min-h-[80px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
           value={form.question}
           onChange={(e) => setForm({ ...form, question: e.target.value })}
         />
@@ -177,12 +177,12 @@ export function NewTaskForm({
         <Label htmlFor="d-s">Lösung</Label>
         <textarea
           id="d-s"
-          className="min-h-[60px] rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm"
+          className="min-h-[60px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
           value={form.solution ?? ''}
           onChange={(e) => setForm({ ...form, solution: e.target.value })}
         />
       </div>
-      {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-error-exam)]">{error}</p>}
       <div>
         <Button onClick={submit} disabled={busy}>
           {busy ? 'Speichert …' : 'Diagnose-Aufgabe anlegen'}

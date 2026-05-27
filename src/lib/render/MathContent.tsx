@@ -27,16 +27,16 @@ const components: Components = {
   ),
   li: ({ node: _n, ...props }) => <li className="leading-relaxed" {...props} />,
   table: ({ node: _n, ...props }) => (
-    <div className="my-3 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--border)] shadow-card">
+    <div className="my-3 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--color-border)] shadow-card">
       <table className="w-full border-collapse text-sm tabular-nums" {...props} />
     </div>
   ),
   thead: ({ node: _n, ...props }) => (
-    <thead className="bg-[var(--primary-pale)] text-[var(--primary)]" {...props} />
+    <thead className="bg-[var(--color-primary-light)] text-[var(--color-primary)]" {...props} />
   ),
   tbody: ({ node: _n, ...props }) => (
     <tbody
-      className="[&_tr:nth-child(even)]:bg-[color-mix(in_srgb,var(--primary-pale)_40%,white)]"
+      className="[&_tr:nth-child(even)]:bg-[color-mix(in_srgb,var(--color-primary-light)_40%,white)]"
       {...props}
     />
   ),
@@ -48,7 +48,7 @@ const components: Components = {
     />
   ),
   td: ({ node: _n, ...props }) => (
-    <td className="border-t border-[var(--border)] px-3 py-2 align-top" {...props} />
+    <td className="border-t border-[var(--color-border)] px-3 py-2 align-top" {...props} />
   ),
   code: ({ node: _n, className, children, ...props }) => {
     const isBlock = /language-/.test(className ?? '')

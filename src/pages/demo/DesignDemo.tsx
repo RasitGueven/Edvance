@@ -79,17 +79,17 @@ export function DesignDemo(): JSX.Element {
     celebration: 'Szenario C — Level-Up-Moment (max. 1× pro Session, moment-bg)',
     session:     'Szenario D — Session-Abschluss mit Fortschritt-Rückblick',
     uikit:       'Alle Basis-Komponenten auf einen Blick — Button, Badge, Card, Tokens',
-    v2:          'Design-System v2 — Tokens scoped via [data-design="v2"], Schueler/Eltern/UI-Kit',
+    v2:          'Design-System v2 — produktive Tokens, Schueler/Eltern/UI-Kit-Showcase',
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-app)' }}>
       {/* Premium Page-Header mit Gradient */}
-      <div className="relative overflow-hidden bg-gradient-hero noise-overlay">
+      <div className="relative overflow-hidden student-hero">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-25 blur-3xl"
-          style={{ background: 'var(--color-moment-gold)' }}
+          style={{ background: 'var(--color-gold-altgold)' }}
         />
         <div className="relative mx-auto max-w-3xl px-4 py-7 text-white">
           <p className="text-eyebrow opacity-70">Edvance · Demo</p>
@@ -101,7 +101,7 @@ export function DesignDemo(): JSX.Element {
       </div>
 
       {/* Tab-Navigation */}
-      <div className="mx-auto max-w-3xl glass-light">
+      <div className="mx-auto max-w-3xl glass-card">
         <TabBar active={active} onChange={setActive} />
       </div>
 

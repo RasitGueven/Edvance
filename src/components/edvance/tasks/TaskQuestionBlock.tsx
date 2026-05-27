@@ -26,22 +26,22 @@ const COGNITIVE_META: Record<CognitiveType, CognitiveMeta> = {
     label: 'Wissen abrufen',
     desc: 'Setze eine Formel oder Definition direkt ein.',
     icon: <BookOpen className="h-4 w-4" />,
-    accent: 'var(--primary)',
-    accentBg: 'var(--primary-pale)',
+    accent: 'var(--color-primary)',
+    accentBg: 'var(--color-primary-light)',
   },
   TRANSFER: {
     label: 'Übertragen',
     desc: 'Wende Gelerntes auf eine neue Situation an.',
     icon: <MoveRight className="h-4 w-4" />,
-    accent: 'var(--success)',
-    accentBg: 'var(--success-light)',
+    accent: 'var(--color-success)',
+    accentBg: 'var(--color-success-light)',
   },
   ANALYSIS: {
     label: 'Analyse',
     desc: 'Verknüpfe Daten und schließe logisch auf das Ergebnis.',
     icon: <Microscope className="h-4 w-4" />,
-    accent: 'var(--warning)',
-    accentBg: 'var(--warning-light)',
+    accent: 'var(--color-gold-warning)',
+    accentBg: 'var(--color-gold-warning-light)',
   },
 }
 
@@ -65,7 +65,7 @@ function CognitiveHero({ type }: { type: CognitiveType }): JSX.Element {
         >
           {m.label}
         </p>
-        <p className="text-xs text-[var(--text-secondary)]">{m.desc}</p>
+        <p className="text-xs text-[var(--color-text-secondary)]">{m.desc}</p>
       </div>
     </div>
   )
@@ -85,18 +85,18 @@ function InputCueChip({ type }: { type: InputType }): JSX.Element | null {
   const cue = INPUT_CUES[type]
   if (!cue) return null
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)]">
-      <span className="text-[var(--primary)]">{cue.icon}</span>
+    <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)]">
+      <span className="text-[var(--color-primary)]">{cue.icon}</span>
       {cue.label}
     </span>
   )
 }
 
 const SUBTASK_TINTS: { accent: string; bg: string }[] = [
-  { accent: 'var(--primary)', bg: 'var(--primary-pale)' },
-  { accent: 'var(--success)', bg: 'var(--success-light)' },
-  { accent: 'var(--warning)', bg: 'var(--warning-light)' },
-  { accent: 'var(--brand-blue)', bg: 'var(--brand-blue-pale)' },
+  { accent: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
+  { accent: 'var(--color-success)', bg: 'var(--color-success-light)' },
+  { accent: 'var(--color-gold-warning)', bg: 'var(--color-gold-warning-light)' },
+  { accent: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
 ]
 
 function SubtaskCard({
@@ -111,7 +111,7 @@ function SubtaskCard({
   const tint = SUBTASK_TINTS[index % SUBTASK_TINTS.length]
   return (
     <div
-      className="flex gap-4 rounded-[var(--radius-md)] border-l-4 bg-[var(--surface)] p-4 shadow-card"
+      className="flex gap-4 rounded-[var(--radius-md)] border-l-4 bg-[var(--color-bg-surface)] p-4 shadow-card"
       style={{ borderLeftColor: tint.accent }}
     >
       <div
@@ -122,7 +122,7 @@ function SubtaskCard({
         {letter}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           Teilaufgabe {letter.toUpperCase()}
         </p>
         <MathContent text={content} />
@@ -143,7 +143,7 @@ export function TaskQuestionBlock({ task }: { task: Task }): JSX.Element | null 
         {task.cognitive_type ? (
           <CognitiveHero type={task.cognitive_type} />
         ) : (
-          <span className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
             Aufgabenstellung
           </span>
         )}
@@ -151,7 +151,7 @@ export function TaskQuestionBlock({ task }: { task: Task }): JSX.Element | null 
       </div>
 
       {preamble && (
-        <div className="rounded-[var(--radius-md)] bg-[var(--primary-pale)] p-6">
+        <div className="rounded-[var(--radius-md)] bg-[var(--color-primary-light)] p-6">
           <MathContent text={preamble.content} />
         </div>
       )}

@@ -94,3 +94,11 @@ export type {
   ScreeningItemRating,
   ScreeningItemRatingInput,
 } from './screening'
+
+export type {
+  BadgeRarity,
+  BadgeForm,
+  Badge,
+  StudentBadge,
+  StreakRepairInventory,
+} from './gamification'

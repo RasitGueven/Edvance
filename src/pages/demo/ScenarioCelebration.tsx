@@ -21,7 +21,7 @@ export function ScenarioCelebration(): JSX.Element {
   return (
     <div className="flex flex-col gap-5">
       {/* Erklärung */}
-      <p className="text-sm text-[var(--text-muted)]">
+      <p className="text-sm text-[var(--color-text-tertiary)]">
         Dieser Screen erscheint max. 1× pro Session — ausgelöst durch echten Level-Aufstieg.
         Level-Up hat eine eigene Premium-Türkis-Identität (Gradient + Glow), abgesetzt
         von Alltags-XP (Gold) und Task/Boss (Grün). Tokens:{' '}
@@ -34,11 +34,11 @@ export function ScenarioCelebration(): JSX.Element {
           {/* Level-Badge mit bounce-pop */}
           <div
             key={animKey}
-            className="flex h-24 w-24 items-center justify-center rounded-full text-4xl font-black animate-bounce-pop"
+            className="flex h-24 w-24 items-center justify-center rounded-full text-4xl font-black animate-xp-float"
             style={{
-              background: 'var(--gradient-levelup)',
-              color: 'var(--color-levelup-on)',
-              boxShadow: 'var(--shadow-glow-levelup)',
+              background: 'var(--color-primary)',
+              color: 'var(--color-bg-surface)',
+              boxShadow: 'var(--shadow-lg)',
             }}
           >
             5
@@ -84,7 +84,7 @@ export function ScenarioCelebration(): JSX.Element {
 
       {!visible && (
         <Card variant="subtle" className="flex flex-col items-center gap-4 py-12 text-center">
-          <p className="text-[var(--text-muted)]">Celebration beendet</p>
+          <p className="text-[var(--color-text-tertiary)]">Celebration beendet</p>
           <Button variant="primary" onClick={replay}>Nochmal auslösen</Button>
         </Card>
       )}

@@ -7,14 +7,14 @@ interface AvatarInitialsProps {
 }
 
 const AVATAR_PALETTE = [
-  'var(--primary)',
-  'var(--success)',
-  'var(--warning)',
-  'var(--level-purple)',
-  'var(--streak-orange)',
-  'var(--info)',
-  'var(--destructive)',
-  'var(--success-dark)',
+  'var(--color-primary)',
+  'var(--color-success)',
+  'var(--color-gold-warning)',
+  'var(--color-repair)',
+  'var(--color-accent-streak)',
+  'var(--color-primary)',
+  'var(--color-error-exam)',
+  'var(--color-success)',
 ]
 
 function nameToColor(name: string): string {

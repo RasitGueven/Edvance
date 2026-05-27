@@ -4,13 +4,13 @@ import { Label } from '@/components/ui/label'
 import { CLASS_LEVELS, SCHOOL_TYPES } from '@/components/edvance/onboarding/constants'
 import type { SchoolType, StepProps } from '@/types'
 
-const HIGHLIGHT_BG = 'color-mix(in srgb, var(--primary) 10%, transparent)'
+const HIGHLIGHT_BG = 'color-mix(in srgb, var(--color-primary) 10%, transparent)'
 
 function selectableStyle(selected: boolean): { borderColor: string; background: string; color: string } {
   return {
-    borderColor: selected ? 'var(--primary)' : 'var(--border)',
+    borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
     background: selected ? HIGHLIGHT_BG : 'transparent',
-    color: selected ? 'var(--primary)' : 'var(--foreground)',
+    color: selected ? 'var(--color-primary)' : 'var(--foreground)',
   }
 }
 

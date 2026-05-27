@@ -20,8 +20,8 @@ export function LernplanSection({ focus, clusterIdFor }: LernplanSectionProps) {
       <div
         className="rounded-3xl p-7 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, color-mix(in srgb, var(--primary) 8%, white) 0%, color-mix(in srgb, var(--primary-dark) 4%, white) 100%)',
-          border: '2px solid color-mix(in srgb, var(--primary) 25%, transparent)',
+          background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 8%, white) 0%, color-mix(in srgb, var(--color-primary-hover) 4%, white) 100%)',
+          border: '2px solid color-mix(in srgb, var(--color-primary) 25%, transparent)',
           borderBottomWidth: '4px',
         }}
       >
@@ -37,14 +37,14 @@ export function LernplanSection({ focus, clusterIdFor }: LernplanSectionProps) {
             const cid = clusterIdFor(s.skill_cluster)
             const card = (
               <EdvanceCard
-                className="p-5 border-2 border-b-4 border-[var(--border)] transition-shadow group-hover:shadow-md"
+                className="p-5 border-2 border-b-4 border-[var(--color-border)] transition-shadow group-hover:shadow-md"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black text-white"
                     style={{
-                      background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                      borderBottom: '3px solid var(--primary-shadow)',
+                      background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)',
+                      borderBottom: '3px solid var(--color-primary-hover)',
                     }}
                   >
                     {i + 1}
@@ -64,7 +64,7 @@ export function LernplanSection({ focus, clusterIdFor }: LernplanSectionProps) {
                     className="h-full rounded-full"
                     style={{
                       width: `${(s.level / 10) * 100}%`,
-                      background: 'linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                      background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)',
                     }}
                   />
                 </div>

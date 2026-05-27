@@ -5,8 +5,8 @@ import { CoordinateSystem, type PlotFn } from '@/components/edvance/CoordinateSy
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-const LINEAR_COLOR = 'var(--primary)'
-const QUAD_COLOR = 'var(--success)'
+const LINEAR_COLOR = 'var(--color-primary)'
+const QUAD_COLOR = 'var(--color-success)'
 
 function num(v: string): number {
   const n = Number(v.replace(',', '.'))
@@ -73,13 +73,13 @@ export function GraphDemo(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Graph-Demo" />
 
       <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Koordinatensystem</h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Koordinatensystem</h1>
+          <p className="mt-1 text-sm text-[var(--color-text-tertiary)]">
             Demo-Seite ohne Login — lineare und quadratische Gleichungen live einzeichnen.
             Bereich x, y ∈ [−10, 10].
           </p>
@@ -91,14 +91,14 @@ export function GraphDemo(): JSX.Element {
 
         <EdvanceCard className="flex flex-col gap-4 p-6">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
               Lineare Gleichung · y = m·x + b
             </p>
             <button
               type="button"
               onClick={() => setShowLinear((v) => !v)}
               className="text-sm font-semibold"
-              style={{ color: showLinear ? 'var(--primary)' : 'var(--text-muted)' }}
+              style={{ color: showLinear ? 'var(--color-primary)' : 'var(--color-text-tertiary)' }}
             >
               {showLinear ? 'Sichtbar' : 'Ausgeblendet'}
             </button>
@@ -111,14 +111,14 @@ export function GraphDemo(): JSX.Element {
 
         <EdvanceCard className="flex flex-col gap-4 p-6">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
               Quadratische Gleichung · y = a·x² + b·x + c
             </p>
             <button
               type="button"
               onClick={() => setShowQuad((v) => !v)}
               className="text-sm font-semibold"
-              style={{ color: showQuad ? 'var(--success)' : 'var(--text-muted)' }}
+              style={{ color: showQuad ? 'var(--color-success)' : 'var(--color-text-tertiary)' }}
             >
               {showQuad ? 'Sichtbar' : 'Ausgeblendet'}
             </button>

@@ -17,12 +17,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary:   'bg-gradient-primary-btn text-white shadow-premium-sm hover:shadow-premium-md hover:-translate-y-px hover:brightness-110',
-        default:   'bg-gradient-primary-btn text-white shadow-premium-sm hover:shadow-premium-md hover:-translate-y-px hover:brightness-110',
+        primary:   'bg-[var(--color-primary)] text-white shadow-xs hover:shadow-md hover:-translate-y-px hover:brightness-110',
+        default:   'bg-[var(--color-primary)] text-white shadow-xs hover:shadow-md hover:-translate-y-px hover:brightness-110',
         secondary: 'border border-primary text-primary bg-transparent hover:bg-primary-light',
         outline:   'border border-primary text-primary bg-transparent hover:bg-primary-light',
         ghost:     'text-primary bg-transparent hover:bg-primary-light',
-        destructive: 'bg-error text-white shadow-premium-sm hover:shadow-premium-md hover:brightness-110',
+        destructive: 'bg-error text-white shadow-xs hover:shadow-md hover:brightness-110',
       },
       size: {
         sm:      'px-3 py-1.5 text-xs min-h-[36px] rounded-lg',

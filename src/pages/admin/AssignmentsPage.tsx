@@ -18,7 +18,7 @@ import {
 import type { Coach, StudentWithName } from '@/types'
 
 const SELECT_CLASS =
-  'h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm sm:w-64'
+  'h-11 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm sm:w-64'
 
 export function AssignmentsPage(): JSX.Element {
   const [students, setStudents] = useState<StudentWithName[]>([])
@@ -90,20 +90,20 @@ export function AssignmentsPage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Coach ↔ Schüler-Zuordnung
           </h1>
-          <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
             Jeder Schüler hat genau einen aktiven Coach. Änderung wirkt sofort.
           </p>
         </div>
 
         {error && (
-          <p className="text-sm text-[var(--destructive)]">{error}</p>
+          <p className="text-sm text-[var(--color-error-exam)]">{error}</p>
         )}
 
         <Input
@@ -130,12 +130,12 @@ export function AssignmentsPage(): JSX.Element {
                   className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="flex flex-col gap-1">
-                    <p className="text-base font-semibold text-[var(--text-primary)]">
+                    <p className="text-base font-semibold text-[var(--color-text-primary)]">
                       {s.full_name ?? 'Unbenannt'}
                     </p>
                     <div className="flex items-center gap-2">
                       {s.class_level && (
-                        <span className="text-xs text-[var(--text-muted)]">
+                        <span className="text-xs text-[var(--color-text-tertiary)]">
                           Klasse {s.class_level}
                         </span>
                       )}

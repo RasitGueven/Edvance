@@ -42,7 +42,7 @@ export function TeilaufgabenEditor({
   if (items.length === 0) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-xs text-[var(--text-muted)]">{t('teil.empty')}</p>
+        <p className="text-xs text-[var(--color-text-tertiary)]">{t('teil.empty')}</p>
         <Button size="sm" variant="outline" onClick={add}>
           <Plus className="mr-1 h-3.5 w-3.5" /> {t('teil.addTeilaufgabe')}
         </Button>
@@ -89,8 +89,8 @@ function TeilRow({
   const type = item.input_type ?? 'NUMERIC'
 
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface,#fafbfd)]">
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] bg-[var(--card)] px-3 py-2">
+    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-subtle)]">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2">
         <div
           className={`grid h-8 w-8 place-items-center rounded-lg font-bold ${NUMERIC_KEY_BG}`}
         >
@@ -102,7 +102,7 @@ function TeilRow({
             aria-label="Key"
           />
         </div>
-        <div className="inline-flex gap-0.5 rounded-lg bg-[var(--surface,#fafbfd)] p-0.5">
+        <div className="inline-flex gap-0.5 rounded-lg bg-[var(--color-bg-subtle)] p-0.5">
           {(['NUMERIC', 'OPEN'] as const).map((tp) => (
             <button
               key={tp}
@@ -110,8 +110,8 @@ function TeilRow({
               onClick={() => onUpdate({ input_type: tp })}
               className={`rounded-md px-2 py-1 text-xs font-semibold transition ${
                 type === tp
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'text-[var(--text-secondary)]'
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--color-text-secondary)]'
               }`}
             >
               {tp === 'NUMERIC' ? t('teil.typeNumeric') : t('teil.typeOpen')}
@@ -165,7 +165,7 @@ function AcceptedList({
   const { t } = useTranslation('screening-editor')
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-semibold text-[var(--text-secondary)]">
+      <span className="text-xs font-semibold text-[var(--color-text-secondary)]">
         {t('open.label')}
       </span>
       {items.map((v, i) => (
@@ -217,8 +217,8 @@ function IconBtn({
       disabled={disabled}
       aria-label={label}
       title={label}
-      className={`grid h-7 w-7 place-items-center rounded-md transition hover:bg-[var(--surface,#fafbfd)] disabled:opacity-40 ${
-        danger ? 'hover:bg-[var(--destructive)]/10 hover:text-[var(--destructive)]' : ''
+      className={`grid h-7 w-7 place-items-center rounded-md transition hover:bg-[var(--color-bg-subtle)] disabled:opacity-40 ${
+        danger ? 'hover:bg-[var(--color-error-exam)]/10 hover:text-[var(--color-error-exam)]' : ''
       }`}
     >
       {children}

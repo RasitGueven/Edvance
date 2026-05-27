@@ -26,11 +26,11 @@ export function LivePreview({ state }: { state: FormState }): JSX.Element {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="sticky top-0 z-10 -mx-2 flex items-center gap-2 bg-[var(--background,white)] px-2 py-2">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
+      <div className="sticky top-0 z-10 -mx-2 flex items-center gap-2 bg-[var(--color-bg-app)] px-2 py-2">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-tertiary)]">
           {t('sections.preview')}
         </h3>
-        <div className="ml-auto inline-flex rounded-lg border border-[var(--border)] p-0.5">
+        <div className="ml-auto inline-flex rounded-lg border border-[var(--color-border)] p-0.5">
           {(['student', 'coach'] as Mode[]).map((m) => (
             <button
               key={m}
@@ -38,8 +38,8 @@ export function LivePreview({ state }: { state: FormState }): JSX.Element {
               onClick={() => setMode(m)}
               className={`rounded-md px-2.5 py-1 text-xs font-semibold ${
                 mode === m
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'text-[var(--text-secondary)]'
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--color-text-secondary)]'
               }`}
             >
               {m === 'student' ? `👤 ${t('preview.student')}` : `🎓 ${t('preview.coach')}`}
@@ -48,7 +48,7 @@ export function LivePreview({ state }: { state: FormState }): JSX.Element {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-card">
+      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-5 shadow-card">
         <div className="mb-3 flex flex-wrap gap-1.5">
           <EdvanceBadge variant="primary">{state.usage}</EdvanceBadge>
           <EdvanceBadge variant="muted">{state.input_type}</EdvanceBadge>
@@ -60,13 +60,13 @@ export function LivePreview({ state }: { state: FormState }): JSX.Element {
           )}
         </div>
         {state.kontext.trim() !== '' && (
-          <div className="mb-3 rounded-r-xl border-l-[3px] border-[var(--primary)] bg-[var(--surface,#fafbfd)] px-3 py-2 text-sm leading-relaxed text-[var(--text-secondary)] whitespace-pre-wrap">
+          <div className="mb-3 rounded-r-xl border-l-[3px] border-[var(--color-primary)] bg-[var(--color-bg-subtle)] px-3 py-2 text-sm leading-relaxed text-[var(--color-text-secondary)] whitespace-pre-wrap">
             {state.kontext}
           </div>
         )}
-        <p className="whitespace-pre-wrap text-base font-medium leading-relaxed text-[var(--text-primary)]">
+        <p className="whitespace-pre-wrap text-base font-medium leading-relaxed text-[var(--color-text-primary)]">
           {state.prompt || (
-            <em className="text-[var(--text-muted)]">{t('preview.promptMissing')}</em>
+            <em className="text-[var(--color-text-tertiary)]">{t('preview.promptMissing')}</em>
           )}
         </p>
 
@@ -123,20 +123,20 @@ function PreviewWidget({
             key={i}
             className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-sm font-medium ${
               mode === 'coach' && o.correct
-                ? 'border-[var(--success)] bg-[var(--success)]/10'
-                : 'border-[var(--border)] bg-[var(--card)]'
+                ? 'border-[var(--color-success)] bg-[var(--color-success)]/10'
+                : 'border-[var(--color-border)] bg-[var(--color-bg-surface)]'
             }`}
           >
             <span
               className={`grid h-6 w-6 place-items-center rounded-full text-xs font-bold ${
                 mode === 'coach' && o.correct
-                  ? 'bg-[var(--success)] text-white'
-                  : 'bg-[var(--surface,#fafbfd)] text-[var(--text-secondary)]'
+                  ? 'bg-[var(--color-success)] text-white'
+                  : 'bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]'
               }`}
             >
               {String.fromCharCode(65 + i)}
             </span>
-            <span>{o.text || <em className="text-[var(--text-muted)]">leer</em>}</span>
+            <span>{o.text || <em className="text-[var(--color-text-tertiary)]">leer</em>}</span>
           </div>
         ))}
       </div>
@@ -146,7 +146,7 @@ function PreviewWidget({
     return (
       <div className="mt-4 flex items-center gap-2">
         <input
-          className="max-w-[220px] flex-1 rounded-xl border-2 border-[var(--border)] bg-[var(--card)] px-4 py-3 text-lg font-semibold outline-none"
+          className="max-w-[220px] flex-1 rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] px-4 py-3 text-lg font-semibold outline-none"
           placeholder="Antwort"
         />
       </div>
@@ -155,14 +155,14 @@ function PreviewWidget({
   if (input_type === 'OPEN') {
     return (
       <textarea
-        className="mt-4 min-h-[90px] w-full rounded-xl border-2 border-[var(--border)] bg-[var(--card)] p-3 text-sm leading-relaxed outline-none"
+        className="mt-4 min-h-[90px] w-full rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] p-3 text-sm leading-relaxed outline-none"
         placeholder="Deine Antwort hier …"
       />
     )
   }
   if (input_type === 'DRAW') {
     return (
-      <div className="mt-4 grid h-40 place-items-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--surface,#fafbfd)] text-[var(--text-muted)]">
+      <div className="mt-4 grid h-40 place-items-center rounded-xl border-2 border-dashed border-[var(--color-border)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)]">
         <div className="text-center">
           <div className="text-3xl">✏️</div>
           <small className="text-xs">Zeichenfläche</small>
@@ -219,7 +219,7 @@ function HintBlock({
         <button
           type="button"
           onClick={onReveal}
-          className="self-start rounded-full border border-[var(--warning)]/40 bg-[var(--warning)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--warning)] transition hover:bg-[var(--warning)]/20"
+          className="self-start rounded-full border border-[var(--color-gold-warning)]/40 bg-[var(--color-gold-warning)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--color-gold-warning)] transition hover:bg-[var(--color-gold-warning)]/20"
         >
           💡 {label(next)}
         </button>
@@ -230,8 +230,8 @@ function HintBlock({
 
 function HintShown({ n, text }: { n: number; text: string }): JSX.Element {
   return (
-    <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-3 py-2 text-sm text-[var(--warning)]">
-      <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[var(--warning)] text-xs font-bold text-white">
+    <div className="flex items-start gap-2 rounded-xl border border-[var(--color-gold-warning)]/30 bg-[var(--color-gold-warning)]/10 px-3 py-2 text-sm text-[var(--color-gold-warning)]">
+      <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[var(--color-gold-warning)] text-xs font-bold text-white">
         {n}
       </span>
       <span>{text}</span>
@@ -251,7 +251,7 @@ function CoachBoxes({
   return (
     <div className="mt-3 flex flex-col gap-1.5">
       {explanation.trim() && (
-        <div className="rounded-xl bg-[var(--success)]/10 px-3 py-2 text-xs leading-relaxed text-[var(--success)]">
+        <div className="rounded-xl bg-[var(--color-success)]/10 px-3 py-2 text-xs leading-relaxed text-[var(--color-success)]">
           <strong className="block text-[10px] uppercase tracking-wider">
             {t('preview.coachSolution')}
           </strong>
@@ -259,7 +259,7 @@ function CoachBoxes({
         </div>
       )}
       {typical.trim() && (
-        <div className="rounded-xl bg-[var(--destructive)]/10 px-3 py-2 text-xs leading-relaxed text-[var(--destructive)]">
+        <div className="rounded-xl bg-[var(--color-error-exam)]/10 px-3 py-2 text-xs leading-relaxed text-[var(--color-error-exam)]">
           <strong className="block text-[10px] uppercase tracking-wider">
             {t('preview.coachErrors')}
           </strong>
@@ -283,23 +283,23 @@ function SubCard({
 }): JSX.Element {
   const { t } = useTranslation('screening-editor')
   return (
-    <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-card">
+    <div className="mt-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-4 shadow-card">
       <div className="mb-2 flex items-start gap-3">
         <div className="grid h-7 w-7 place-items-center rounded-lg bg-[var(--violet,#7c3aed)]/10 font-bold text-[var(--violet,#7c3aed)]">
           {item.key}
         </div>
-        <p className="flex-1 pt-0.5 text-sm font-medium leading-relaxed text-[var(--text-primary)]">
-          {item.prompt || <em className="text-[var(--text-muted)]">{t('preview.promptMissing')}</em>}
+        <p className="flex-1 pt-0.5 text-sm font-medium leading-relaxed text-[var(--color-text-primary)]">
+          {item.prompt || <em className="text-[var(--color-text-tertiary)]">{t('preview.promptMissing')}</em>}
         </p>
       </div>
       {item.input_type === 'NUMERIC' ? (
         <input
-          className="w-full max-w-[220px] rounded-xl border-2 border-[var(--border)] bg-[var(--card)] px-4 py-2 text-base outline-none"
+          className="w-full max-w-[220px] rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] px-4 py-2 text-base outline-none"
           placeholder="Antwort"
         />
       ) : (
         <textarea
-          className="min-h-[60px] w-full rounded-xl border-2 border-[var(--border)] bg-[var(--card)] p-3 text-sm outline-none"
+          className="min-h-[60px] w-full rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-bg-surface)] p-3 text-sm outline-none"
           placeholder="Antwort"
         />
       )}
@@ -312,7 +312,7 @@ function SubCard({
         label={(n) => t('hint.show', { n })}
       />
       {mode === 'coach' && (item.accepted ?? []).filter(Boolean).length > 0 && (
-        <div className="mt-2 rounded-xl bg-[var(--success)]/10 px-3 py-2 text-xs leading-relaxed text-[var(--success)]">
+        <div className="mt-2 rounded-xl bg-[var(--color-success)]/10 px-3 py-2 text-xs leading-relaxed text-[var(--color-success)]">
           <strong className="block text-[10px] uppercase tracking-wider">
             {t('preview.coachNote')}
           </strong>

@@ -7,10 +7,10 @@ import type { ResumePoint } from '@/lib/supabase/resume'
 type StudentTileAccent = 'primary' | 'streak' | 'levelup' | 'xp'
 
 const ACCENT_VAR: Record<StudentTileAccent, string> = {
-  primary: 'var(--primary)',
-  streak:  'var(--streak-orange)',
-  levelup: 'var(--color-levelup)',
-  xp:      'var(--xp-gold)',
+  primary: 'var(--color-primary)',
+  streak:  'var(--color-accent-streak)',
+  levelup: 'var(--color-primary)',
+  xp:      'var(--color-accent)',
 }
 
 // ─── ContinueTile (2×2 Hero) ─────────────────────────────────────────────────
@@ -82,7 +82,7 @@ function StudentStatTile({
         </span>
         <div className="flex flex-col gap-0.5">
           {loading ? (
-            <span className="h-9 w-14 rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton" />
+            <span className="h-9 w-14 rounded-[var(--radius-md)] bg-[var(--color-border)] animate-skeleton" />
           ) : (
             <span
               className="text-3xl font-bold leading-none"
@@ -91,7 +91,7 @@ function StudentStatTile({
               {value}
             </span>
           )}
-          <span className="text-xs text-[var(--text-muted)]">{label}</span>
+          <span className="text-xs text-[var(--color-text-tertiary)]">{label}</span>
         </div>
       </EdvanceCard>
     </div>
@@ -140,9 +140,9 @@ function StudentActionTile({
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-base font-semibold text-[var(--text-primary)]">{title}</span>
+          <span className="text-base font-semibold text-[var(--color-text-primary)]">{title}</span>
           {description && (
-            <span className="text-xs leading-relaxed text-[var(--text-muted)]">{description}</span>
+            <span className="text-xs leading-relaxed text-[var(--color-text-tertiary)]">{description}</span>
           )}
         </div>
       </EdvanceCard>

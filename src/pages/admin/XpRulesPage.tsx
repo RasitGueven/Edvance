@@ -74,14 +74,14 @@ export function XpRulesPage(): JSX.Element {
         <div>
           <Link
             to="/admin"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="mb-2 flex items-center gap-1 text-sm text-[var(--color-text-tertiary)]"
           >
             <ArrowLeft className="h-4 w-4" /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
             XP-Gewichtung
           </h1>
-          <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
             Vergebene XP pro abgeschlossener Aufgabe ={' '}
             <span className="font-semibold">Basis-XP</span> +{' '}
             <span className="font-semibold">Multiplikator</span> ×
@@ -90,7 +90,7 @@ export function XpRulesPage(): JSX.Element {
         </div>
 
         {error && (
-          <p className="text-sm text-[var(--destructive)]">{error}</p>
+          <p className="text-sm text-[var(--color-error-exam)]">{error}</p>
         )}
 
         {loading ? (
@@ -113,7 +113,7 @@ export function XpRulesPage(): JSX.Element {
                   key={r.content_type}
                   className="flex flex-col gap-4 p-6"
                 >
-                  <p className="text-base font-semibold text-[var(--text-primary)]">
+                  <p className="text-base font-semibold text-[var(--color-text-primary)]">
                     {TYPE_LABEL[r.content_type] ?? r.content_type}
                   </p>
                   <div className="flex flex-wrap items-end gap-4">
@@ -166,7 +166,7 @@ export function XpRulesPage(): JSX.Element {
                         : 'Speichern'}
                     </Button>
                     {savedType === r.content_type && (
-                      <span className="text-sm text-[var(--success)]">
+                      <span className="text-sm text-[var(--color-success)]">
                         Gespeichert
                       </span>
                     )}

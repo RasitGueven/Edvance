@@ -164,10 +164,10 @@ export function ScreeningSession(): JSX.Element {
             variant="premium"
             className="flex animate-fade-in flex-col gap-6 p-8"
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
               {KICKERS[(step - 1) % KICKERS.length]}
             </p>
-            <h1 className="text-xl font-bold leading-snug text-[var(--text-primary)]">
+            <h1 className="text-xl font-bold leading-snug text-[var(--color-text-primary)]">
               {item.prompt}
             </h1>
 

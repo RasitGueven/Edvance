@@ -249,7 +249,7 @@ function DifficultyDots({ difficulty }: { difficulty: number }): JSX.Element {
           key={i}
           className="h-1.5 w-1.5 rounded-full"
           style={{
-            background: i <= difficulty ? 'var(--primary)' : 'var(--border-strong)',
+            background: i <= difficulty ? 'var(--color-primary)' : 'var(--color-neutral-unknown)',
           }}
         />
       ))}
