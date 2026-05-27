@@ -1,307 +1,299 @@
 import { useEffect, useState, type JSX } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { ArrowLeft, Pencil, CheckCircle2 } from 'lucide-react'
+import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import {
-  EdvanceBadge,
   EdvanceCard,
+  EdvanceBadge,
   EmptyState,
   LoadingPulse,
 } from '@/components/edvance'
-import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { listStudentsWithName } from '@/lib/supabase/students'
-import { generateParentReport } from '@/lib/supabase/generateParentReport'
 import {
-  createParentReport,
   listReportsForStudent,
   publishReport,
+  saveReportDraft,
 } from '@/lib/supabase/parentReports'
-import type { ParentReport, ParentReportDraft, StudentWithName } from '@/types'
+import type { ParentReport, StudentWithName } from '@/types'
 
-const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm'
-const TEXTAREA_CLASS =
-  'min-h-[90px] w-full resize-y rounded-xl border border-[var(--border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--primary)] focus:outline-none'
-
-const FIELDS: { key: keyof ParentReportDraft; label: string }[] = [
-  { key: 'lernfortschritt', label: 'Lernfortschritt' },
-  { key: 'anwesenheit', label: 'Anwesenheit' },
-  { key: 'eingriffe', label: 'Eingriffe' },
-  { key: 'empfehlung', label: 'Empfehlung / nächste Schritte' },
-  { key: 'coach_notiz', label: 'Persönliche Coach-Notiz' },
-]
-
-function isoDaysAgo(days: number): string {
-  return new Date(Date.now() - days * 864e5).toISOString().slice(0, 10)
-}
-
+/**
+ * Coach-Einschätzung verfassen und freigeben.
+ * Pro Schüler: Liste vorhandener Reports + Editor für neuen Entwurf.
+ */
 export function ReportsPage(): JSX.Element {
   const [students, setStudents] = useState<StudentWithName[]>([])
-  const [studentId, setStudentId] = useState('')
-  const [from, setFrom] = useState(isoDaysAgo(14))
-  const [to, setTo] = useState(isoDaysAgo(0))
-  const [context, setContext] = useState('')
-  const [draft, setDraft] = useState<ParentReportDraft | null>(null)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [done, setDone] = useState<string | null>(null)
+  const [activeId, setActiveId] = useState<string | null>(null)
   const [reports, setReports] = useState<ParentReport[]>([])
-  const [reportsLoading, setReportsLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    void listStudentsWithName().then(({ data }) => setStudents(data ?? []))
+    let cancelled = false
+    void (async () => {
+      const { data, error: sErr } = await listStudentsWithName()
+      if (cancelled) return
+      if (sErr) setError(sErr)
+      else {
+        setStudents(data ?? [])
+        if ((data ?? []).length > 0) setActiveId((data ?? [])[0].id)
+      }
+      setLoading(false)
+    })()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  const loadReports = (sid: string): void => {
-    if (!sid) {
-      setReports([])
-      return
-    }
-    setReportsLoading(true)
-    void listReportsForStudent(sid).then(({ data }) => {
-      setReports(data ?? [])
-      setReportsLoading(false)
-    })
-  }
-
   useEffect(() => {
-    loadReports(studentId)
-  }, [studentId])
-
-  const publishExisting = async (id: string): Promise<void> => {
-    setError(null)
-    const { error: err } = await publishReport(id)
-    if (err) {
-      setError(err)
-      return
+    if (!activeId) return
+    let cancelled = false
+    void (async () => {
+      const { data } = await listReportsForStudent(activeId)
+      if (!cancelled) setReports(data ?? [])
+    })()
+    return () => {
+      cancelled = true
     }
-    loadReports(studentId)
-  }
-
-  const generate = async (): Promise<void> => {
-    if (!studentId) {
-      setError('Bitte Schüler auswählen.')
-      return
-    }
-    setBusy(true)
-    setError(null)
-    setDone(null)
-    const { data, error: err } = await generateParentReport({
-      student_id: studentId,
-      period_start: from,
-      period_end: to,
-      coach_context: context.trim() || null,
-    })
-    setBusy(false)
-    if (err) {
-      setError(err)
-      return
-    }
-    setDraft(data)
-  }
-
-  const setField = (k: keyof ParentReportDraft, v: string): void => {
-    if (!draft) return
-    setDraft({ ...draft, [k]: v })
-  }
-
-  const save = async (publish: boolean): Promise<void> => {
-    if (!draft) return
-    setBusy(true)
-    setError(null)
-    const { coach_notiz, ...summary } = draft
-    const { data, error: err } = await createParentReport({
-      student_id: studentId,
-      period_start: from,
-      period_end: to,
-      summary,
-      coach_note: coach_notiz,
-    })
-    if (err || !data) {
-      setBusy(false)
-      setError(err ?? 'Speichern fehlgeschlagen')
-      return
-    }
-    if (publish) {
-      const { error: pErr } = await publishReport(data.id)
-      if (pErr) {
-        setBusy(false)
-        setError(pErr)
-        return
-      }
-    }
-    setBusy(false)
-    setDraft(null)
-    setDone(
-      publish
-        ? 'Report freigegeben — für die Eltern sichtbar.'
-        : 'Als Entwurf gespeichert (für Eltern noch unsichtbar).',
-    )
-    loadReports(studentId)
-  }
+  }, [activeId])
 
   return (
-    <div className="min-h-screen bg-background">
-      <EdvanceNavbar subtitle="Elternreport" sticky />
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-        <div>
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
+      <EdvanceNavbar subtitle="Reports verfassen" sticky />
+      <main className="mx-auto max-w-4xl px-4 py-8 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Reports</h1>
           <Link
             to="/coach"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] hover:underline"
           >
-            <ArrowLeft className="h-4 w-4" /> Coach
+            <ArrowLeft className="h-4 w-4" /> Zurück
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-            Elternreport (KI-gestützt)
-          </h1>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
-        {done && <p className="text-sm text-[var(--success)]">{done}</p>}
+        {error && <p className="text-sm text-[var(--color-error-coach)]">{error}</p>}
 
-        <EdvanceCard className="flex flex-col gap-4 p-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="r-stud">Schüler *</Label>
-              <select
-                id="r-stud"
-                className={SELECT_CLASS}
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-              >
-                <option value="">–</option>
-                {students.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.full_name ?? 'Unbenannt'}
-                    {s.class_level ? ` · Kl. ${s.class_level}` : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="r-from">Zeitraum von</Label>
-              <Input
-                id="r-from"
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
+        {loading ? (
+          <LoadingPulse type="card" />
+        ) : students.length === 0 ? (
+          <EmptyState
+            icon="📝"
+            title="Keine Schüler zugewiesen"
+            description="Sobald dir Schüler zugeordnet sind, kannst du hier Reports schreiben."
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[280px_1fr]">
+            <StudentList students={students} activeId={activeId} onSelect={setActiveId} />
+            {activeId && (
+              <ReportEditor
+                studentId={activeId}
+                existingReports={reports}
+                saving={saving}
+                onSubmit={async (input, publish) => {
+                  setSaving(true)
+                  const { data: draft, error: dErr } = await saveReportDraft(input)
+                  if (dErr || !draft) {
+                    setError(dErr ?? 'Speichern fehlgeschlagen')
+                    setSaving(false)
+                    return
+                  }
+                  if (publish) {
+                    const { error: pErr } = await publishReport(draft.id)
+                    if (pErr) {
+                      setError(pErr)
+                      setSaving(false)
+                      return
+                    }
+                  }
+                  const { data: list } = await listReportsForStudent(activeId)
+                  setReports(list ?? [])
+                  setSaving(false)
+                }}
               />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="r-to">Zeitraum bis</Label>
-              <Input
-                id="r-to"
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="r-ctx">Kontext / Schwerpunkte (optional)</Label>
-            <textarea
-              id="r-ctx"
-              className={TEXTAREA_CLASS}
-              value={context}
-              onChange={(e) => setContext(e.target.value)}
-              placeholder="z. B. Klausurvorbereitung Mathe, Motivationsthema …"
-            />
-          </div>
-          <div>
-            <Button onClick={generate} disabled={busy}>
-              {busy && !draft ? 'Generiert …' : 'Entwurf generieren'}
-            </Button>
-          </div>
-        </EdvanceCard>
-
-        {studentId && (
-          <div className="flex flex-col gap-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-              Bestehende Reports
-            </p>
-            {reportsLoading ? (
-              <LoadingPulse type="card" />
-            ) : reports.length === 0 ? (
-              <EmptyState
-                icon="📭"
-                title="Noch keine Reports"
-                description="Für diesen Schüler wurde noch kein Report erstellt."
-              />
-            ) : (
-              reports.map((r) => (
-                <EdvanceCard
-                  key={r.id}
-                  className="flex flex-wrap items-center justify-between gap-3 p-6"
-                >
-                  <div className="flex flex-col gap-1">
-                    <p className="text-base font-semibold text-[var(--text-primary)]">
-                      {r.period_start} – {r.period_end}
-                    </p>
-                    <EdvanceBadge
-                      variant={
-                        r.status === 'published' ? 'success' : 'warning'
-                      }
-                    >
-                      {r.status === 'published'
-                        ? 'Freigegeben'
-                        : 'Entwurf'}
-                    </EdvanceBadge>
-                  </div>
-                  {r.status !== 'published' && (
-                    <Button onClick={() => publishExisting(r.id)}>
-                      Freigeben
-                    </Button>
-                  )}
-                </EdvanceCard>
-              ))
             )}
           </div>
         )}
-
-        {busy && !draft && <LoadingPulse type="card" />}
-
-        {draft ? (
-          <EdvanceCard className="flex flex-col gap-4 p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-              Entwurf — vor Freigabe prüfen und anpassen
-            </p>
-            {FIELDS.map((f) => (
-              <div key={f.key} className="flex flex-col gap-2">
-                <Label htmlFor={`f-${f.key}`}>{f.label}</Label>
-                <textarea
-                  id={`f-${f.key}`}
-                  className={TEXTAREA_CLASS}
-                  value={draft[f.key]}
-                  onChange={(e) => setField(f.key, e.target.value)}
-                />
-              </div>
-            ))}
-            <div className="flex flex-wrap gap-2">
-              <Button disabled={busy} onClick={() => save(true)}>
-                {busy ? 'Speichert …' : 'Speichern & freigeben'}
-              </Button>
-              <Button
-                variant="outline"
-                disabled={busy}
-                onClick={() => save(false)}
-              >
-                Nur als Entwurf speichern
-              </Button>
-            </div>
-          </EdvanceCard>
-        ) : (
-          !busy &&
-          !done && (
-            <EmptyState
-              icon="📝"
-              title="Noch kein Entwurf"
-              description="Wähle Schüler und Zeitraum und generiere den Entwurf."
-            />
-          )
-        )}
       </main>
+    </div>
+  )
+}
+
+function StudentList({
+  students,
+  activeId,
+  onSelect,
+}: {
+  students: StudentWithName[]
+  activeId: string | null
+  onSelect: (id: string) => void
+}): JSX.Element {
+  return (
+    <aside className="flex flex-col gap-2">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+        Schüler
+      </h2>
+      {students.map((s) => {
+        const isActive = s.id === activeId
+        return (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => onSelect(s.id)}
+            className={`rounded-[var(--radius-md)] border px-3 py-2 text-left transition-colors ${
+              isActive
+                ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+                : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary-light)]'
+            }`}
+          >
+            <p className="text-sm font-semibold text-[var(--color-text-primary)]">{s.full_name ?? 'Unbenannt'}</p>
+            {s.class_level && (
+              <p className="text-xs text-[var(--color-text-tertiary)]">Klasse {s.class_level}</p>
+            )}
+          </button>
+        )
+      })}
+    </aside>
+  )
+}
+
+function ReportEditor({
+  studentId,
+  existingReports,
+  saving,
+  onSubmit,
+}: {
+  studentId: string
+  existingReports: ParentReport[]
+  saving: boolean
+  onSubmit: (
+    input: {
+      student_id: string
+      period_start: string
+      period_end: string
+      summary: Record<string, unknown>
+      coach_note: string | null
+    },
+    publish: boolean,
+  ) => Promise<void>
+}): JSX.Element {
+  const today = new Date()
+  const periodStart = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10)
+  const periodEnd = today.toISOString().slice(0, 10)
+  const [learningProgress, setLearningProgress] = useState('')
+  const [attendance, setAttendance] = useState('')
+  const [interventions, setInterventions] = useState('')
+  const [coachNote, setCoachNote] = useState('')
+
+  return (
+    <section className="flex flex-col gap-4">
+      <EdvanceCard variant="hero-parent" className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
+            Neuer Report ({periodStart} → {periodEnd})
+          </h3>
+          <Pencil className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+        </div>
+
+        <Field label="Lernfortschritt" value={learningProgress} onChange={setLearningProgress} />
+        <Field label="Anwesenheit" value={attendance} onChange={setAttendance} />
+        <Field label="Eingriffe" value={interventions} onChange={setInterventions} />
+        <Field
+          label="Coach-Einschätzung (persönlich, mit Namen)"
+          value={coachNote}
+          onChange={setCoachNote}
+        />
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() =>
+              onSubmit(
+                {
+                  student_id: studentId,
+                  period_start: periodStart,
+                  period_end: periodEnd,
+                  summary: { learning_progress: learningProgress, attendance, interventions },
+                  coach_note: coachNote.trim() || null,
+                },
+                false,
+              )
+            }
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] hover:border-[var(--color-primary)]"
+          >
+            Als Entwurf speichern
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() =>
+              onSubmit(
+                {
+                  student_id: studentId,
+                  period_start: periodStart,
+                  period_end: periodEnd,
+                  summary: { learning_progress: learningProgress, attendance, interventions },
+                  coach_note: coachNote.trim() || null,
+                },
+                true,
+              )
+            }
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-bg-surface)] hover:bg-[var(--color-primary-hover)]"
+          >
+            <CheckCircle2 className="h-4 w-4" /> Freigeben
+          </button>
+        </div>
+      </EdvanceCard>
+
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mt-2">
+        Bisherige Reports
+      </h3>
+      {existingReports.length === 0 ? (
+        <p className="text-sm text-[var(--color-text-tertiary)]">Noch keine Reports vorhanden.</p>
+      ) : (
+        existingReports.map((r) => (
+          <EdvanceCard key={r.id} className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+                {new Date(r.period_start).toLocaleDateString('de-DE')} –{' '}
+                {new Date(r.period_end).toLocaleDateString('de-DE')}
+              </p>
+              {r.published_at && (
+                <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
+                  Veröffentlicht am {new Date(r.published_at).toLocaleDateString('de-DE')}
+                </p>
+              )}
+            </div>
+            <EdvanceBadge variant={r.status === 'published' ? 'strength' : 'muted'}>
+              {r.status === 'published' ? 'Veröffentlicht' : 'Entwurf'}
+            </EdvanceBadge>
+          </EdvanceCard>
+        ))
+      )}
+    </section>
+  )
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: string
+  onChange: (v: string) => void
+}): JSX.Element {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">
+        {label}
+      </label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={3}
+        className="w-full resize-y rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-primary)]"
+      />
     </div>
   )
 }

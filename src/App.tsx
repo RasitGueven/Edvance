@@ -11,6 +11,8 @@ import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { TiersPage } from '@/pages/admin/TiersPage'
 import { DiagnosticsPage } from '@/pages/admin/DiagnosticsPage'
 import { IntakePage } from '@/pages/coach/IntakePage'
+import { ScreeningResultsPage } from '@/pages/coach/ScreeningResultsPage'
+import { ReportsPage } from '@/pages/coach/ReportsPage'
 import { ClusterView } from '@/pages/student/ClusterView'
 import { TaskPlayer } from '@/pages/student/TaskPlayer'
 import { ProtectedRoute } from '@/components/edvance/ProtectedRoute'
@@ -64,6 +66,22 @@ export default function App(): JSX.Element {
           element={
             <ProtectedRoute allowedRoles={['coach', 'admin']}>
               <IntakePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/screening-results"
+          element={
+            <ProtectedRoute allowedRoles={['coach', 'admin']}>
+              <ScreeningResultsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/reports"
+          element={
+            <ProtectedRoute allowedRoles={['coach', 'admin']}>
+              <ReportsPage />
             </ProtectedRoute>
           }
         />

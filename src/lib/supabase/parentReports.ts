@@ -44,6 +44,9 @@ export async function listReportsForStudent(
   }
 }
 
+// Alias mit klarem Namen für den UI-Editor.
+export const saveReportDraft = createParentReport
+
 // Veroeffentlicht einen Report (draft → published).
 export async function publishReport(
   id: string,

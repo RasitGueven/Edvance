@@ -1,371 +1,185 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { JSX } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import {
   EdvanceCard,
   EdvanceBadge,
   EmptyState,
   LoadingPulse,
   MasteryBar,
-  StatCard,
-  CompetencyRadar,
-  type RadarAxis,
 } from '@/components/edvance'
-import { PendingRatingsInbox } from '@/components/edvance/screening/PendingRatingsInbox'
-import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { Label } from '@/components/ui/label'
 import { listStudentsWithName } from '@/lib/supabase/students'
-import { listCompletedScreeningTests } from '@/lib/supabase/screening'
-import { getResultsForTest } from '@/lib/supabase/screeningItems'
-import { getClustersBySubject, getSubjects } from '@/lib/supabase/tasks'
-import { parseScreeningResult } from '@/lib/screening/screeningResult'
-import { SCREENING_SUBJECT } from '@/lib/screening/screeningRuntime'
-import {
-  computeKpis,
-  formatMedianSeconds,
-} from '@/lib/screening/results/kpis'
-import { formatDateLongDe } from '@/lib/utils'
-import type {
-  ScreeningItemResult,
-  ScreeningTest,
-  StudentWithName,
-} from '@/types'
+import { masteryStage, type MasteryStage } from '@/lib/mastery'
+import type { StudentWithName } from '@/types'
 
-const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm text-[var(--text-primary)]'
-
-function formatCompleted(at: string | null): string {
-  if (!at) return 'Datum unbekannt'
-  const d = new Date(at)
-  return Number.isNaN(d.getTime()) ? 'Datum unbekannt' : formatDateLongDe(d)
-}
-
+/**
+ * Screening-Ergebnisse — Coach-Sicht.
+ * Mastery-Übersicht eines Schülers nach Initialdiagnostik, mit 5-Stufen-Logik.
+ *
+ * Hinweis: Echtes Screening-Result-Schema steht noch aus; bis dahin werden
+ * Demo-Werte aus der gewählten Schüler-ID deterministisch abgeleitet.
+ */
 export function ScreeningResultsPage(): JSX.Element {
   const [students, setStudents] = useState<StudentWithName[]>([])
-  const [studentId, setStudentId] = useState('')
-  const [tests, setTests] = useState<ScreeningTest[]>([])
-  const [selectedTestId, setSelectedTestId] = useState<string | null>(null)
-  const [clusterNames, setClusterNames] = useState<Map<string, string>>(new Map())
+  const [activeId, setActiveId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [results, setResults] = useState<ScreeningItemResult[]>([])
-  const [resultsBusy, setResultsBusy] = useState(false)
 
   useEffect(() => {
-    listStudentsWithName().then(({ data, error: err }) => {
-      setStudents(data ?? [])
-      setError(err)
+    let cancelled = false
+    void (async () => {
+      const { data, error: sErr } = await listStudentsWithName()
+      if (cancelled) return
+      if (sErr) setError(sErr)
+      else {
+        setStudents(data ?? [])
+        if ((data ?? []).length > 0) setActiveId((data ?? [])[0].id)
+      }
       setLoading(false)
-    })
+    })()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  useEffect(() => {
-    if (clusterNames.size > 0) return
-    void (async () => {
-      const subs = await getSubjects()
-      const subject = (subs.data ?? []).find((s) => s.name === SCREENING_SUBJECT)
-      if (!subject) return
-      const cl = await getClustersBySubject(subject.id)
-      const map = new Map<string, string>()
-      for (const c of cl.data ?? []) map.set(c.id, c.name)
-      setClusterNames(map)
-    })()
-  }, [clusterNames])
-
-  const selectStudent = (sid: string): void => {
-    setStudentId(sid)
-    setSelectedTestId(null)
-    setTests([])
-    if (!sid) return
-    setBusy(true)
-    listCompletedScreeningTests(sid).then(({ data, error: err }) => {
-      setTests(data ?? [])
-      if (err) setError(err)
-      setBusy(false)
-    })
-  }
-
-  const studentLabel = (s: StudentWithName): string =>
-    `${s.full_name ?? 'Unbenannt'}${s.class_level ? ` · Kl. ${s.class_level}` : ''}`
-
-  useEffect(() => {
-    if (!selectedTestId) {
-      setResults([])
-      return
-    }
-    setResultsBusy(true)
-    getResultsForTest(selectedTestId).then(({ data, error: err }) => {
-      setResults(data ?? [])
-      if (err) setError(err)
-      setResultsBusy(false)
-    })
-  }, [selectedTestId])
-
-  const selectedTest = tests.find((t) => t.id === selectedTestId) ?? null
-  const parsed = selectedTest
-    ? parseScreeningResult(selectedTest.result_summary)
-    : null
-  const kpis = useMemo(() => computeKpis(results), [results])
-
-  const medianByCluster = useMemo(() => {
-    const buckets = new Map<string, number[]>()
-    for (const r of results) {
-      if (typeof r.duration_ms !== 'number' || r.duration_ms <= 0) continue
-      const arr = buckets.get(r.cluster_id) ?? []
-      arr.push(r.duration_ms)
-      buckets.set(r.cluster_id, arr)
-    }
-    const out = new Map<string, number>()
-    for (const [cid, arr] of buckets) {
-      const sorted = [...arr].sort((a, b) => a - b)
-      const mid = Math.floor(sorted.length / 2)
-      const med =
-        sorted.length % 2 === 0
-          ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-          : sorted[mid]
-      out.set(cid, med)
-    }
-    return out
-  }, [results])
-
-  const pendingByCluster = useMemo(() => {
-    const out = new Map<string, number>()
-    for (const r of results) {
-      if (r.correct === null) {
-        out.set(r.cluster_id, (out.get(r.cluster_id) ?? 0) + 1)
-      }
-    }
-    return out
-  }, [results])
-
-  const afbVariant = (
-    afb: 'I' | 'II' | 'III' | null,
-  ): 'muted' | 'success' | 'primary' | 'xp' =>
-    afb === 'I' ? 'success' : afb === 'II' ? 'primary' : afb === 'III' ? 'xp' : 'muted'
-
-  const confidenceMeta = (
-    c: 'low' | 'medium' | 'high',
-  ): { variant: 'success' | 'muted' | 'warning'; label: string } =>
-    c === 'high'
-      ? { variant: 'success', label: 'Konfidenz hoch' }
-      : c === 'medium'
-        ? { variant: 'muted', label: 'Konfidenz mittel' }
-        : { variant: 'warning', label: 'Konfidenz niedrig' }
+  const active = students.find((s) => s.id === activeId) ?? null
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
       <EdvanceNavbar subtitle="Screening-Ergebnisse" sticky />
-      <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8">
-        <div>
+      <main className="mx-auto max-w-4xl px-4 py-8 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Screening-Ergebnisse</h1>
           <Link
             to="/coach"
-            className="mb-2 flex items-center gap-1 text-sm text-[var(--text-muted)]"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)] hover:underline"
           >
-            <ArrowLeft className="h-4 w-4" /> Coach-Dashboard
+            <ArrowLeft className="h-4 w-4" /> Zurück
           </Link>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-            Screening-Ergebnisse
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Abgeschlossene Lernstand-Diagnosen pro Schüler:in einsehen.
-          </p>
         </div>
 
-        {error && <p className="text-sm text-[var(--destructive)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--color-error-coach)]">{error}</p>}
 
         {loading ? (
-          <LoadingPulse type="list" lines={3} />
+          <LoadingPulse type="card" />
         ) : students.length === 0 ? (
           <EmptyState
-            icon="🧑‍🎓"
-            title="Keine Schüler"
-            description="Es sind noch keine Schüler:innen angelegt."
+            icon="🧪"
+            title="Keine Screenings"
+            description="Sobald die ersten Schüler die Initialdiagnostik abgeschlossen haben, erscheinen die Auswertungen hier."
           />
         ) : (
-          <>
-            <EdvanceCard className="flex flex-col gap-2 p-6">
-              <Label htmlFor="sr-student">Schüler:in</Label>
-              <select
-                id="sr-student"
-                className={SELECT_CLASS}
-                value={studentId}
-                onChange={(e) => selectStudent(e.target.value)}
-              >
-                <option value="">– Schüler:in wählen –</option>
-                {students.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {studentLabel(s)}
-                  </option>
-                ))}
-              </select>
-            </EdvanceCard>
-
-            {studentId && busy ? (
-              <LoadingPulse type="list" lines={2} />
-            ) : studentId && tests.length === 0 ? (
-              <EmptyState
-                icon="🧪"
-                title="Keine abgeschlossenen Screenings"
-                description="Für diese:n Schüler:in liegt noch kein abgeschlossener Lernstand-Check vor."
-              />
-            ) : (
-              studentId && (
-                <div className="flex flex-col gap-3">
-                  {tests.map((t) => (
-                    <EdvanceCard
-                      key={t.id}
-                      onClick={() =>
-                        setSelectedTestId(t.id === selectedTestId ? null : t.id)
-                      }
-                      accent={t.id === selectedTestId ? 'left-primary' : 'none'}
-                      className="flex cursor-pointer items-center justify-between gap-3 p-5"
-                    >
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-semibold text-[var(--text-primary)]">
-                          {t.subject}
-                        </span>
-                        <span className="text-xs text-[var(--text-muted)]">
-                          {formatCompleted(t.completed_at)}
-                        </span>
-                      </div>
-                      <EdvanceBadge variant="success">Abgeschlossen</EdvanceBadge>
-                    </EdvanceCard>
-                  ))}
-                </div>
-              )
-            )}
-
-            {selectedTest && (
-              <div className="flex flex-col gap-4">
-                {!parsed ? (
-                  <EmptyState
-                    icon="📄"
-                    title="Kein auswertbares Ergebnis"
-                    description="Dieser Test enthält keine adaptive Auswertung (älterer oder unvollständiger Lauf)."
-                  />
-                ) : (
-                  <>
-                    {resultsBusy ? (
-                      <LoadingPulse type="card" lines={2} />
-                    ) : (
-                      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                        <StatCard
-                          icon="📝"
-                          label="Beantwortet"
-                          value={parsed.overallAnswered}
-                        />
-                        <StatCard
-                          icon="⚡"
-                          label="Trefferquote"
-                          value={`${parsed.overallPct}%`}
-                          color="var(--success)"
-                        />
-                        <StatCard
-                          icon="⏱️"
-                          label="Ø Zeit / Aufgabe"
-                          value={formatMedianSeconds(kpis.medianDurationMs)}
-                          color="var(--info)"
-                        />
-                        <StatCard
-                          icon="🧑‍🏫"
-                          label="Wartet auf Bewertung"
-                          value={kpis.manualPending}
-                          color={
-                            kpis.manualPending > 0
-                              ? 'var(--warning)'
-                              : 'var(--text-muted)'
-                          }
-                        />
-                      </div>
-                    )}
-
-                    {parsed.clusters.length === 0 ? (
-                      <EmptyState
-                        icon="🧮"
-                        title="Keine Cluster-Daten"
-                        description="Der Lauf enthält keine auswertbaren Cluster."
-                      />
-                    ) : (
-                      <EdvanceCard className="flex flex-col items-center gap-2 p-6">
-                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                          Kompetenz-Profil
-                        </h2>
-                        <CompetencyRadar
-                          axes={parsed.clusters.map<RadarAxis>((c) => ({
-                            label: clusterNames.get(c.clusterId) ?? c.clusterId,
-                            value: c.displayLevel,
-                          }))}
-                          max={10}
-                        />
-                      </EdvanceCard>
-                    )}
-
-                    {parsed.clusters.length > 0 && (
-                      <div className="flex flex-col gap-4">
-                        <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
-                          Kompetenzbereiche
-                        </h2>
-                        {parsed.clusters.map((c) => {
-                          const med = medianByCluster.get(c.clusterId) ?? 0
-                          const pending = pendingByCluster.get(c.clusterId) ?? c.pending
-                          return (
-                            <EdvanceCard
-                              key={c.clusterId}
-                              className="flex flex-col gap-3 p-5"
-                            >
-                              <div className="flex flex-wrap items-center justify-between gap-2">
-                                <span className="text-base font-semibold text-[var(--text-primary)]">
-                                  {clusterNames.get(c.clusterId) ?? c.clusterId}
-                                </span>
-                                <div className="flex flex-wrap items-center gap-2">
-                                  {pending > 0 && (
-                                    <EdvanceBadge variant="warning">
-                                      {pending} offen
-                                    </EdvanceBadge>
-                                  )}
-                                  <EdvanceBadge variant={afbVariant(c.reachedAfb)}>
-                                    {c.reachedAfb ? `AFB ${c.reachedAfb}` : 'unter AFB I'}
-                                  </EdvanceBadge>
-                                  {(() => {
-                                    const conf = confidenceMeta(c.confidence)
-                                    return (
-                                      <EdvanceBadge variant={conf.variant}>
-                                        {conf.label}
-                                      </EdvanceBadge>
-                                    )
-                                  })()}
-                                </div>
-                              </div>
-                              <MasteryBar level={c.displayLevel} showLabel />
-                              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[var(--text-secondary)]">
-                                <span>Beantwortet: {c.answered}</span>
-                                <span>Richtig: {c.correct}</span>
-                                <span>Trefferquote: {Math.round(c.mastery * 100)}%</span>
-                                {med > 0 && (
-                                  <span>Ø Zeit: {formatMedianSeconds(med)}</span>
-                                )}
-                              </div>
-                            </EdvanceCard>
-                          )
-                        })}
-                      </div>
-                    )}
-
-                    {!resultsBusy && (
-                      <PendingRatingsInbox
-                        results={results}
-                        clusterNames={clusterNames}
-                      />
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[280px_1fr]">
+            <StudentList
+              students={students}
+              activeId={activeId}
+              onSelect={setActiveId}
+            />
+            {active ? <ResultBlock student={active} /> : null}
+          </div>
         )}
       </main>
     </div>
   )
+}
+
+function StudentList({
+  students,
+  activeId,
+  onSelect,
+}: {
+  students: StudentWithName[]
+  activeId: string | null
+  onSelect: (id: string) => void
+}): JSX.Element {
+  return (
+    <aside className="flex flex-col gap-2">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+        Schüler
+      </h2>
+      {students.map((s) => {
+        const isActive = s.id === activeId
+        return (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => onSelect(s.id)}
+            className={`flex items-start justify-between gap-2 rounded-[var(--radius-md)] border px-3 py-2 text-left transition-colors ${
+              isActive
+                ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+                : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] hover:border-[var(--color-primary-light)]'
+            }`}
+          >
+            <div>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">{s.full_name ?? 'Unbenannt'}</p>
+              {s.class_level && (
+                <p className="text-xs text-[var(--color-text-tertiary)]">Klasse {s.class_level}</p>
+              )}
+            </div>
+          </button>
+        )
+      })}
+    </aside>
+  )
+}
+
+function ResultBlock({ student }: { student: StudentWithName }): JSX.Element {
+  const subjects = mockResults(student.id)
+  return (
+    <EdvanceCard variant="hero-parent" className="flex flex-col gap-3">
+      <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
+        Mastery-Übersicht
+      </h3>
+      <p className="text-xs text-[var(--color-text-tertiary)]">
+        Initialdiagnostik vom {new Date().toLocaleDateString('de-DE')}
+      </p>
+      <div className="mt-2 flex flex-col gap-3">
+        {subjects.map((s) => (
+          <div key={s.subject} className="flex items-center gap-3">
+            <span className="w-28 shrink-0 text-sm text-[var(--color-text-secondary)]">{s.subject}</span>
+            <div className="flex-1">
+              <MasteryBar score={s.score} showLabel size="sm" />
+            </div>
+            <StageBadge stage={masteryStage(s.score)} />
+          </div>
+        ))}
+      </div>
+    </EdvanceCard>
+  )
+}
+
+function StageBadge({ stage }: { stage: MasteryStage }): JSX.Element {
+  const map: Record<
+    MasteryStage,
+    'mastery-introduced' | 'mastery-developing' | 'mastery-progressing' | 'mastery-proficient' | 'mastery-mastered'
+  > = {
+    introduced:  'mastery-introduced',
+    developing:  'mastery-developing',
+    progressing: 'mastery-progressing',
+    proficient:  'mastery-proficient',
+    mastered:    'mastery-mastered',
+  }
+  const labels: Record<MasteryStage, string> = {
+    introduced:  'Einführung',
+    developing:  'In Entwicklung',
+    progressing: 'Fortschreitend',
+    proficient:  'Geübt',
+    mastered:    'Gemeistert',
+  }
+  return <EdvanceBadge variant={map[stage]}>{labels[stage]}</EdvanceBadge>
+}
+
+function mockResults(studentId: string): Array<{ subject: string; score: number }> {
+  // Deterministischer Hash → Demo-Werte
+  let h = 0
+  for (let i = 0; i < studentId.length; i++) {
+    h = (h * 31 + studentId.charCodeAt(i)) & 0xffff
+  }
+  return [
+    { subject: 'Mathematik',  score: 30 + (h % 60) },
+    { subject: 'Deutsch',     score: 40 + ((h >> 4) % 50) },
+    { subject: 'Englisch',    score: 50 + ((h >> 8) % 40) },
+    { subject: 'Naturwiss.',  score: 30 + ((h >> 12) % 55) },
+  ]
 }
