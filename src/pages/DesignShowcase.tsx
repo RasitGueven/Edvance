@@ -11,6 +11,7 @@ import {
   LoadingPulse,
   ToastBanner,
 } from '@/components/edvance'
+import { DesignTokensSection } from '@/components/edvance/showcase/DesignTokensSection'
 
 type ToastConfig = {
   type: 'success' | 'xp' | 'warning' | 'error'
@@ -112,96 +113,8 @@ export function DesignShowcase() {
         </Section>
 
         {/* ── Farb-Tokens ── */}
-        <Section title="Design Tokens – Farben">
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { group: 'Brand',
-                tokens: [
-                  { label: 'Brand Navy',    var: '--brand-navy' },
-                  { label: 'Primary',       var: '--primary' },
-                  { label: 'Primary Light', var: '--primary-light' },
-                  { label: 'Primary Pale',  var: '--primary-pale' },
-                ]
-              },
-              { group: 'Status',
-                tokens: [
-                  { label: 'Success',     var: '--success' },
-                  { label: 'Warning',     var: '--warning' },
-                  { label: 'Destructive', var: '--destructive' },
-                  { label: 'Info',        var: '--info' },
-                ]
-              },
-              { group: 'Gamification',
-                tokens: [
-                  { label: 'XP Gold (=Accent)', var: '--xp-gold' },
-                  { label: 'XP Gold Light',     var: '--xp-gold-light' },
-                  { label: 'Streak Orange',     var: '--streak-orange' },
-                ]
-              },
-              { group: 'Emotionale Momente',
-                tokens: [
-                  { label: 'Level-Up',        var: '--color-levelup' },
-                  { label: 'Level-Up Moment', var: '--color-moment-levelup' },
-                  { label: 'Repair (Lila)',   var: '--color-moment-repair' },
-                  { label: 'Erfolg/Boss',     var: '--color-moment-green' },
-                  { label: 'Streak-Verlust',  var: '--color-moment-red' },
-                  { label: 'Moment-Bühne',    var: '--color-moment-bg' },
-                ]
-              },
-              { group: 'Text & Surface',
-                tokens: [
-                  { label: 'Text Primary',   var: '--text-primary' },
-                  { label: 'Text Secondary', var: '--text-secondary' },
-                  { label: 'Text Muted',     var: '--text-muted' },
-                  { label: 'Surface',        var: '--surface' },
-                ]
-              },
-            ].map(({ group, tokens }) => (
-              <EdvanceCard key={group}>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-4">
-                  {group}
-                </p>
-                <div className="flex flex-col gap-3">
-                  {tokens.map(({ label, var: cssVar }) => (
-                    <div key={cssVar} className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-[var(--radius-sm)] flex-none border border-[var(--border)]"
-                        style={{ backgroundColor: `var(${cssVar})` }}
-                      />
-                      <span className="text-sm font-semibold text-[var(--text-primary)] flex-1">{label}</span>
-                      <code className="text-xs text-[var(--text-muted)] font-mono">{cssVar}</code>
-                    </div>
-                  ))}
-                </div>
-              </EdvanceCard>
-            ))}
-          </div>
-        </Section>
-
-        {/* ── Spacing ── */}
-        <Section title="Spacing-Rhythmus (4pt Grid)">
-          <EdvanceCard>
-            <div className="flex flex-col gap-3">
-              {[
-                { token: '--space-1',  px: '4px',  label: 'space-1' },
-                { token: '--space-2',  px: '8px',  label: 'space-2' },
-                { token: '--space-4',  px: '16px', label: 'space-4' },
-                { token: '--space-6',  px: '24px', label: 'space-6' },
-                { token: '--space-8',  px: '32px', label: 'space-8' },
-                { token: '--space-12', px: '48px', label: 'space-12' },
-                { token: '--space-16', px: '64px', label: 'space-16' },
-              ].map(({ token, px, label }) => (
-                <div key={token} className="flex items-center gap-4">
-                  <code className="text-xs font-mono text-[var(--text-muted)] w-24 shrink-0">{label}</code>
-                  <div
-                    className="h-5 rounded bg-[var(--primary-pale)] border border-[var(--primary-light)]"
-                    style={{ width: px }}
-                  />
-                  <span className="text-xs text-[var(--text-muted)]">{px}</span>
-                </div>
-              ))}
-            </div>
-          </EdvanceCard>
+        <Section title="Design Tokens – Farben & Spacing">
+          <DesignTokensSection />
         </Section>
 
         {/* ── EdvanceCard Varianten ── */}
