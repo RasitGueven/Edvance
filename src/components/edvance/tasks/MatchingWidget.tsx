@@ -11,10 +11,10 @@ type Props = {
 }
 
 const TINTS = [
-  { line: '#2D6A9F', fill: 'color-mix(in srgb, #2D6A9F 10%, white)' },
-  { line: '#16a34a', fill: 'color-mix(in srgb, #16a34a 10%, white)' },
-  { line: '#d97706', fill: 'color-mix(in srgb, #d97706 10%, white)' },
-  { line: '#7c3aed', fill: 'color-mix(in srgb, #7c3aed 10%, white)' },
+  { line: 'var(--primary)',          fill: 'var(--primary-pale)' },
+  { line: 'var(--success)',          fill: 'var(--success-light)' },
+  { line: 'var(--warning)',          fill: 'var(--warning-light)' },
+  { line: 'var(--level-purple)',     fill: 'color-mix(in srgb, var(--level-purple) 10%, white)' },
 ]
 
 function tintFor(pairIndex: number) {
