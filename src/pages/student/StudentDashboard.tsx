@@ -4,7 +4,7 @@ import { BookOpen, ChevronRight, FileText, FlaskConical, PlayCircle, Search, X, 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { XPBar } from '@/components/edvance'
+import { LoadingPulse, XPBar } from '@/components/edvance'
 import { DashboardTiles } from '@/components/edvance/DashboardTiles'
 import { useAuth } from '@/hooks/useAuth'
 import { getClustersBySubject, getSubjects, getTasksByCluster } from '@/lib/supabase/tasks'
@@ -150,8 +150,7 @@ export function StudentDashboard(): JSX.Element {
       <section className="relative overflow-hidden bg-gradient-hero noise-overlay">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
-          style={{ background: 'var(--color-moment-gold)' }}
+          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl bg-[var(--color-moment-gold)]"
         />
         <div className="mx-auto max-w-3xl px-4 py-8 text-white">
           <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
@@ -282,7 +281,7 @@ export function StudentDashboard(): JSX.Element {
             clusterNameById={clusterNameById}
           />
         ) : loadingClusters ? (
-          <p className="mt-6 text-sm text-muted">Lade Themen …</p>
+          <div className="mt-6"><LoadingPulse /></div>
         ) : clusters.length === 0 ? (
           <Card className="mt-6">
             <CardContent className="pt-6 text-center text-sm text-muted">
@@ -360,7 +359,7 @@ function FilterResults({
   clusterNameById: Record<string, string>
 }): JSX.Element {
   if (loading) {
-    return <p className="mt-6 text-sm text-muted">Suche …</p>
+    return <div className="mt-6"><LoadingPulse /></div>
   }
   if (tasks.length === 0) {
     return (

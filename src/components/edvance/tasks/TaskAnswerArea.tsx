@@ -185,14 +185,7 @@ export function TaskAnswerArea({
       </div>
 
       {hintShown && task.hint && (
-        <div
-          className="rounded-xl px-4 py-3 text-sm"
-          style={{
-            background: 'color-mix(in srgb, var(--warning) 10%, transparent)',
-            border: '2px solid color-mix(in srgb, var(--warning) 30%, transparent)',
-            color: 'var(--warning)',
-          }}
-        >
+        <div className="rounded-xl border-2 border-[var(--warning)] bg-[var(--warning-light)] px-4 py-3 text-sm text-[var(--warning)]">
           💡 {task.hint}
         </div>
       )}

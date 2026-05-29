@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { LoadingPulse } from '@/components/edvance'
 import { TaskAnswerArea } from '@/components/edvance/tasks/TaskAnswerArea'
 import { useAuth } from '@/hooks/useAuth'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
@@ -148,7 +149,7 @@ export function TaskPlayer(): JSX.Element {
       <div className="min-h-screen bg-background">
         <EdvanceNavbar subtitle="Aufgabe" />
         <main className="mx-auto max-w-3xl px-4 py-8">
-          <p className="text-sm text-muted">Lade Aufgabe …</p>
+          <LoadingPulse />
         </main>
       </div>
     )
