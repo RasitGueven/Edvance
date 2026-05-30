@@ -34,12 +34,7 @@ export function ScenarioCelebration(): JSX.Element {
           {/* Level-Badge mit bounce-pop */}
           <div
             key={animKey}
-            className="flex h-24 w-24 items-center justify-center rounded-full text-4xl font-black animate-xp-float"
-            style={{
-              background: 'var(--color-primary)',
-              color: 'var(--color-bg-surface)',
-              boxShadow: 'var(--shadow-lg)',
-            }}
+            className="flex h-24 w-24 items-center justify-center rounded-full text-4xl font-black animate-xp-float shadow-lg bg-[var(--color-primary)] text-[var(--color-bg-surface)]"
           >
             5
           </div>
