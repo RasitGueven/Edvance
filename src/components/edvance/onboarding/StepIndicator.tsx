@@ -61,7 +61,7 @@ export function StepIndicator({ current }: StepIndicatorProps): JSX.Element {
           className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${Math.round(((current + 1) / STEP_LABELS.length) * 100)}%`,
-            background: 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary) 100%)',
+            background: 'var(--color-primary)',
           }}
         />
       </div>
