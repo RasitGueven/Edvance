@@ -28,11 +28,10 @@ export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): 
             key={coach.id}
             type="button"
             onClick={() => setData({ ...data, coachId: coach.id })}
-            className="flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all"
+            className={`flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all ${selected ? 'ring-2' : ''}`}
             style={{
               borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
               background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
-              boxShadow: selected ? '0 0 0 2px var(--color-primary)' : 'none',
             }}
           >
             <span

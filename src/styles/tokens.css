@@ -88,9 +88,11 @@
     --color-moment-levelup-bg:      #334D7A;
     --color-moment-levelup-crown:   #E8D5A3;
     --color-moment-levelup-xp:      #D4A843;
-    --color-moment-boss-green:      #1DB954;
-    --color-moment-boss-bg-start:   #1A2E4A;
-    --color-moment-boss-bg-end:     #0A6B2E;
+    --color-moment-boss-green:          #1DB954;
+    --color-moment-boss-bg-start:       #1A2E4A;
+    --color-moment-boss-bg-end:         #0A6B2E;
+    --color-moment-boss-shadow-start:   #2A2D33;   /* Schatten-Variante: entsättigt */
+    --color-moment-boss-shadow-end:     #1A1F22;   /* Schatten-Variante: entsättigt */
     --color-moment-streak-red:      #E03535;
     --color-moment-repair-purple:   #7B5EA7;
 

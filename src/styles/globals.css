@@ -7,6 +7,8 @@
   --color-primary:                    var(--color-primary);
   --color-primary-hover:              var(--color-primary-hover);
   --color-primary-light:              var(--color-primary-light);
+  --color-navy-deep:                  var(--color-navy-deep);
+  --color-overlay:                    var(--color-overlay);
 
   /* Hintergrund */
   --color-bg-app:                     var(--color-bg-app);
@@ -89,6 +91,8 @@
   --color-moment-boss-green:          var(--color-moment-boss-green);
   --color-moment-boss-bg-start:       var(--color-moment-boss-bg-start);
   --color-moment-boss-bg-end:         var(--color-moment-boss-bg-end);
+  --color-moment-boss-shadow-start:   var(--color-moment-boss-shadow-start);
+  --color-moment-boss-shadow-end:     var(--color-moment-boss-shadow-end);
   --color-moment-streak-red:          var(--color-moment-streak-red);
   --color-moment-repair-purple:       var(--color-moment-repair-purple);
 

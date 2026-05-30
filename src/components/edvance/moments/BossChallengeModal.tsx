@@ -18,9 +18,8 @@ const DEFAULT_DISMISS_MS = 2800
  * - Max. 3 Sekunden Sichtbarkeit
  * - Max. 1× pro Session (Caller-Verantwortung)
  *
- * Hintergrund-Verlauf-Animation 4s-Zyklus zwischen `moment-boss-bg-start` (#1A2E4A)
- * und `moment-boss-bg-end` (#0A6B2E). Text in `moment-boss-green` (#1DB954).
- * Sterne in `--color-gold-altgold` (war v1 `#F5C842`, jetzt Altgold via Token).
+ * Hintergrund-Verlauf-Animation 4s-Zyklus zwischen `--color-moment-boss-bg-start`
+ * und `--color-moment-boss-bg-end`. Schatten-Variante nutzt `--color-moment-boss-shadow-*`.
  */
 export function BossChallengeModal({
   open,
@@ -50,7 +49,7 @@ export function BossChallengeModal({
         className="w-full max-w-md rounded-[var(--radius-xl)] p-8 shadow-xl animate-scale-in text-center relative overflow-hidden"
         style={{
           background: isShadow
-            ? 'linear-gradient(120deg, #2A2D33, #1A1F22)'
+            ? 'linear-gradient(120deg, var(--color-moment-boss-shadow-start), var(--color-moment-boss-shadow-end))'
             : 'linear-gradient(120deg, var(--color-moment-boss-bg-start), var(--color-moment-boss-bg-end))',
           backgroundSize: '200% 200%',
           animation: 'boss-shift 4s ease-in-out infinite',

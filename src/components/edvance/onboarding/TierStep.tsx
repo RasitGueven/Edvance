@@ -36,11 +36,10 @@ export function TierStep({ data, setData, tiers, loading }: TierStepProps): JSX.
             key={tier.id}
             type="button"
             onClick={() => setData({ ...data, tier: tier.name })}
-            className="relative flex items-start justify-between rounded-xl border px-5 py-4 text-left transition-all"
+            className={`relative flex items-start justify-between rounded-xl border px-5 py-4 text-left transition-all ${selected ? 'ring-2' : ''}`}
             style={{
               borderColor: tierBorder(selected, isRecommended),
               background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
-              boxShadow: selected ? '0 0 0 2px var(--color-primary)' : 'none',
             }}
           >
             {isRecommended && (

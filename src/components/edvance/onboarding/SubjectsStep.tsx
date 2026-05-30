@@ -29,12 +29,10 @@ export function SubjectsStep({ data, setData }: StepProps): JSX.Element {
               type="button"
               disabled={disabled}
               onClick={() => toggleSubject(subject)}
-              className="flex items-center justify-between rounded-xl border px-5 py-4 text-left transition-all"
+              className={`flex items-center justify-between rounded-xl border px-5 py-4 text-left transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${selected ? 'ring-2' : ''}`}
               style={{
                 borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
                 background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
-                opacity: disabled ? 0.4 : 1,
-                cursor: disabled ? 'not-allowed' : 'pointer',
               }}
             >
               <span className="font-medium text-foreground">{subject}</span>
