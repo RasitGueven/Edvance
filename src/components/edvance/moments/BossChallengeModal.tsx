@@ -41,7 +41,7 @@ export function BossChallengeModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in"
-      style={{ backgroundColor: 'rgba(20, 33, 61, 0.55)' }}
+      style={{ backgroundColor: 'var(--color-overlay)' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
