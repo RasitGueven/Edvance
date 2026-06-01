@@ -83,13 +83,12 @@ export function DesignDemo(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-app)' }}>
+    <div className="min-h-screen bg-[var(--color-bg-app)]">
       {/* Premium Page-Header mit Gradient */}
       <div className="relative overflow-hidden student-hero">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-25 blur-3xl"
-          style={{ background: 'var(--color-gold-altgold)' }}
+          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[var(--color-gold-altgold)] opacity-25 blur-3xl"
         />
         <div className="relative mx-auto max-w-3xl px-4 py-7 text-white">
           <p className="text-eyebrow opacity-70">Edvance · Demo</p>
