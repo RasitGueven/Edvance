@@ -83,7 +83,7 @@ function Section({
           {type}
         </code>
         {submitted && (
-          <span className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>
+          <span className="text-xs font-semibold text-[var(--color-success)]">
             ✓ Eingereicht
           </span>
         )}
