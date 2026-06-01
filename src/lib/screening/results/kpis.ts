@@ -44,6 +44,35 @@ export function computeKpis(results: ScreeningItemResult[]): ScreeningKpis {
   }
 }
 
+export function computeMedianByCluster(
+  results: ScreeningItemResult[],
+): Map<string, number> {
+  const buckets = new Map<string, number[]>()
+  for (const r of results) {
+    if (typeof r.duration_ms !== 'number' || r.duration_ms <= 0) continue
+    const arr = buckets.get(r.cluster_id) ?? []
+    arr.push(r.duration_ms)
+    buckets.set(r.cluster_id, arr)
+  }
+  const out = new Map<string, number>()
+  for (const [cid, arr] of buckets) {
+    out.set(cid, median(arr))
+  }
+  return out
+}
+
+export function computePendingByCluster(
+  results: ScreeningItemResult[],
+): Map<string, number> {
+  const out = new Map<string, number>()
+  for (const r of results) {
+    if (r.correct === null) {
+      out.set(r.cluster_id, (out.get(r.cluster_id) ?? 0) + 1)
+    }
+  }
+  return out
+}
+
 export function formatMedianSeconds(ms: number): string {
   if (ms <= 0) return '–'
   const sec = Math.round(ms / 1000)

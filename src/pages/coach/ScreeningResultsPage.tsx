@@ -23,6 +23,8 @@ import { parseScreeningResult } from '@/lib/screening/screeningResult'
 import { SCREENING_SUBJECT } from '@/lib/screening/screeningRuntime'
 import {
   computeKpis,
+  computeMedianByCluster,
+  computePendingByCluster,
   formatMedianSeconds,
 } from '@/lib/screening/results/kpis'
 import { formatDateLongDe } from '@/lib/utils'
@@ -39,6 +41,23 @@ function formatCompleted(at: string | null): string {
   if (!at) return 'Datum unbekannt'
   const d = new Date(at)
   return Number.isNaN(d.getTime()) ? 'Datum unbekannt' : formatDateLongDe(d)
+}
+
+function afbVariant(
+  afb: 'I' | 'II' | 'III' | null,
+): 'muted' | 'success' | 'primary' | 'xp' {
+  if (afb === 'I') return 'success'
+  if (afb === 'II') return 'primary'
+  if (afb === 'III') return 'xp'
+  return 'muted'
+}
+
+function confidenceMeta(
+  c: 'low' | 'medium' | 'high',
+): { variant: 'success' | 'muted' | 'warning'; label: string } {
+  if (c === 'high') return { variant: 'success', label: 'Konfidenz hoch' }
+  if (c === 'medium') return { variant: 'muted', label: 'Konfidenz mittel' }
+  return { variant: 'warning', label: 'Konfidenz niedrig' }
 }
 
 export function ScreeningResultsPage(): JSX.Element {
@@ -109,50 +128,8 @@ export function ScreeningResultsPage(): JSX.Element {
     : null
   const kpis = useMemo(() => computeKpis(results), [results])
 
-  const medianByCluster = useMemo(() => {
-    const buckets = new Map<string, number[]>()
-    for (const r of results) {
-      if (typeof r.duration_ms !== 'number' || r.duration_ms <= 0) continue
-      const arr = buckets.get(r.cluster_id) ?? []
-      arr.push(r.duration_ms)
-      buckets.set(r.cluster_id, arr)
-    }
-    const out = new Map<string, number>()
-    for (const [cid, arr] of buckets) {
-      const sorted = [...arr].sort((a, b) => a - b)
-      const mid = Math.floor(sorted.length / 2)
-      const med =
-        sorted.length % 2 === 0
-          ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-          : sorted[mid]
-      out.set(cid, med)
-    }
-    return out
-  }, [results])
-
-  const pendingByCluster = useMemo(() => {
-    const out = new Map<string, number>()
-    for (const r of results) {
-      if (r.correct === null) {
-        out.set(r.cluster_id, (out.get(r.cluster_id) ?? 0) + 1)
-      }
-    }
-    return out
-  }, [results])
-
-  const afbVariant = (
-    afb: 'I' | 'II' | 'III' | null,
-  ): 'muted' | 'success' | 'primary' | 'xp' =>
-    afb === 'I' ? 'success' : afb === 'II' ? 'primary' : afb === 'III' ? 'xp' : 'muted'
-
-  const confidenceMeta = (
-    c: 'low' | 'medium' | 'high',
-  ): { variant: 'success' | 'muted' | 'warning'; label: string } =>
-    c === 'high'
-      ? { variant: 'success', label: 'Konfidenz hoch' }
-      : c === 'medium'
-        ? { variant: 'muted', label: 'Konfidenz mittel' }
-        : { variant: 'warning', label: 'Konfidenz niedrig' }
+  const medianByCluster = useMemo(() => computeMedianByCluster(results), [results])
+  const pendingByCluster = useMemo(() => computePendingByCluster(results), [results])
 
   return (
     <div className="min-h-screen bg-background">
