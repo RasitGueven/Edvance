@@ -43,17 +43,12 @@ export function StreakRepairFlow({
   if (phase === 'loss') {
     return (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in"
-        style={{ backgroundColor: 'var(--color-overlay)' }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-overlay)] px-4 animate-fade-in"
         role="alert"
         aria-live="assertive"
       >
         <div
-          className="w-full max-w-md rounded-[var(--radius-xl)] p-8 text-center animate-scale-in"
-          style={{
-            backgroundColor: 'var(--color-moment-streak-red)',
-            color: 'var(--color-bg-surface)',
-          }}
+          className="w-full max-w-md rounded-[var(--radius-xl)] bg-[var(--color-moment-streak-red)] p-8 text-center text-[var(--color-bg-surface)] animate-scale-in"
         >
           <Flame className="h-16 w-16 mx-auto" aria-hidden="true" />
           <h2 className="text-2xl font-bold mt-3">Streak unterbrochen</h2>
@@ -68,16 +63,14 @@ export function StreakRepairFlow({
   return (
     <Modal open onClose={onCancel} size="md" title="">
       <div
-        className="-m-6 p-6 rounded-[var(--radius-xl)]"
-        style={{ backgroundColor: 'var(--color-repair-surface)' }}
+        className="-m-6 p-6 rounded-[var(--radius-xl)] bg-[var(--color-repair-surface)]"
       >
         <div className="flex flex-col items-center text-center gap-3">
           <Sparkles
-            className="h-12 w-12"
-            style={{ color: 'var(--color-repair)' }}
+            className="h-12 w-12 text-[var(--color-repair)]"
             aria-hidden="true"
           />
-          <h2 className="text-xl font-bold" style={{ color: 'var(--color-repair)' }}>
+          <h2 className="text-xl font-bold text-[var(--color-repair)]">
             Streak retten?
           </h2>
           <p className="text-sm text-[var(--color-text-secondary)] max-w-xs">
@@ -99,11 +92,7 @@ export function StreakRepairFlow({
               type="button"
               disabled={tokens <= 0}
               onClick={onUseToken}
-              className="flex-1 rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold disabled:opacity-50"
-              style={{
-                backgroundColor: 'var(--color-repair)',
-                color: 'var(--color-bg-surface)',
-              }}
+              className="flex-1 rounded-[var(--radius-md)] bg-[var(--color-repair)] px-4 py-2 text-sm font-semibold text-[var(--color-bg-surface)] disabled:opacity-50"
             >
               Token einsetzen
             </button>
