@@ -42,22 +42,6 @@ export async function listLeads(status?: LeadStatus): Promise<SupabaseResult<Lea
   }
 }
 
-// Einzelner Lead per id (kann fehlen → null).
-export async function getLeadById(id: string): Promise<SupabaseResult<Lead | null>> {
-  try {
-    const { data, error } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle()
-    if (error) return { data: null, error: error.message }
-    return { data: (data as Lead | null) ?? null, error: null }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Lead konnte nicht geladen werden'
-    return { data: null, error: message }
-  }
-}
-
 type LeadPatch = Partial<
   Pick<
     Lead,

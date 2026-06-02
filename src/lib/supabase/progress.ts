@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import type { StudentProgress, SupabaseResult, XpEvent } from '@/types'
+import type { StudentProgress, SupabaseResult } from '@/types'
 
 // XP/Streak/Level eines Schuelers (kann fehlen, bevor das erste xp_event
 // existiert → null).
@@ -48,22 +48,3 @@ export async function awardXp(
   }
 }
 
-// XP-Verlauf eines Schuelers, neueste zuerst.
-export async function listXpEvents(
-  studentId: string,
-  limit = 50,
-): Promise<SupabaseResult<XpEvent[]>> {
-  try {
-    const { data, error } = await supabase
-      .from('xp_events')
-      .select('*')
-      .eq('student_id', studentId)
-      .order('created_at', { ascending: false })
-      .limit(limit)
-    if (error) return { data: null, error: error.message }
-    return { data: (data ?? []) as XpEvent[], error: null }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'XP-Verlauf konnte nicht geladen werden'
-    return { data: null, error: message }
-  }
-}

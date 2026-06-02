@@ -4,7 +4,6 @@ import type {
   ScreeningItemInput,
   ScreeningItemResult,
   ScreeningItemResultInput,
-  ScreeningLevel,
   SupabaseResult,
 } from '@/types'
 
@@ -59,26 +58,6 @@ export async function listScreeningItemsByIds(
       .from('screening_items')
       .select('*')
       .in('id', ids)
-    if (error) return { data: null, error: error.message }
-    return { data: (data ?? []) as ScreeningItem[], error: null }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Items konnten nicht geladen werden'
-    return { data: null, error: message }
-  }
-}
-
-// Aktive Items eines Clusters auf einer Stufe (fuer den adaptiven Controller).
-export async function listActiveByClusterLevel(
-  clusterId: string,
-  level: ScreeningLevel,
-): Promise<SupabaseResult<ScreeningItem[]>> {
-  try {
-    const { data, error } = await supabase
-      .from('screening_items')
-      .select('*')
-      .eq('cluster_id', clusterId)
-      .eq('level', level)
-      .eq('active', true)
     if (error) return { data: null, error: error.message }
     return { data: (data ?? []) as ScreeningItem[], error: null }
   } catch (err) {
