@@ -61,7 +61,7 @@ export function ScenarioV2Foundations(): JSX.Element {
           <EdvanceCard className="p-4 col-span-2">
             <p className="text-xs uppercase tracking-wide text-[var(--color-text-tertiary)]">animate-bar-grow</p>
             <div className="mt-2 h-2.5 w-full rounded-full bg-[var(--color-bg-subtle)] overflow-hidden">
-              <div key={`bar-${tick}`} className="h-full xp-bar-fill animate-bar-grow" style={{ width: '72%' }} />
+              <div key={`bar-${tick}`} className="h-full xp-bar-fill animate-bar-grow w-[72%]" />
             </div>
           </EdvanceCard>
         </div>

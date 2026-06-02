@@ -137,13 +137,13 @@ function ProgressRow(): JSX.Element {
         <div>
           <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Normal · primary</p>
           <div className="bg-[var(--color-bg-subtle)] rounded-full h-1.5 overflow-hidden">
-            <div className="bg-[var(--color-primary)] h-full rounded-full" style={{ width: '60%' }} />
+            <div className="bg-[var(--color-primary)] h-full rounded-full w-[60%]" />
           </div>
         </div>
         <div>
           <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Success · gemeistert</p>
           <div className="bg-[var(--color-bg-subtle)] rounded-full h-1.5 overflow-hidden">
-            <div className="bg-[var(--color-success)] h-full rounded-full" style={{ width: '90%' }} />
+            <div className="bg-[var(--color-success)] h-full rounded-full w-[90%]" />
           </div>
         </div>
         <div>
