@@ -35,8 +35,7 @@ export function LevelUpModal({ open, onClose, level, xpReward }: LevelUpModalPro
         className="-m-2 rounded-[var(--radius-xl)] p-6 student-hero light-source text-white flex flex-col items-center text-center gap-4"
       >
         <Crown
-          className="h-16 w-16 animate-fly-in"
-          style={{ color: 'var(--color-moment-levelup-crown)' }}
+          className="h-16 w-16 animate-fly-in text-[var(--color-moment-levelup-crown)]"
           aria-hidden="true"
         />
         <p className="text-xs font-semibold uppercase tracking-widest opacity-80">
@@ -45,11 +44,7 @@ export function LevelUpModal({ open, onClose, level, xpReward }: LevelUpModalPro
         <p className="text-5xl font-bold leading-none">{level}</p>
         {typeof xpReward === 'number' && (
           <span
-            className="inline-flex items-center rounded-[var(--radius-md)] px-3 py-1 text-sm font-bold"
-            style={{
-              backgroundColor: 'var(--color-moment-levelup-xp)',
-              color: 'var(--color-primary)',
-            }}
+            className="inline-flex items-center rounded-[var(--radius-md)] px-3 py-1 text-sm font-bold bg-[var(--color-moment-levelup-xp)] text-[var(--color-primary)]"
           >
             +{xpReward} XP
           </span>

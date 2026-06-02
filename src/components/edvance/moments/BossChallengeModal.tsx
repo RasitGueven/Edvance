@@ -39,8 +39,7 @@ export function BossChallengeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in"
-      style={{ backgroundColor: 'var(--color-overlay)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-overlay)] px-4 animate-fade-in"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -60,14 +59,12 @@ export function BossChallengeModal({
       >
         <Stars />
         <p
-          className="text-xs font-semibold uppercase tracking-widest opacity-80 relative z-10"
-          style={{ color: isShadow ? undefined : 'var(--color-moment-boss-green)' }}
+          className={`text-xs font-semibold uppercase tracking-widest opacity-80 relative z-10${isShadow ? '' : ' text-[var(--color-moment-boss-green)]'}`}
         >
           Boss-Challenge
         </p>
         <h2
-          className="text-3xl font-bold mt-2 leading-tight relative z-10"
-          style={{ color: isShadow ? undefined : 'var(--color-moment-boss-green)' }}
+          className={`text-3xl font-bold mt-2 leading-tight relative z-10${isShadow ? '' : ' text-[var(--color-moment-boss-green)]'}`}
         >
           80 % geschafft!
         </h2>
@@ -97,13 +94,12 @@ function Stars(): JSX.Element {
       ].map((s, i) => (
         <Star
           key={i}
-          className={cn('absolute animate-fly-in')}
+          className={cn('absolute animate-fly-in text-[var(--color-gold-altgold)]')}
           style={{
             top: s.top,
             left: s.left,
             width: s.size,
             height: s.size,
-            color: 'var(--color-gold-altgold)',
             animationDelay: `${s.delay}ms`,
             filter: 'drop-shadow(0 0 6px rgba(212, 168, 67, 0.4))',
           }}
