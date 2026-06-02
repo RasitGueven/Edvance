@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
-import type { JSX } from 'react'
+import { useEffect, useRef, useState, type JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
