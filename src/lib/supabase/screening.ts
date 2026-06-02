@@ -4,8 +4,6 @@ import type {
   ScreeningTestInput,
   SupabaseResult,
 } from '@/types'
-import type { BehaviorSnapshot } from '@/types/diagnosis'
-
 // Abgeschlossene Screening-Tests eines Schülers (neueste zuerst) — für
 // die Coach-Ergebnis-Sicht.
 export async function listCompletedScreeningTests(
@@ -77,24 +75,6 @@ export async function getActiveScreeningTest(
   }
 }
 
-export async function getScreeningTestById(
-  id: string,
-): Promise<SupabaseResult<ScreeningTest | null>> {
-  try {
-    const { data, error } = await supabase
-      .from('screening_tests')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle()
-    if (error) return { data: null, error: error.message }
-    return { data: (data as ScreeningTest | null) ?? null, error: null }
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Screening konnte nicht geladen werden'
-    return { data: null, error: message }
-  }
-}
-
 // Schliesst den Lauf ab: Ergebnis-Aggregat + optionale Coach-Notiz.
 export async function completeScreeningTest(
   id: string,
@@ -122,46 +102,3 @@ export async function completeScreeningTest(
   }
 }
 
-export async function abortScreeningTest(
-  id: string,
-): Promise<SupabaseResult<ScreeningTest>> {
-  try {
-    const { data, error } = await supabase
-      .from('screening_tests')
-      .update({ status: 'aborted', completed_at: new Date().toISOString() })
-      .eq('id', id)
-      .select('*')
-      .single()
-    if (error) return { data: null, error: error.message }
-    return { data: data as ScreeningTest, error: null }
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Screening konnte nicht abgebrochen werden'
-    return { data: null, error: message }
-  }
-}
-
-// Resume: bereits persistierte Snapshots eines Laufs (in Submit-Reihenfolge).
-// coach_rating wird separat via getRatingsForTest (screeningRatings.ts) gemerged.
-export async function getScreeningSnapshots(
-  screeningTestId: string,
-): Promise<SupabaseResult<(Omit<BehaviorSnapshot, 'coach_rating'> & { id: string })[]>> {
-  try {
-    const { data, error } = await supabase
-      .from('behavior_snapshots')
-      .select('*')
-      .eq('screening_test_id', screeningTestId)
-      .order('submitted_at', { ascending: true })
-    if (error) return { data: null, error: error.message }
-    return {
-      data: (data ?? []) as (Omit<BehaviorSnapshot, 'coach_rating'> & {
-        id: string
-      })[],
-      error: null,
-    }
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Snapshots konnten nicht geladen werden'
-    return { data: null, error: message }
-  }
-}
