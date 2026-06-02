@@ -180,14 +180,54 @@ Erstellt: 02.06.2026 | Branch zur Erstellung: `claude/sweet-ramanujan-U16Pu`
 
 ---
 
-## Qualität & TypeScript
+## Qualität & TypeScript (Code-Review-Befunde)
 
-- `npm run lint` (`tsc -b`) läuft sauber auf `dev`-Branch nach PR #18
-- Alle Supabase-Aufrufe in `src/lib/supabase/` isoliert (kein direkter Aufruf in Pages/Komponenten)
-- `SupabaseResult<T>` Pattern konsistent im Lib-Layer
-- Kein `mock`/`MOCK_`-Import mehr in Runtime-Code (nach Real-Data-Programm)
-- `src/types/index.ts` ist zentral, aber mit 400+ Zeilen am Limit (CLAUDE.md §4)
-- `src/pages/student/StudentDashboard.tsx` und `CoachDashboard.tsx` über 400 Zeilen — Refactoring ausstehend
+**TypeScript:** `tsc -b --noEmit` — keine Fehler, Build ist sauber.
+
+**Lib-Layer:** Vollständig diszipliniert. 19 Module, kein direkter Supabase-Aufruf außerhalb `src/lib/`. `SupabaseResult<T>` konsistent, alle try/catch mit aussagekräftigen Fehlermeldungen.
+
+**Auth/RLS:** Korrekt. `behavior_snapshots` und `screening_ratings` nur INSERT + SELECT (Append-Only erzwungen). `ProtectedRoute` konsequent genutzt. `.env` in `.gitignore`.
+
+### Dateigröße-Verstöße (> 400 Zeilen, CLAUDE.md §4)
+
+| Datei | Zeilen | Empfehlung |
+|---|---|---|
+| `src/pages/DiagnosisResult.tsx` | 946 | Aufteilen in Result + Sub-Komponenten |
+| `src/pages/DiagnosisSession.tsx` | 764 | Aufteilen in Session + Widget-Orchestrator |
+| `src/components/edvance/index.tsx` | 559 | Gamification-Komponenten + Feedback-Komponenten auslagern |
+| `src/pages/DesignShowcase.tsx` | 478 | Dev-Tool, niedriger Prio |
+| `src/pages/admin/DiagnosticsPage.tsx` | 427 | Dev-Tool, niedriger Prio |
+| `src/pages/student/StudentDashboard.tsx` | 419 | Grenzwertig |
+
+### Inline-Style-Verstöße (CLAUDE.md §11 — statische boxShadow)
+
+- `CoachDashboard.tsx:82,110` — `SHADOW_CARD`/`SHADOW_ACTIVE` als `style={{ boxShadow }}` → ersetzen durch `shadow-card`/`shadow-elevation-md`
+- `AdminDashboard.tsx:71,183` — `SHADOW_CARD` als `style={{ boxShadow }}` → ersetzen durch `shadow-card`
+
+### Hardcodierte Hex-Farben außerhalb CSS
+
+- `DrawCanvas.tsx` — `STROKE_COLOR = '#0F172A'`, `BG_COLOR = '#FFFFFF'`
+- `MatchingWidget.tsx:14–17` — 4 Farben in der Paarungspalette
+- `src/components/edvance/index.tsx:309–310` — 8 Farben im KPI-Farb-Array
+- `EdvanceLogo.tsx:19–22` — `COLORS`-Objekt mit 4 Werten (spiegeln tokens.css, aber nicht als CSS-Variablen referenziert)
+
+### LoadingPulse-Lücken
+
+`StudentDashboard.tsx` und `ClusterView.tsx` nutzen Textfallback (`"Lade Themen …"`) statt `LoadingPulse` — Verstoß gegen CLAUDE.md §11.
+
+### Doppelte StatCard-Komponente
+
+`CoachDashboard.tsx` und `AdminDashboard.tsx` definieren je eine lokale `StatCard`-Funktion, obwohl die globale Komponente in `src/components/edvance/index.tsx` verfügbar ist.
+
+### Offene Architektur-Fragen (undokumentiert)
+
+1. **`/diagnosis` ohne Auth-Schutz** — bewusste Entscheidung für Tablet-Präsenz-Nutzung, aber nicht in CLAUDE.md/ROADMAP dokumentiert.
+2. **Zwei Primärfarb-Tokens divergieren:** `--color-primary #334D7A` (tokens.css) vs. `--primary #2D6A9F` (globals.css) — Übergangszustand oder dauerhaft?
+3. **`BehaviorSnapshot`-Typ** in `src/types/diagnosis.ts` statt `src/types/index.ts` — undokumentierte Aufteilung.
+4. **Kein `supabase gen types`** — Join-Typen werden manuell gecastet; Schema-Drift wird nicht durch TypeScript erkennbar.
+5. **Demo-Routen in Produktion** (`/showcase`, `/demo/*`) — nicht auth-geschützt; Entscheidung vor Launch treffen.
+6. **`schema.sql` nicht konsolidiert** — Migrations 015–021 nur als `.sql`-Dateien, nicht in `schema.sql` nachgeführt.
+7. **Nicht-geroutete Demo-Dateien** (`ScenarioCelebration`, `ScenarioCoach`, etc.) — Leichen oder bewusst geparkt?
 
 ---
 
