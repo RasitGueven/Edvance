@@ -19,6 +19,23 @@ const SIGNAL_LABELS: Record<
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+export function formatDate(iso: string): string {
+  return new Intl.DateTimeFormat('de-DE', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(iso))
+}
+
+export function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
 export function formatDuration(ms: number): string {
   const totalSec = Math.round(ms / 1000)
   const min = Math.floor(totalSec / 60)
