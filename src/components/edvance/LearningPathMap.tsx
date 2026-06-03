@@ -58,6 +58,19 @@ export function LearningPathMap({
           style={{ stroke: 'var(--color-border)' }}
           vectorEffect="non-scaling-stroke"
         />
+        {/* weicher Glow-Unterstrich → „Sternbild"-Anmutung auf hellem Himmel */}
+        <path
+          d={reachedPath.join(' ')}
+          fill="none"
+          strokeWidth={11}
+          strokeLinecap="round"
+          style={{
+            stroke:
+              'color-mix(in srgb, var(--color-accent) 55%, transparent)',
+          }}
+          opacity={0.5}
+          vectorEffect="non-scaling-stroke"
+        />
         <path
           d={reachedPath.join(' ')}
           fill="none"
