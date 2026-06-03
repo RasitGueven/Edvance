@@ -12,6 +12,13 @@ type MockEntry = {
 
 const ENTRIES: MockEntry[] = [
   {
+    href: '/mock/first-session',
+    title: 'Schüler · Erste Session',
+    description:
+      'Kompletter Mock-Flow: Check-In → individueller Lernpfad → Aufgaben → Accomplishments → Home-Quest.',
+    badge: 'Schüler',
+  },
+  {
     href: '/mock/screening-coach',
     title: 'Coach-Auswertung',
     description:
