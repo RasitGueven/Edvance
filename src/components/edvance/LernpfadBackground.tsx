@@ -1,38 +1,27 @@
 import type { CSSProperties, JSX } from 'react'
 
 /**
- * Dekorativer Hintergrund für den Lernpfad — „Luminous Constellation Ascent".
- * Heller, energetischer Dämmerungs-Himmel (nicht düster): unten warmer
- * Sonnenaufgang → oben ein radiantes Ziel-Glühen. Sterne funkeln, Wolken
- * treiben nach oben, eine Hügel-Silhouette gibt Tiefe.
+ * Dekorativer Hintergrund für den Lernpfad — helle, lebendige „Welt" (Mario-Vibe,
+ * aber in Edvance-CI): klarer blauer Himmel oben, nach oben treibende Wolken, unten
+ * rollende grüne Hügel in den Mastery-Grüns. Der Pfad klettert aus der Welt hinauf.
  *
  * Rein dekorativ (kein Text → kein i18n). Alle Farben aus CSS-Variablen
  * (§11: keine hardcodierten Farben). Bewegung respektiert prefers-reduced-motion.
  */
 
-// Deterministische Stern-Positionen (kein Random → stabil über Re-Renders).
-// y bleibt im oberen, „luftigen" Bereich; unten dominiert der warme Horizont.
-const STARS: { x: number; y: number; size: number; delay: number; dur: number }[] = [
-  { x: 12, y: 8, size: 4, delay: 0, dur: 4 },
-  { x: 78, y: 6, size: 5, delay: 1.2, dur: 5 },
-  { x: 45, y: 14, size: 3, delay: 2.1, dur: 4.5 },
-  { x: 88, y: 22, size: 4, delay: 0.6, dur: 5.5 },
-  { x: 22, y: 26, size: 3, delay: 1.8, dur: 4 },
-  { x: 63, y: 30, size: 5, delay: 0.3, dur: 6 },
-  { x: 8, y: 38, size: 3, delay: 2.6, dur: 4.5 },
-  { x: 92, y: 42, size: 4, delay: 1.0, dur: 5 },
-  { x: 35, y: 46, size: 3, delay: 2.2, dur: 4 },
-  { x: 70, y: 52, size: 4, delay: 0.9, dur: 5.5 },
-  { x: 18, y: 58, size: 3, delay: 1.5, dur: 4.5 },
-  { x: 55, y: 4, size: 3, delay: 3.0, dur: 5 },
+// Wolken: x-Start (%), Breite (px), Animations-Dauer & -Delay (s), Höhe-Anker (top %).
+const CLOUDS: { x: number; w: number; dur: number; delay: number; top: number }[] = [
+  { x: 10, w: 104, dur: 26, delay: 0, top: 18 },
+  { x: 62, w: 132, dur: 32, delay: 7, top: 30 },
+  { x: 36, w: 88, dur: 28, delay: 14, top: 8 },
+  { x: 78, w: 110, dur: 30, delay: 20, top: 44 },
 ]
 
-// Wolken: Start-x (%), Größe (px Breite), Animations-Dauer & -Delay (s).
-const CLOUDS: { x: number; w: number; dur: number; delay: number }[] = [
-  { x: 8, w: 96, dur: 22, delay: 0 },
-  { x: 64, w: 120, dur: 26, delay: 5 },
-  { x: 38, w: 104, dur: 30, delay: 11 },
-  { x: 80, w: 88, dur: 24, delay: 16 },
+// Büsche auf den Hügeln (wenige Akzente): x (%), Breite (px), Grün-Mix-Token.
+const BUSHES: { x: number; w: number; fill: string }[] = [
+  { x: 16, w: 64, fill: 'var(--color-mastery-mastered)' },
+  { x: 70, w: 80, fill: 'var(--color-mastery-proficient)' },
+  { x: 47, w: 52, fill: 'var(--color-mastery-mastered)' },
 ]
 
 export function LernpfadBackground(): JSX.Element {
@@ -42,122 +31,106 @@ export function LernpfadBackground(): JSX.Element {
       aria-hidden="true"
     >
       <style>{`
-        @keyframes lp-twinkle {
-          0%, 100% { opacity: 0.25; transform: scale(0.85); }
-          50%      { opacity: 1;    transform: scale(1.15); }
-        }
         @keyframes lp-cloud-rise {
-          0%   { transform: translateY(110%); opacity: 0; }
-          12%  { opacity: 0.85; }
-          88%  { opacity: 0.85; }
-          100% { transform: translateY(-130%); opacity: 0; }
+          0%   { transform: translate(-50%, 130%); opacity: 0; }
+          14%  { opacity: 1; }
+          86%  { opacity: 1; }
+          100% { transform: translate(-50%, -160%); opacity: 0; }
         }
-        @keyframes lp-goal-pulse {
-          0%, 100% { opacity: 0.55; transform: scale(0.96); }
-          50%      { opacity: 0.95; transform: scale(1.04); }
-        }
-        .lp-star  { animation: lp-twinkle var(--lp-dur, 5s) var(--ease-out, ease-in-out) var(--lp-delay, 0s) infinite; }
-        .lp-cloud { animation: lp-cloud-rise var(--lp-dur, 24s) linear var(--lp-delay, 0s) infinite; }
-        .lp-goal  { animation: lp-goal-pulse 6s ease-in-out infinite; }
+        .lp-cloud { animation: lp-cloud-rise var(--lp-dur, 28s) linear var(--lp-delay, 0s) infinite; }
         @media (prefers-reduced-motion: reduce) {
-          .lp-star, .lp-cloud, .lp-goal { animation: none; }
-          .lp-cloud { opacity: 0.7; transform: none; }
+          .lp-cloud { animation: none; opacity: 0.9; transform: translate(-50%, 0); }
         }
       `}</style>
 
-      {/* Layer 1 — Himmel-Verlauf: unten warm → oben helles Periwinkle. */}
+      {/* Layer 1 — Himmel: klarer, heller Blau-Verlauf (unten heller → oben tiefer). */}
       <div
         className="absolute inset-0"
         style={{
           background:
             'linear-gradient(to top,' +
-            ' color-mix(in srgb, var(--color-gold-champagner) 42%, white) 0%,' +
-            ' color-mix(in srgb, var(--color-primary-light) 65%, white) 42%,' +
-            ' color-mix(in srgb, var(--color-primary) 12%, white) 100%)',
+            ' color-mix(in srgb, var(--color-primary) 6%, white) 0%,' +
+            ' color-mix(in srgb, var(--color-primary) 15%, white) 50%,' +
+            ' color-mix(in srgb, var(--color-primary) 24%, white) 100%)',
         }}
       />
 
-      {/* Layer 2 — Ziel-Glühen oben Mitte (der „Gipfel"/die Akademie). */}
-      <div
-        className="lp-goal absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 -translate-y-1/3 rounded-[var(--radius-full)]"
-        style={{
-          background:
-            'radial-gradient(circle, color-mix(in srgb, var(--color-accent) 45%, transparent) 0%,' +
-            ' color-mix(in srgb, var(--color-gold-champagner) 30%, transparent) 40%, transparent 70%)',
-        }}
-      />
-
-      {/* Layer 3 — Sternenfeld (sanftes Twinkle, gestaffelt). */}
-      {STARS.map((s, i) => (
-        <span
-          key={i}
-          className="lp-star absolute rounded-[var(--radius-full)]"
-          style={
-            {
-              left: `${s.x}%`,
-              top: `${s.y}%`,
-              width: s.size,
-              height: s.size,
-              backgroundColor: 'var(--color-gold-altgold)',
-              boxShadow:
-                '0 0 6px color-mix(in srgb, var(--color-gold-champagner) 80%, transparent)',
-              '--lp-delay': `${s.delay}s`,
-              '--lp-dur': `${s.dur}s`,
-            } as CSSProperties
-          }
-        />
-      ))}
-
-      {/* Layer 5 — Wolken: treiben nach oben (rundere, vollere Formen). */}
+      {/* Layer 2 — Wolken: treiben nach oben durch den Himmel. */}
       {CLOUDS.map((c, i) => (
         <svg
           key={i}
-          className="lp-cloud absolute bottom-0"
+          className="lp-cloud absolute"
           viewBox="0 0 120 56"
           style={
             {
               left: `${c.x}%`,
+              top: `${c.top}%`,
               width: c.w,
               height: c.w * 0.47,
+              filter:
+                'drop-shadow(0 6px 10px color-mix(in srgb, var(--color-primary) 18%, transparent))',
               '--lp-delay': `${c.delay}s`,
               '--lp-dur': `${c.dur}s`,
             } as CSSProperties
           }
         >
-          <g fill="white" opacity="0.9">
+          <g fill="white">
             <circle cx="34" cy="34" r="18" />
-            <circle cx="58" cy="26" r="22" />
-            <circle cx="84" cy="34" r="18" />
-            <rect x="30" y="34" width="58" height="18" rx="9" />
+            <circle cx="60" cy="24" r="24" />
+            <circle cx="86" cy="34" r="18" />
+            <rect x="30" y="34" width="60" height="18" rx="9" />
           </g>
-          <g
+          <ellipse
+            cx="60"
+            cy="49"
+            rx="36"
+            ry="6"
             fill="var(--color-primary-light)"
-            opacity="0.7"
-          >
-            <ellipse cx="60" cy="48" rx="34" ry="7" />
-          </g>
+          />
         </svg>
       ))}
 
-      {/* Layer 4 — Hügel-Silhouette am Horizont (Tiefe, Parallax hinten). */}
-      <svg
-        className="absolute bottom-0 left-0 h-32 w-full"
-        viewBox="0 0 400 120"
-        preserveAspectRatio="none"
-      >
-        {/* hintere Kette (heller) */}
-        <path
-          d="M0 70 Q70 36 150 60 Q240 86 320 50 Q360 34 400 56 L400 120 L0 120 Z"
-          fill="var(--color-primary-light)"
-          opacity="0.9"
-        />
-        {/* vordere Kette (kräftiger Primary, klar dunkler für Tiefe) */}
-        <path
-          d="M0 92 Q90 58 190 84 Q280 106 400 80 L400 120 L0 120 Z"
-          fill="var(--color-primary)"
-          opacity="0.16"
-        />
-      </svg>
+      {/* Layer 3 — Hügel-Landschaft (rollende Grüns, mehrschichtig für Tiefe). */}
+      <div className="absolute bottom-0 left-0 h-72 w-full">
+        {/* Büsche sitzen auf der vorderen Hügellinie (wenige Akzente). */}
+        {BUSHES.map((b, i) => (
+          <svg
+            key={i}
+            className="absolute bottom-16"
+            viewBox="0 0 80 48"
+            style={{ left: `${b.x}%`, width: b.w, height: b.w * 0.6 }}
+          >
+            <g fill={b.fill}>
+              <circle cx="24" cy="30" r="16" />
+              <circle cx="44" cy="22" r="20" />
+              <circle cx="60" cy="32" r="14" />
+              <rect x="20" y="30" width="44" height="18" rx="6" />
+            </g>
+          </svg>
+        ))}
+
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 400 288"
+          preserveAspectRatio="none"
+        >
+          {/* hintere Hügelkette (heller, weiter weg) */}
+          <path
+            d="M0 150 Q80 96 170 132 Q260 168 330 120 Q370 94 400 116 L400 288 L0 288 Z"
+            fill="color-mix(in srgb, var(--color-success-grow) 50%, white)"
+          />
+          {/* mittlere Kette */}
+          <path
+            d="M0 196 Q90 150 200 184 Q300 214 400 178 L400 288 L0 288 Z"
+            fill="color-mix(in srgb, var(--color-mastery-proficient) 55%, white)"
+          />
+          {/* vordere Kette (kräftigstes Grün, Vordergrund) */}
+          <path
+            d="M0 238 Q110 200 220 230 Q310 254 400 232 L400 288 L0 288 Z"
+            fill="color-mix(in srgb, var(--color-mastery-mastered) 75%, white)"
+          />
+        </svg>
+      </div>
     </div>
   )
 }
