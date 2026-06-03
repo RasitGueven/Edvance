@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 
+export { ToastBanner } from './ToastBanner'
+export { LoadingPulse } from './LoadingPulse'
+export { AvatarInitials } from './AvatarInitials'
+
 // ─── EdvanceCard ──────────────────────────────────────────────────────────────
 
 interface EdvanceCardProps {
@@ -297,58 +301,6 @@ export function StatCard({
   )
 }
 
-// ─── AvatarInitials ───────────────────────────────────────────────────────────
-
-interface AvatarInitialsProps {
-  name: string
-  size?: 'sm' | 'md' | 'lg'
-  color?: 'auto' | string
-}
-
-const AVATAR_PALETTE = [
-  '#2D6A9F', '#0F6E56', '#D97706', '#7C3AED',
-  '#EA580C', '#0E7490', '#BE185D', '#065F46',
-]
-
-function nameToColor(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-    hash = hash & hash
-  }
-  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length]
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
-}
-
-export function AvatarInitials({ name, size = 'md', color = 'auto' }: AvatarInitialsProps) {
-  const bg = color === 'auto' ? nameToColor(name) : color
-
-  const sizeStyles: Record<string, string> = {
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-10 h-10 text-sm',
-    lg: 'w-14 h-14 text-lg',
-  }
-
-  return (
-    <div
-      className={cn(
-        'flex-none flex items-center justify-center rounded-[var(--radius-full)] font-bold text-white select-none',
-        sizeStyles[size],
-      )}
-      style={{ backgroundColor: bg }}
-      title={name}
-      aria-label={name}
-    >
-      {getInitials(name)}
-    </div>
-  )
-}
-
 // ─── ProgressStep ─────────────────────────────────────────────────────────────
 
 interface ProgressStepProps {
@@ -426,134 +378,3 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
   )
 }
 
-// ─── LoadingPulse ─────────────────────────────────────────────────────────────
-
-interface LoadingPulseProps {
-  lines?: number
-  type?: 'card' | 'list' | 'stat'
-}
-
-function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      className={cn('rounded-[var(--radius-md)] bg-[var(--border)] animate-skeleton', className)}
-      style={style}
-    />
-  )
-}
-
-export function LoadingPulse({ lines = 3, type = 'list' }: LoadingPulseProps) {
-  if (type === 'card') {
-    return (
-      <div className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] shadow-card bg-[var(--surface)]">
-        <SkeletonBlock className="h-5 w-1/2 mb-4" />
-        <SkeletonBlock className="h-4 w-full mb-2" />
-        <SkeletonBlock className="h-4 w-3/4 mb-2" />
-        <SkeletonBlock className="h-4 w-5/6" />
-      </div>
-    )
-  }
-
-  if (type === 'stat') {
-    return (
-      <div className="grid grid-cols-3 gap-4">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="rounded-[var(--radius-xl)] p-6 border border-[var(--border)] shadow-card bg-[var(--surface)] flex items-start gap-3"
-          >
-            <SkeletonBlock className="w-12 h-12 rounded-[var(--radius-lg)] flex-none" />
-            <div className="flex-1 flex flex-col gap-2">
-              <SkeletonBlock className="h-8 w-16" />
-              <SkeletonBlock className="h-3 w-full" />
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      {Array.from({ length: lines }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <SkeletonBlock className="w-10 h-10 rounded-[var(--radius-full)] flex-none" />
-          <div className="flex-1 flex flex-col gap-1.5">
-            <SkeletonBlock
-              className="h-3.5"
-              style={{ width: `${70 + (i % 3) * 10}%` } as React.CSSProperties}
-            />
-            <SkeletonBlock className="h-3 w-1/2" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ─── ToastBanner ──────────────────────────────────────────────────────────────
-
-interface ToastBannerProps {
-  type: 'success' | 'xp' | 'levelup' | 'warning' | 'error'
-  message: string
-  xpAmount?: number
-  onClose?: () => void
-}
-
-const TOAST_CLASS: Record<string, string> = {
-  success: 'toast-success',
-  xp:      'toast-xp',
-  levelup: 'toast-levelup',
-  warning: 'toast-warning',
-  error:   'toast-error',
-}
-
-const TOAST_ICON: Record<string, string> = {
-  success: '✓',
-  xp:      '🎉',
-  levelup: '⬆️',
-  warning: '⚠️',
-  error:   '✕',
-}
-
-export function ToastBanner({ type, message, xpAmount, onClose }: ToastBannerProps) {
-  const [exiting, setExiting] = useState(false)
-
-  useEffect(() => {
-    const hideTimer = setTimeout(() => setExiting(true), 2700)
-    return () => clearTimeout(hideTimer)
-  }, [])
-
-  useEffect(() => {
-    if (!exiting) return
-    const closeTimer = setTimeout(() => onClose?.(), 200)
-    return () => clearTimeout(closeTimer)
-  }, [exiting, onClose])
-
-  return (
-    <div
-      className={cn(
-        'fixed top-6 left-1/2 z-50',
-        'flex items-center gap-3 px-5 py-3',
-        'rounded-[var(--radius-lg)] font-semibold border-[1.5px]',
-        '-translate-x-1/2 min-w-[280px] max-w-[480px]',
-        'shadow-elevation-lg',
-        TOAST_CLASS[type],
-        exiting ? 'animate-toast-out' : 'animate-toast-in',
-      )}
-      role="alert"
-    >
-      <span className={cn('text-xl leading-none', type === 'xp' && 'text-2xl')}>
-        {TOAST_ICON[type]}
-      </span>
-
-      <span className="flex-1 text-sm">{message}</span>
-
-      {type === 'xp' && xpAmount !== undefined && (
-        <span className="text-xl font-bold leading-none animate-bounce-pop">
-          +{xpAmount} XP
-        </span>
-      )}
-    </div>
-  )
-}
