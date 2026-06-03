@@ -11,6 +11,13 @@ import {
   LoadingPulse,
   ToastBanner,
 } from '@/components/edvance'
+import {
+  SHADOW_VARIANTS,
+  COLOR_GROUPS,
+  SPACING_TOKENS,
+  ANIMATION_DEMOS,
+  AVATAR_NAMES,
+} from './DesignShowcaseData'
 
 type ToastConfig = {
   type: 'success' | 'xp' | 'warning' | 'error'
@@ -40,7 +47,6 @@ export function DesignShowcase() {
 
   return (
     <div className="min-h-full bg-[var(--background)] pb-16">
-      {/* Header */}
       <div className="px-8 py-10 bg-[var(--brand-navy)]">
         <div className="max-w-5xl mx-auto">
           <EdvanceBadge variant="xp" className="mb-4">Design System v2</EdvanceBadge>
@@ -54,52 +60,32 @@ export function DesignShowcase() {
 
       <div className="px-8 py-10 flex flex-col gap-14 max-w-5xl mx-auto">
 
-        {/* ── Typografie ── */}
         <Section title="Typografie-Hierarchie">
           <EdvanceCard>
             <div className="flex flex-col gap-5">
-              <div className="flex items-baseline gap-4">
-                <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-2xl font-bold</span>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">Screen-Titel</p>
-              </div>
-              <div className="h-px bg-[var(--border)]" />
-              <div className="flex items-baseline gap-4">
-                <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-xs uppercase</span>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">Section-Header</p>
-              </div>
-              <div className="h-px bg-[var(--border)]" />
-              <div className="flex items-baseline gap-4">
-                <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-base font-semibold</span>
-                <p className="text-base font-semibold text-[var(--text-primary)]">Card-Titel</p>
-              </div>
-              <div className="h-px bg-[var(--border)]" />
-              <div className="flex items-baseline gap-4">
-                <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-sm leading-relaxed</span>
-                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">Body-Text – fließend, gut lesbar, nie zu eng gesetzt.</p>
-              </div>
-              <div className="h-px bg-[var(--border)]" />
-              <div className="flex items-baseline gap-4">
-                <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-3xl font-bold</span>
-                <p className="text-3xl font-bold text-[var(--primary)]">92%</p>
-              </div>
-              <div className="h-px bg-[var(--border)]" />
-              <div className="flex items-baseline gap-4">
-                <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">text-xs</span>
-                <p className="text-xs text-[var(--text-muted)]">Caption – Zeitstempel, Metadaten, sekundäre Info</p>
-              </div>
+              {[
+                { cls: 'text-2xl font-bold text-[var(--text-primary)]', mono: 'text-2xl font-bold', text: 'Screen-Titel' },
+                { cls: 'text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]', mono: 'text-xs uppercase', text: 'Section-Header' },
+                { cls: 'text-base font-semibold text-[var(--text-primary)]', mono: 'text-base font-semibold', text: 'Card-Titel' },
+                { cls: 'text-sm leading-relaxed text-[var(--text-secondary)]', mono: 'text-sm leading-relaxed', text: 'Body-Text – fließend, gut lesbar, nie zu eng gesetzt.' },
+                { cls: 'text-3xl font-bold text-[var(--primary)]', mono: 'text-3xl font-bold', text: '92%' },
+                { cls: 'text-xs text-[var(--text-muted)]', mono: 'text-xs', text: 'Caption – Zeitstempel, Metadaten, sekundäre Info' },
+              ].map(({ cls, mono, text }, i) => (
+                <div key={i}>
+                  {i > 0 && <div className="h-px bg-[var(--border)] mb-5" />}
+                  <div className="flex items-baseline gap-4">
+                    <span className="w-40 text-xs text-[var(--text-muted)] font-mono shrink-0">{mono}</span>
+                    <p className={cls}>{text}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </EdvanceCard>
         </Section>
 
-        {/* ── Schatten & Elevation ── */}
         <Section title="Schatten & Elevation">
           <div className="grid grid-cols-4 gap-4">
-            {[
-              { label: 'shadow-card',        cls: 'shadow-card',         desc: 'Standard Cards' },
-              { label: 'shadow-elevation-sm', cls: 'shadow-elevation-sm', desc: 'Hover-Zustand' },
-              { label: 'shadow-elevation-md', cls: 'shadow-elevation-md', desc: 'Raised Cards' },
-              { label: 'shadow-elevation-lg', cls: 'shadow-elevation-lg', desc: 'Toasts, Modals' },
-            ].map(({ label, cls, desc }) => (
+            {SHADOW_VARIANTS.map(({ label, cls, desc }) => (
               <div
                 key={label}
                 className={`bg-[var(--surface)] rounded-[var(--radius-xl)] p-5 border border-[var(--border)] ${cls}`}
@@ -111,52 +97,9 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── Farb-Tokens ── */}
         <Section title="Design Tokens – Farben">
           <div className="grid grid-cols-2 gap-4">
-            {[
-              { group: 'Brand',
-                tokens: [
-                  { label: 'Brand Navy',    var: '--brand-navy' },
-                  { label: 'Primary',       var: '--primary' },
-                  { label: 'Primary Light', var: '--primary-light' },
-                  { label: 'Primary Pale',  var: '--primary-pale' },
-                ]
-              },
-              { group: 'Status',
-                tokens: [
-                  { label: 'Success',     var: '--success' },
-                  { label: 'Warning',     var: '--warning' },
-                  { label: 'Destructive', var: '--destructive' },
-                  { label: 'Info',        var: '--info' },
-                ]
-              },
-              { group: 'Gamification',
-                tokens: [
-                  { label: 'XP Gold (=Accent)', var: '--xp-gold' },
-                  { label: 'XP Gold Light',     var: '--xp-gold-light' },
-                  { label: 'Streak Orange',     var: '--streak-orange' },
-                ]
-              },
-              { group: 'Emotionale Momente',
-                tokens: [
-                  { label: 'Level-Up',        var: '--color-levelup' },
-                  { label: 'Level-Up Moment', var: '--color-moment-levelup' },
-                  { label: 'Repair (Lila)',   var: '--color-moment-repair' },
-                  { label: 'Erfolg/Boss',     var: '--color-moment-green' },
-                  { label: 'Streak-Verlust',  var: '--color-moment-red' },
-                  { label: 'Moment-Bühne',    var: '--color-moment-bg' },
-                ]
-              },
-              { group: 'Text & Surface',
-                tokens: [
-                  { label: 'Text Primary',   var: '--text-primary' },
-                  { label: 'Text Secondary', var: '--text-secondary' },
-                  { label: 'Text Muted',     var: '--text-muted' },
-                  { label: 'Surface',        var: '--surface' },
-                ]
-              },
-            ].map(({ group, tokens }) => (
+            {COLOR_GROUPS.map(({ group, tokens }) => (
               <EdvanceCard key={group}>
                 <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-4">
                   {group}
@@ -178,19 +121,10 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── Spacing ── */}
         <Section title="Spacing-Rhythmus (4pt Grid)">
           <EdvanceCard>
             <div className="flex flex-col gap-3">
-              {[
-                { token: '--space-1',  px: '4px',  label: 'space-1' },
-                { token: '--space-2',  px: '8px',  label: 'space-2' },
-                { token: '--space-4',  px: '16px', label: 'space-4' },
-                { token: '--space-6',  px: '24px', label: 'space-6' },
-                { token: '--space-8',  px: '32px', label: 'space-8' },
-                { token: '--space-12', px: '48px', label: 'space-12' },
-                { token: '--space-16', px: '64px', label: 'space-16' },
-              ].map(({ token, px, label }) => (
+              {SPACING_TOKENS.map(({ token, px, label }) => (
                 <div key={token} className="flex items-center gap-4">
                   <code className="text-xs font-mono text-[var(--text-muted)] w-24 shrink-0">{label}</code>
                   <div
@@ -204,38 +138,23 @@ export function DesignShowcase() {
           </EdvanceCard>
         </Section>
 
-        {/* ── EdvanceCard Varianten ── */}
         <Section title="EdvanceCard – Varianten & Accents">
           <div className="grid grid-cols-2 gap-4">
-            <EdvanceCard variant="default">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">variant: default</p>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                Standard-Card mit weißem Hintergrund. Für den meisten Content.
-              </p>
-            </EdvanceCard>
-
-            <EdvanceCard variant="raised">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">variant: raised</p>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                Erhöhte Card für prominenteren Content.
-              </p>
-            </EdvanceCard>
-
-            <EdvanceCard variant="navy">
-              <p className="text-xs font-semibold uppercase tracking-wider opacity-60 mb-2">variant: navy</p>
-              <p className="text-sm leading-relaxed opacity-80">
-                Navy-Hintergrund. Für Header-Bereiche oder primäre Highlights.
-              </p>
-            </EdvanceCard>
-
-            <EdvanceCard variant="blue-pale">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">variant: blue-pale</p>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                Helles Blau. Für Info-Boxen oder Onboarding-Hinweise.
-              </p>
-            </EdvanceCard>
+            {(['default', 'raised', 'navy', 'blue-pale'] as const).map((variant) => (
+              <EdvanceCard key={variant} variant={variant}>
+                <p className="text-xs font-semibold uppercase tracking-wider opacity-60 mb-2">variant: {variant}</p>
+                <p className="text-sm leading-relaxed opacity-80">
+                  {variant === 'navy'
+                    ? 'Navy-Hintergrund. Für Header-Bereiche oder primäre Highlights.'
+                    : variant === 'blue-pale'
+                    ? 'Helles Blau. Für Info-Boxen oder Onboarding-Hinweise.'
+                    : variant === 'raised'
+                    ? 'Erhöhte Card für prominenteren Content.'
+                    : 'Standard-Card mit weißem Hintergrund. Für den meisten Content.'}
+                </p>
+              </EdvanceCard>
+            ))}
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             {(['left-primary', 'left-success', 'left-warning', 'left-destructive'] as const).map(
               (accent) => (
@@ -250,7 +169,6 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── EdvanceBadge ── */}
         <Section title="EdvanceBadge – alle Varianten">
           <EdvanceCard>
             <div className="flex flex-wrap gap-3">
@@ -265,7 +183,6 @@ export function DesignShowcase() {
           </EdvanceCard>
         </Section>
 
-        {/* ── MasteryBar ── */}
         <Section title="MasteryBar – Level 1–10">
           <EdvanceCard>
             <div className="flex flex-col gap-5">
@@ -284,7 +201,6 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── XPBar ── */}
         <Section title="XPBar – Shimmer-Animation">
           <EdvanceCard>
             <div className="flex flex-col gap-6">
@@ -295,7 +211,6 @@ export function DesignShowcase() {
           </EdvanceCard>
         </Section>
 
-        {/* ── StatCard ── */}
         <Section title="StatCard – Hover-Lift-Effekt">
           <div className="grid grid-cols-3 gap-4">
             <StatCard value="92%"   label="Aufgaben abgeschlossen" icon="✅" trend="+8%"  color="var(--success)" />
@@ -307,7 +222,6 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── AvatarInitials ── */}
         <Section title="AvatarInitials – Auto-Farbe aus Name">
           <EdvanceCard>
             <div className="flex flex-col gap-6">
@@ -324,23 +238,20 @@ export function DesignShowcase() {
                   Konsistente Hash-Farbe aus Namen
                 </p>
                 <div className="flex gap-4 flex-wrap">
-                  {['Anna Müller', 'Jonas Weber', 'Lena Fischer', 'Max Bauer', 'Sophie Klein', 'Tim Schulz'].map(
-                    (name) => (
-                      <div key={name} className="flex flex-col items-center gap-1.5">
-                        <AvatarInitials name={name} />
-                        <span className="text-xs text-[var(--text-muted)] text-center max-w-[48px] leading-tight">
-                          {name.split(' ')[0]}
-                        </span>
-                      </div>
-                    ),
-                  )}
+                  {AVATAR_NAMES.map((name) => (
+                    <div key={name} className="flex flex-col items-center gap-1.5">
+                      <AvatarInitials name={name} />
+                      <span className="text-xs text-[var(--text-muted)] text-center max-w-[48px] leading-tight">
+                        {name.split(' ')[0]}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </EdvanceCard>
         </Section>
 
-        {/* ── ProgressStep ── */}
         <Section title="ProgressStep – Onboarding-Stepper">
           <EdvanceCard>
             <div className="flex flex-col gap-8">
@@ -351,7 +262,6 @@ export function DesignShowcase() {
           </EdvanceCard>
         </Section>
 
-        {/* ── EmptyState ── */}
         <Section title="EmptyState – einladende Leerzustände">
           <div className="grid grid-cols-2 gap-4">
             <EdvanceCard>
@@ -360,9 +270,7 @@ export function DesignShowcase() {
                 title="Noch keine Aufgaben"
                 description="Dein Coach hat noch keine Aufgaben erstellt. Schau morgen wieder rein."
                 action={
-                  <button
-                    className="px-4 py-2 rounded-[var(--radius-lg)] text-sm font-semibold bg-[var(--primary)] text-white min-h-[44px]"
-                  >
+                  <button className="px-4 py-2 rounded-[var(--radius-lg)] text-sm font-semibold bg-[var(--primary)] text-white min-h-[44px]">
                     Aufgaben anfragen
                   </button>
                 }
@@ -378,7 +286,6 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── LoadingPulse ── */}
         <Section title="LoadingPulse – Skeleton-Loader">
           <div className="flex flex-col gap-4">
             <div>
@@ -396,19 +303,13 @@ export function DesignShowcase() {
           </div>
         </Section>
 
-        {/* ── Animationen ── */}
         <Section title="Animationen – Demo">
           <EdvanceCard>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-5">
               Klicke auf einen Button um die Animation einmalig zu triggern.
             </p>
             <div className="flex flex-wrap items-center gap-6">
-              {[
-                { label: 'bounce-pop',   cls: 'animate-bounce-pop' },
-                { label: 'scale-in',     cls: 'animate-scale-in' },
-                { label: 'fade-in',      cls: 'animate-fade-in' },
-                { label: 'xp-pulse',     cls: 'animate-xp-pulse' },
-              ].map(({ label, cls }) => (
+              {ANIMATION_DEMOS.map(({ label, cls }) => (
                 <div key={label} className="flex flex-col items-center gap-3">
                   <div
                     key={`${label}-${animKey}`}
@@ -428,7 +329,6 @@ export function DesignShowcase() {
           </EdvanceCard>
         </Section>
 
-        {/* ── ToastBanner Demo ── */}
         <Section title="ToastBanner – alle Typen">
           <EdvanceCard>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
