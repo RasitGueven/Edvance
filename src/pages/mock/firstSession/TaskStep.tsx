@@ -2,22 +2,24 @@ import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EdvanceCard, EdvanceBadge, ToastBanner } from '@/components/edvance'
 import { cn } from '@/lib/utils'
-import { MOCK_TODAY_TASKS, type MockTask } from '@/lib/mocks/firstSession'
+import type { MockTask } from '@/lib/mocks/firstSession'
 
 interface TaskStepProps {
+  tasks: MockTask[]
   taskIndex: number
   onSubmit: (correct: boolean, xpEarned: number) => void
   onAdvance: () => void
 }
 
 export function TaskStep({
+  tasks,
   taskIndex,
   onSubmit,
   onAdvance,
 }: TaskStepProps): JSX.Element {
   const { t } = useTranslation('student')
-  const task: MockTask = MOCK_TODAY_TASKS[taskIndex]
-  const isLast = taskIndex === MOCK_TODAY_TASKS.length - 1
+  const task: MockTask = tasks[taskIndex]
+  const isLast = taskIndex === tasks.length - 1
 
   const [selected, setSelected] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState<boolean>(false)
@@ -38,7 +40,7 @@ export function TaskStep({
   }
 
   return (
-    <div key={task.id} className="flex flex-col gap-6 animate-fly-in">
+    <div className="flex flex-col gap-6 animate-fly-in">
       {toastOpen && (
         <ToastBanner
           type="xp"
@@ -52,7 +54,7 @@ export function TaskStep({
         <EdvanceBadge variant="primary">
           {t('firstSession.task.progress', {
             current: taskIndex + 1,
-            total: MOCK_TODAY_TASKS.length,
+            total: tasks.length,
           })}
         </EdvanceBadge>
         <EdvanceBadge variant="muted">AFB {task.difficulty}</EdvanceBadge>

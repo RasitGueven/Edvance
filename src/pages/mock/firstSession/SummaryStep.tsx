@@ -3,26 +3,31 @@ import { useTranslation } from 'react-i18next'
 import { EdvanceCard, MasteryBar, RarityBadge } from '@/components/edvance'
 import { BossChallengeModal } from '@/components/edvance/moments'
 import { cn } from '@/lib/utils'
+import { Check } from 'lucide-react'
 import { MASTERY_STAGE_LABEL, MASTERY_STAGE_COLOR } from '@/lib/mastery'
 import {
   MOCK_CLUSTER_PROGRESS,
-  MOCK_TODAY_TASKS,
-  totalMockMinutes,
+  sessionMinutes,
+  type MockTask,
 } from '@/lib/mocks/firstSession'
 
 interface SummaryStepProps {
+  tasks: MockTask[]
   xpEarned: number
   correctCount: number
+  goal: string
   onNext: () => void
 }
 
 export function SummaryStep({
+  tasks,
   xpEarned,
   correctCount,
+  goal,
   onNext,
 }: SummaryStepProps): JSX.Element {
   const { t } = useTranslation('student')
-  const total = MOCK_TODAY_TASKS.length
+  const total = tasks.length
   const accuracy = total === 0 ? 0 : correctCount / total
   const [bossOpen, setBossOpen] = useState<boolean>(accuracy >= 0.8)
 
@@ -51,11 +56,35 @@ export function SummaryStep({
           colorVar="--color-primary"
         />
         <StatTile
-          value={totalMockMinutes().toString()}
+          value={sessionMinutes(tasks).toString()}
           label={t('firstSession.summary.timeLabel')}
           colorVar="--color-mastery-proficient"
         />
       </div>
+
+      {goal.length > 0 && (
+        <EdvanceCard accent="mastered">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 inline-flex h-8 w-8 flex-none items-center justify-center rounded-[var(--radius-full)] bg-[var(--color-success-answer-light)]">
+              <Check
+                className="h-5 w-5 text-[var(--color-success-answer)]"
+                aria-hidden="true"
+              />
+            </span>
+            <div className="flex flex-col gap-1 min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+                {t('firstSession.summary.goalEyebrow')}
+              </p>
+              <p className="text-base font-semibold text-[var(--color-text-primary)] break-words">
+                {goal}
+              </p>
+              <span className="text-xs font-semibold text-[var(--color-success-answer)]">
+                ✓ {t('firstSession.summary.goalDone')}
+              </span>
+            </div>
+          </div>
+        </EdvanceCard>
+      )}
 
       <EdvanceCard>
         <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">

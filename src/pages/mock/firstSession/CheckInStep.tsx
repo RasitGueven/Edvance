@@ -2,12 +2,18 @@ import { useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EdvanceCard } from '@/components/edvance'
 import { cn } from '@/lib/utils'
-import type { MockMood } from '@/lib/mocks/firstSession'
+import {
+  MOCK_STUDENT_FIRST_SESSION,
+  MOCK_TEACHER_TOPICS,
+  type MockMood,
+} from '@/lib/mocks/firstSession'
 
 export interface CheckInAnswers {
   mood: MockMood
+  moodReason: string
   hasExam: boolean
-  examSubject: string
+  teacherTopicIds: string[]
+  teacherTopicCustom: string
   goal: string
 }
 
@@ -15,7 +21,7 @@ interface CheckInStepProps {
   onComplete: (answers: CheckInAnswers) => void
 }
 
-type SubStep = 'mood' | 'exam' | 'goal'
+type SubStep = 'mood' | 'mood-reason' | 'exam' | 'topics' | 'goal'
 
 const MOODS: { value: MockMood; emoji: string; labelKey: string }[] = [
   { value: 'happy', emoji: '😊', labelKey: 'firstSession.checkIn.mood.happy' },
@@ -27,18 +33,29 @@ export function CheckInStep({ onComplete }: CheckInStepProps): JSX.Element {
   const { t } = useTranslation('student')
   const [sub, setSub] = useState<SubStep>('mood')
   const [mood, setMood] = useState<MockMood | null>(null)
+  const [moodReason, setMoodReason] = useState<string>('')
   const [hasExam, setHasExam] = useState<boolean | null>(null)
-  const [examSubject, setExamSubject] = useState<string>('')
+  const [topicIds, setTopicIds] = useState<string[]>([])
+  const [topicCustom, setTopicCustom] = useState<string>('')
   const [goal, setGoal] = useState<string>('')
 
   const advance = (): void => {
-    if (sub === 'mood' && mood) setSub('exam')
-    else if (sub === 'exam' && hasExam !== null) setSub('goal')
-    else if (sub === 'goal') {
+    if (sub === 'mood' && mood) {
+      // 😊 = direkt weiter, 😐/😟 = Follow-up Frage
+      setSub(mood === 'happy' ? 'exam' : 'mood-reason')
+    } else if (sub === 'mood-reason') {
+      setSub('exam')
+    } else if (sub === 'exam' && hasExam !== null) {
+      setSub('topics')
+    } else if (sub === 'topics') {
+      setSub('goal')
+    } else if (sub === 'goal') {
       onComplete({
         mood: mood ?? 'neutral',
+        moodReason: moodReason.trim(),
         hasExam: hasExam ?? false,
-        examSubject: examSubject.trim(),
+        teacherTopicIds: topicIds,
+        teacherTopicCustom: topicCustom.trim(),
         goal: goal.trim(),
       })
     }
@@ -46,27 +63,37 @@ export function CheckInStep({ onComplete }: CheckInStepProps): JSX.Element {
 
   const canAdvance =
     (sub === 'mood' && mood !== null) ||
+    sub === 'mood-reason' ||
     (sub === 'exam' && hasExam !== null) ||
+    sub === 'topics' ||
     sub === 'goal'
+
+  const toggleTopic = (id: string): void => {
+    setTopicIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
+  }
 
   return (
     <div key={sub} className="flex flex-col gap-6 animate-fly-in">
       <EdvanceCard>
-        {sub === 'mood' && (
-          <MoodPicker mood={mood} setMood={setMood} t={t} />
+        {sub === 'mood' && <MoodPicker mood={mood} setMood={setMood} t={t} />}
+        {sub === 'mood-reason' && (
+          <MoodReason value={moodReason} setValue={setMoodReason} t={t} />
         )}
         {sub === 'exam' && (
-          <ExamPicker
-            hasExam={hasExam}
-            setHasExam={setHasExam}
-            examSubject={examSubject}
-            setExamSubject={setExamSubject}
+          <ExamPicker hasExam={hasExam} setHasExam={setHasExam} t={t} />
+        )}
+        {sub === 'topics' && (
+          <TopicsPicker
+            topicIds={topicIds}
+            toggleTopic={toggleTopic}
+            custom={topicCustom}
+            setCustom={setTopicCustom}
             t={t}
           />
         )}
-        {sub === 'goal' && (
-          <GoalPicker goal={goal} setGoal={setGoal} t={t} />
-        )}
+        {sub === 'goal' && <GoalPicker goal={goal} setGoal={setGoal} t={t} />}
       </EdvanceCard>
 
       <button
@@ -126,24 +153,47 @@ function MoodPicker({ mood, setMood, t }: MoodProps): JSX.Element {
   )
 }
 
+interface MoodReasonProps {
+  value: string
+  setValue: (v: string) => void
+  t: (key: string) => string
+}
+function MoodReason({ value, setValue, t }: MoodReasonProps): JSX.Element {
+  return (
+    <div className="flex flex-col gap-3">
+      <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+        {t('firstSession.checkIn.moodReason.question')}
+      </h2>
+      <p className="text-xs text-[var(--color-text-tertiary)]">
+        {t('firstSession.checkIn.moodReason.hint')}
+      </p>
+      <textarea
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={t('firstSession.checkIn.moodReason.placeholder')}
+        rows={3}
+        className={cn(
+          'rounded-[var(--radius-md)] border border-[var(--color-border)]',
+          'bg-[var(--color-bg-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)]',
+          'focus:border-[var(--color-primary)] focus:outline-none resize-none',
+        )}
+      />
+    </div>
+  )
+}
+
 interface ExamProps {
   hasExam: boolean | null
   setHasExam: (v: boolean) => void
-  examSubject: string
-  setExamSubject: (v: string) => void
-  t: (key: string) => string
+  t: (key: string, opts?: Record<string, unknown>) => string
 }
-function ExamPicker({
-  hasExam,
-  setHasExam,
-  examSubject,
-  setExamSubject,
-  t,
-}: ExamProps): JSX.Element {
+function ExamPicker({ hasExam, setHasExam, t }: ExamProps): JSX.Element {
   return (
     <div className="flex flex-col gap-5">
       <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
-        {t('firstSession.checkIn.exam.question')}
+        {t('firstSession.checkIn.exam.question', {
+          subject: MOCK_STUDENT_FIRST_SESSION.subject,
+        })}
       </h2>
       <div className="grid grid-cols-2 gap-3">
         {[
@@ -166,28 +216,78 @@ function ExamPicker({
           </button>
         ))}
       </div>
-      {hasExam === true && (
-        <div className="flex flex-col gap-2 animate-fly-in">
-          <label
-            htmlFor="exam-subject"
-            className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]"
-          >
-            {t('firstSession.checkIn.exam.subjectLabel')}
-          </label>
-          <input
-            id="exam-subject"
-            type="text"
-            value={examSubject}
-            onChange={(e) => setExamSubject(e.target.value)}
-            placeholder={t('firstSession.checkIn.exam.subjectPlaceholder')}
-            className={cn(
-              'min-h-[44px] rounded-[var(--radius-md)] border border-[var(--color-border)]',
-              'bg-[var(--color-bg-surface)] px-4 py-2 text-sm text-[var(--color-text-primary)]',
-              'focus:border-[var(--color-primary)] focus:outline-none',
-            )}
-          />
-        </div>
-      )}
+    </div>
+  )
+}
+
+interface TopicsProps {
+  topicIds: string[]
+  toggleTopic: (id: string) => void
+  custom: string
+  setCustom: (v: string) => void
+  t: (key: string) => string
+}
+function TopicsPicker({
+  topicIds,
+  toggleTopic,
+  custom,
+  setCustom,
+  t,
+}: TopicsProps): JSX.Element {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+          {t('firstSession.checkIn.teacherTopics.question')}
+        </h2>
+        <p className="text-xs text-[var(--color-text-tertiary)]">
+          {t('firstSession.checkIn.teacherTopics.hint')}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {MOCK_TEACHER_TOPICS.map((topic) => {
+          const active = topicIds.includes(topic.id)
+          return (
+            <button
+              key={topic.id}
+              type="button"
+              onClick={() => toggleTopic(topic.id)}
+              className={cn(
+                'min-h-[44px] rounded-[var(--radius-full)] border-2 px-4 py-2',
+                'text-sm font-semibold transition-all duration-base ease-bounce',
+                active
+                  ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                  : 'border-[var(--color-border)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] hover:-translate-y-0.5 hover:shadow-md',
+              )}
+            >
+              {active ? '✓ ' : ''}
+              {topic.name}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="teacher-topics-custom"
+          className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]"
+        >
+          {t('firstSession.checkIn.teacherTopics.customLabel')}
+        </label>
+        <input
+          id="teacher-topics-custom"
+          type="text"
+          value={custom}
+          onChange={(e) => setCustom(e.target.value)}
+          placeholder={t('firstSession.checkIn.teacherTopics.customPlaceholder')}
+          className={cn(
+            'min-h-[44px] rounded-[var(--radius-md)] border border-[var(--color-border)]',
+            'bg-[var(--color-bg-surface)] px-4 py-2 text-sm text-[var(--color-text-primary)]',
+            'focus:border-[var(--color-primary)] focus:outline-none',
+          )}
+        />
+      </div>
     </div>
   )
 }

@@ -9,6 +9,11 @@ import type { MasteryStage } from '@/lib/mastery'
 
 export type MockMood = 'happy' | 'neutral' | 'low'
 
+export interface MockTeacherTopic {
+  id: string
+  name: string
+}
+
 export interface MockTask {
   id: string
   clusterId: string
@@ -19,6 +24,8 @@ export interface MockTask {
   xp: number
   difficulty: 'I' | 'II' | 'III'
   durationMin: number
+  /** Lehrer-Themen, denen diese Aufgabe zugeordnet ist (für Plan-Filterung). */
+  topicIds: string[]
 }
 
 export interface MockClusterProgress {
@@ -41,10 +48,20 @@ export interface MockHomeQuestTask {
 export const MOCK_STUDENT_FIRST_SESSION = {
   displayName: 'Lina',
   classLevel: 8,
+  /** Fach kommt aus dem Schüler-Profil — wird nicht im Check-In abgefragt. */
+  subject: 'Mathe',
   /** Pre-Session aus dem Screening abgeleitet (Mock). */
   startXp: 0,
   startLevel: 1,
 }
+
+export const MOCK_TEACHER_TOPICS: MockTeacherTopic[] = [
+  { id: 'topic-bruch', name: 'Bruchrechnung' },
+  { id: 'topic-prozent', name: 'Prozentrechnung' },
+  { id: 'topic-linear', name: 'Lineare Funktionen' },
+  { id: 'topic-geometrie', name: 'Geometrie & Winkel' },
+  { id: 'topic-gleichung', name: 'Gleichungen lösen' },
+]
 
 export const MOCK_TODAY_TASKS: MockTask[] = [
   {
@@ -57,6 +74,7 @@ export const MOCK_TODAY_TASKS: MockTask[] = [
     xp: 20,
     difficulty: 'II',
     durationMin: 5,
+    topicIds: ['topic-bruch'],
   },
   {
     id: 'mock-task-2',
@@ -69,6 +87,7 @@ export const MOCK_TODAY_TASKS: MockTask[] = [
     xp: 30,
     difficulty: 'II',
     durationMin: 6,
+    topicIds: ['topic-linear', 'topic-gleichung'],
   },
   {
     id: 'mock-task-3',
@@ -80,8 +99,48 @@ export const MOCK_TODAY_TASKS: MockTask[] = [
     xp: 20,
     difficulty: 'I',
     durationMin: 4,
+    topicIds: ['topic-prozent'],
+  },
+  {
+    id: 'mock-task-4',
+    clusterId: 'mock-cluster-raum',
+    clusterName: 'Raum & Form',
+    question:
+      'In einem Dreieck sind zwei Winkel 45° und 65°. Wie groß ist der dritte Winkel?',
+    options: ['60°', '70°', '80°', '90°'],
+    correctIndex: 1,
+    xp: 20,
+    difficulty: 'I',
+    durationMin: 4,
+    topicIds: ['topic-geometrie'],
+  },
+  {
+    id: 'mock-task-5',
+    clusterId: 'mock-cluster-funktion',
+    clusterName: 'Funktionaler Zusammenhang',
+    question: 'Löse die Gleichung 3x + 7 = 22.',
+    options: ['x = 3', 'x = 5', 'x = 7', 'x = 15'],
+    correctIndex: 1,
+    xp: 25,
+    difficulty: 'II',
+    durationMin: 5,
+    topicIds: ['topic-gleichung'],
   },
 ]
+
+/**
+ * Filtert die Tagesaufgaben nach gewählten Lehrer-Themen.
+ * Leere Auswahl → alle Aufgaben. Max 3 Aufgaben pro Session.
+ */
+export function selectTasksForSession(topicIds: string[]): MockTask[] {
+  if (topicIds.length === 0) return MOCK_TODAY_TASKS.slice(0, 3)
+  const matched = MOCK_TODAY_TASKS.filter((t) =>
+    t.topicIds.some((id) => topicIds.includes(id)),
+  )
+  // Fallback wenn nichts matcht (z.B. nur Freitext eingegeben): erste 3 Aufgaben.
+  const pool = matched.length > 0 ? matched : MOCK_TODAY_TASKS
+  return pool.slice(0, 3)
+}
 
 export const MOCK_CLUSTER_PROGRESS: MockClusterProgress[] = [
   {
@@ -119,12 +178,7 @@ export const MOCK_HOME_QUEST: MockHomeQuestTask[] = [
   },
 ]
 
-/** Gesamt-XP über alle Mock-Aufgaben — wird in Summary angezeigt. */
-export function totalMockXp(): number {
-  return MOCK_TODAY_TASKS.reduce((sum, t) => sum + t.xp, 0)
-}
-
-/** Geschätzte Session-Dauer in Minuten. */
-export function totalMockMinutes(): number {
-  return MOCK_TODAY_TASKS.reduce((sum, t) => sum + t.durationMin, 0)
+/** Geschätzte Session-Dauer in Minuten, abhängig von ausgewählten Aufgaben. */
+export function sessionMinutes(tasks: MockTask[]): number {
+  return tasks.reduce((sum, t) => sum + t.durationMin, 0)
 }
