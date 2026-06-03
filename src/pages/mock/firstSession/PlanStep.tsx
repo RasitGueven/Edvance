@@ -2,13 +2,16 @@ import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EdvanceCard, EdvanceBadge } from '@/components/edvance'
 import { cn } from '@/lib/utils'
-import { MOCK_TODAY_TASKS } from '@/lib/mocks/firstSession'
+import type { MockTask } from '@/lib/mocks/firstSession'
 
 interface PlanStepProps {
+  tasks: MockTask[]
+  /** True wenn Lehrer-Themen den Filter beeinflusst haben. */
+  topicsDriven: boolean
   onStart: () => void
 }
 
-export function PlanStep({ onStart }: PlanStepProps): JSX.Element {
+export function PlanStep({ tasks, topicsDriven, onStart }: PlanStepProps): JSX.Element {
   const { t } = useTranslation('student')
 
   return (
@@ -18,15 +21,17 @@ export function PlanStep({ onStart }: PlanStepProps): JSX.Element {
           {t('firstSession.plan.eyebrow')}
         </p>
         <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
-          {t('firstSession.plan.title')}
+          {t('firstSession.plan.title', { count: tasks.length })}
         </h2>
         <p className="text-sm text-[var(--color-text-secondary)]">
-          {t('firstSession.plan.subtitle')}
+          {topicsDriven
+            ? t('firstSession.plan.subtitleTopics')
+            : t('firstSession.plan.subtitle')}
         </p>
       </div>
 
       <div className="flex flex-col gap-3">
-        {MOCK_TODAY_TASKS.map((task, idx) => (
+        {tasks.map((task, idx) => (
           <EdvanceCard key={task.id} accent="primary">
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-1 flex-col gap-2 min-w-0">

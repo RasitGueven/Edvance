@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
 import { StreakPill, XPBar } from '@/components/edvance'
@@ -9,7 +9,8 @@ import { SummaryStep } from './firstSession/SummaryStep'
 import { HomeQuestStep } from './firstSession/HomeQuestStep'
 import {
   MOCK_STUDENT_FIRST_SESSION,
-  MOCK_TODAY_TASKS,
+  selectTasksForSession,
+  type MockTask,
 } from '@/lib/mocks/firstSession'
 
 type Phase = 'check-in' | 'plan' | 'task' | 'summary' | 'home-quest'
@@ -22,7 +23,14 @@ export function MockFirstSession(): JSX.Element {
   const [taskIndex, setTaskIndex] = useState<number>(0)
   const [xpEarned, setXpEarned] = useState<number>(0)
   const [correctCount, setCorrectCount] = useState<number>(0)
-  const [, setCheckIn] = useState<CheckInAnswers | null>(null)
+  const [checkIn, setCheckIn] = useState<CheckInAnswers | null>(null)
+
+  // Lehrer-Themen → gefilterte Aufgaben (Mock-Auswahl-Logik).
+  const sessionTasks: MockTask[] = useMemo(
+    () => selectTasksForSession(checkIn?.teacherTopicIds ?? []),
+    [checkIn?.teacherTopicIds],
+  )
+  const topicsDriven = (checkIn?.teacherTopicIds.length ?? 0) > 0
 
   const handleCheckInDone = (answers: CheckInAnswers): void => {
     setCheckIn(answers)
@@ -37,7 +45,7 @@ export function MockFirstSession(): JSX.Element {
   }
 
   const handleTaskAdvance = (): void => {
-    if (taskIndex < MOCK_TODAY_TASKS.length - 1) {
+    if (taskIndex < sessionTasks.length - 1) {
       setTaskIndex((i) => i + 1)
     } else {
       setPhase('summary')
@@ -87,9 +95,17 @@ export function MockFirstSession(): JSX.Element {
         {phase === 'check-in' && (
           <CheckInStep onComplete={handleCheckInDone} />
         )}
-        {phase === 'plan' && <PlanStep onStart={() => setPhase('task')} />}
+        {phase === 'plan' && (
+          <PlanStep
+            tasks={sessionTasks}
+            topicsDriven={topicsDriven}
+            onStart={() => setPhase('task')}
+          />
+        )}
         {phase === 'task' && (
           <TaskStep
+            key={taskIndex}
+            tasks={sessionTasks}
             taskIndex={taskIndex}
             onSubmit={handleTaskSubmit}
             onAdvance={handleTaskAdvance}
@@ -97,8 +113,10 @@ export function MockFirstSession(): JSX.Element {
         )}
         {phase === 'summary' && (
           <SummaryStep
+            tasks={sessionTasks}
             xpEarned={xpEarned}
             correctCount={correctCount}
+            goal={checkIn?.goal ?? ''}
             onNext={() => setPhase('home-quest')}
           />
         )}

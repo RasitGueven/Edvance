@@ -14,12 +14,21 @@
         "neutral": "Geht so",
         "low": "Heute schwer"
       },
+      "moodReason": {
+        "question": "Was belastet dich?",
+        "hint": "Optional — kurz reicht",
+        "placeholder": "z.B. wenig geschlafen, Streit mit Freundin, Stress mit Hausaufgaben"
+      },
       "exam": {
-        "question": "Kommen bald Klausuren?",
+        "question": "Kommen bald Klausuren in {{subject}}?",
         "yes": "Ja",
-        "no": "Nein",
-        "subjectLabel": "In welchem Fach?",
-        "subjectPlaceholder": "z.B. Mathe"
+        "no": "Nein"
+      },
+      "teacherTopics": {
+        "question": "Welche Themen hat dein Lehrer gerade gemacht?",
+        "hint": "Wähle aus oder schreib eigene dazu — wir wählen passende Aufgaben aus.",
+        "customLabel": "Weitere Themen",
+        "customPlaceholder": "z.B. Quadratische Gleichungen"
       },
       "goal": {
         "question": "Was möchtest du heute schaffen?",
@@ -31,8 +40,9 @@
     },
     "plan": {
       "eyebrow": "Dein Plan",
-      "title": "Diese 3 Aufgaben heute",
+      "title": "Diese {{count}} Aufgaben heute",
       "subtitle": "Basiert auf deiner Einstufung — wir starten bei deinen Lücken.",
+      "subtitleTopics": "Passend zu den Themen deines Lehrers.",
       "durationMin": "{{min}} Min",
       "cta": "Aufgabe 1 starten"
     },
@@ -51,6 +61,8 @@
       "xpEarnedLabel": "XP gesammelt",
       "tasksDoneLabel": "Aufgaben",
       "timeLabel": "Minuten",
+      "goalEyebrow": "Dein Ziel heute",
+      "goalDone": "Geschafft",
       "masteryEyebrow": "Dein Fortschritt",
       "masteryBefore": "Vorher",
       "masteryAfter": "Jetzt",
