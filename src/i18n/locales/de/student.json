@@ -1,0 +1,71 @@
+{
+  "firstSession": {
+    "hero": {
+      "eyebrow": "Heute · Erste Session",
+      "greeting": "Hi {{name}} 👋",
+      "subtitle": "Schön dass du da bist. Lass uns starten."
+    },
+    "stepLabel": "Schritt {{current}}/{{total}}",
+    "checkIn": {
+      "title": "Check-In",
+      "mood": {
+        "question": "Wie fühlst du dich heute?",
+        "happy": "Gut drauf",
+        "neutral": "Geht so",
+        "low": "Heute schwer"
+      },
+      "exam": {
+        "question": "Kommen bald Klausuren?",
+        "yes": "Ja",
+        "no": "Nein",
+        "subjectLabel": "In welchem Fach?",
+        "subjectPlaceholder": "z.B. Mathe"
+      },
+      "goal": {
+        "question": "Was möchtest du heute schaffen?",
+        "hint": "Optional — ein Satz reicht",
+        "placeholder": "z.B. Bruchrechnung verstehen"
+      },
+      "next": "Weiter",
+      "start": "Los geht's"
+    },
+    "plan": {
+      "eyebrow": "Dein Plan",
+      "title": "Diese 3 Aufgaben heute",
+      "subtitle": "Basiert auf deiner Einstufung — wir starten bei deinen Lücken.",
+      "durationMin": "{{min}} Min",
+      "cta": "Aufgabe 1 starten"
+    },
+    "task": {
+      "progress": "Aufgabe {{current}}/{{total}}",
+      "submit": "Antwort prüfen",
+      "next": "Nächste Aufgabe",
+      "finish": "Fertig",
+      "feedbackRight": "Stark! Genau das war's.",
+      "feedbackTryAgain": "Nicht ganz — schau dir nochmal die Aufgabe an.",
+      "xpToast": "Aufgabe geschafft!"
+    },
+    "summary": {
+      "headline": "Geschafft!",
+      "subtitle": "Hier ist deine Session auf einen Blick.",
+      "xpEarnedLabel": "XP gesammelt",
+      "tasksDoneLabel": "Aufgaben",
+      "timeLabel": "Minuten",
+      "masteryEyebrow": "Dein Fortschritt",
+      "masteryBefore": "Vorher",
+      "masteryAfter": "Jetzt",
+      "badgeLabel": "Erste Session",
+      "badgeSub": "Frisch in der Akademie",
+      "cta": "Deine Home-Quest ansehen"
+    },
+    "homeQuest": {
+      "eyebrow": "Bis zur nächsten Session",
+      "title": "Deine Home-Quest",
+      "explanation": "Kleine Aufgaben für zuhause. Erfülle sie, damit dein Home-Streak weiterläuft.",
+      "durationMin": "{{min}} Min",
+      "accept": "Quest annehmen",
+      "doneTitle": "Quest übernommen",
+      "doneSubtitle": "Bis bald — wir sehen uns nächste Session."
+    }
+  }
+}
