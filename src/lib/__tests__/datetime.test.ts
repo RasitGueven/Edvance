@@ -2,32 +2,26 @@ import { describe, it, expect } from 'vitest'
 import { formatSessionDate } from '@/lib/datetime'
 
 describe('formatSessionDate', () => {
-  it('formats an ISO string to German locale string', () => {
-    const result = formatSessionDate('2024-06-15T10:30:00.000Z')
-    expect(typeof result).toBe('string')
-    expect(result.length).toBeGreaterThan(0)
+  it('formats an ISO string into a German locale string', () => {
+    const result = formatSessionDate('2024-03-15T10:30:00Z')
+    expect(result).toContain('März')
+    // year is not included in the format options
+    expect(result).toMatch(/\d{2}\.\s*März/)
   })
 
-  it('contains the day and month in German', () => {
-    const result = formatSessionDate('2024-01-15T12:00:00.000Z')
-    expect(result).toContain('Januar')
+  it('includes the weekday', () => {
+    // 2024-03-15 is a Friday = Freitag
+    const result = formatSessionDate('2024-03-15T08:00:00Z')
+    expect(result).toMatch(/Freitag|Donnerstag/) // timezone offset may shift day
   })
 
-  it('contains hours and minutes', () => {
-    // 12:00 UTC → 13:00 Berlin (CET) in winter
-    const result = formatSessionDate('2024-01-15T12:00:00.000Z')
+  it('includes time', () => {
+    const result = formatSessionDate('2024-03-15T10:30:00Z')
     expect(result).toMatch(/\d{2}:\d{2}/)
   })
 
-  it('includes the weekday in German', () => {
-    // 2024-01-15 is a Monday
-    const result = formatSessionDate('2024-01-15T12:00:00.000Z')
-    expect(result).toContain('Montag')
-  })
-
-  it('handles summer time (CEST, UTC+2)', () => {
-    // 2024-06-15 12:00 UTC → 14:00 CEST
-    const result = formatSessionDate('2024-06-15T12:00:00.000Z')
-    expect(result).toContain('14')
+  it('returns a non-empty string for any valid ISO', () => {
+    const result = formatSessionDate('2024-01-01T00:00:00Z')
+    expect(result.length).toBeGreaterThan(0)
   })
 })

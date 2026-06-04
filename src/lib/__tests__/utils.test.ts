@@ -3,37 +3,41 @@ import { cn, getInitials, formatDateLongDe } from '@/lib/utils'
 
 describe('cn', () => {
   it('merges class names', () => {
-    expect(cn('a', 'b')).toBe('a b')
+    expect(cn('foo', 'bar')).toBe('foo bar')
   })
 
-  it('deduplicates conflicting Tailwind classes (last wins)', () => {
-    expect(cn('text-red-500', 'text-blue-500')).toBe('text-blue-500')
+  it('deduplicates conflicting tailwind classes', () => {
+    expect(cn('text-sm', 'text-lg')).toBe('text-lg')
   })
 
-  it('handles conditional falsy values', () => {
-    expect(cn('base', false && 'ignored', undefined, null, 'extra')).toBe('base extra')
+  it('ignores falsy values', () => {
+    expect(cn('foo', false, undefined, null, 'bar')).toBe('foo bar')
   })
 
-  it('returns empty string for no inputs', () => {
+  it('handles conditional objects', () => {
+    expect(cn({ 'text-red-500': true, 'text-blue-500': false })).toBe('text-red-500')
+  })
+
+  it('returns empty string for no classes', () => {
     expect(cn()).toBe('')
   })
 })
 
 describe('getInitials', () => {
-  it('returns first two letters of two-word name', () => {
+  it('returns initials from a full name', () => {
     expect(getInitials('Max Mustermann')).toBe('MM')
   })
 
-  it('returns single initial for one word', () => {
-    expect(getInitials('Max')).toBe('M')
+  it('caps at 2 characters', () => {
+    expect(getInitials('Anna Berta Clara')).toBe('AB')
   })
 
-  it('caps at two initials for long names', () => {
-    expect(getInitials('Anna Bella Clara')).toBe('AB')
+  it('handles single name', () => {
+    expect(getInitials('Anna')).toBe('A')
   })
 
-  it('uppercases initials', () => {
-    expect(getInitials('anna becker')).toBe('AB')
+  it('returns uppercase', () => {
+    expect(getInitials('hans müller')).toBe('HM')
   })
 
   it('handles empty string gracefully', () => {
@@ -42,14 +46,13 @@ describe('getInitials', () => {
 })
 
 describe('formatDateLongDe', () => {
-  it('formats a known date in German', () => {
-    const date = new Date('2024-01-15T12:00:00Z')
-    const result = formatDateLongDe(date)
-    expect(result).toContain('Januar')
+  it('returns a German formatted date string', () => {
+    const result = formatDateLongDe(new Date('2024-01-15'))
     expect(result).toContain('2024')
+    expect(result).toMatch(/Januar/)
   })
 
-  it('uses current date when no argument given', () => {
+  it('uses current date when no arg is given', () => {
     const result = formatDateLongDe()
     expect(result).toBeTruthy()
     expect(typeof result).toBe('string')

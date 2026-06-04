@@ -35,3 +35,9 @@ export function cognitiveTypeLabel(t: CognitiveType | null | undefined): string 
   return t ? COGNITIVE_TYPE_LABELS[t] : '–'
 }
 
+export function difficultyLabel(value: number | null | undefined): string {
+  if (value == null) return '–'
+  const option = DIFFICULTY_OPTIONS.find(o => o.value === value)
+  return option ? option.label : String(value)
+}
+
