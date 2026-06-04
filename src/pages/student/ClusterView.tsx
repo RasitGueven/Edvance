@@ -4,7 +4,7 @@ import { ArrowLeft, BookOpen, CheckCircle2, FileText, FlaskConical, PlayCircle }
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { LoadingPulse } from '@/components/edvance'
+import { EmptyState, LoadingPulse } from '@/components/edvance'
 import { useAuth } from '@/hooks/useAuth'
 import { getClusterById, getTasksByClusterOrdered } from '@/lib/supabase/tasks'
 import { getStudentByProfile } from '@/lib/supabase/students'
@@ -129,11 +129,11 @@ export function ClusterView(): JSX.Element {
         </p>
 
         {tasks.length === 0 ? (
-          <Card className="mt-6">
-            <CardContent className="pt-6 text-center text-sm text-muted">
-              Noch keine Inhalte in diesem Cluster.
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon="📚"
+            title="Noch keine Inhalte"
+            description="Dieser Cluster hat noch keine Aufgaben oder Erklärungen."
+          />
         ) : (
           <div className="mt-6 flex flex-col gap-6">
             <Section

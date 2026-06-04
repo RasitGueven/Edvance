@@ -108,7 +108,7 @@ export function DrawCanvas({ onChange, height = 260, initialDataUrl }: DrawCanva
           onPointerMove={handleMove}
           onPointerUp={handleUp}
           onPointerCancel={handleUp}
-          className="block touch-none cursor-crosshair bg-white"
+          className="block touch-none cursor-crosshair bg-[var(--color-bg-surface)]"
         />
       </div>
       <div className="flex items-center justify-between text-xs">

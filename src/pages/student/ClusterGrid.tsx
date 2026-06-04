@@ -170,14 +170,12 @@ export function ClusterGrid({
                   : 'border-[var(--color-border)]'
               }`}
             >
-              {/* Decorative blob */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-60 blur-2xl transition-opacity duration-300 group-hover:opacity-90"
                 style={blobStyle}
               />
 
-              {/* Top: icon + name + chevron */}
               <div className="relative flex items-start gap-4 flex-1">
                 <span
                   className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] shadow-xs"
@@ -209,7 +207,6 @@ export function ClusterGrid({
                 <ChevronRight className="h-5 w-5 shrink-0 text-[var(--color-text-tertiary)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)]" />
               </div>
 
-              {/* Bottom: Screening-Lernstand + Fortschritt */}
               <div className="mt-4 flex flex-col gap-3">
                 {status && (
                   <div>

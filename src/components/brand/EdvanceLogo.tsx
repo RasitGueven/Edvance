@@ -1,16 +1,9 @@
 import React from 'react';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// edvance Logo Assets (Design-Handoff)
-// ViewBox 0 0 100 100 — alle Paths
-// ─────────────────────────────────────────────────────────────────────────────
-
+// SVG viewBox 0 0 100 100 — alle Paths im Design-Handoff festgelegt.
 const PATHS = {
-  /** Hairline J-Kurve — Standard für Navbar, Cards */
   spine: 'M 8,36 C 12,52 28,60 34,58 C 52,54 70,14 90,8',
-  /** Pfeilspitze am Endpunkt */
   arrow: 'M 83,14 L 90,8 L 81,7',
-  /** Kalligraphisch gefüllt — für App-Icon, Siegel, Prägung */
   calligraphic:
     'M 8,36 C 12,53.5 28,61.5 34.5,60 C 52.5,55.5 70.5,14.5 90,8 C 70,13.5 51.5,52.5 33.5,56.5 C 27.5,59 11.5,50.5 8,36 Z',
 };
@@ -21,10 +14,6 @@ const COLORS = {
   black: 'var(--color-text-primary)',
   gold: 'var(--color-accent)',
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EdvanceSymbol — J-Kurve allein (Hairline + Dot + Gold-Pfeil)
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface EdvanceSymbolProps {
   size?: number;
@@ -79,10 +68,6 @@ export function EdvanceSymbol({
     </svg>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EdvanceLogo — Symbol + Wordmark nebeneinander
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface EdvanceLogoProps {
   size?: number;
@@ -166,10 +151,6 @@ export function EdvanceLogo({
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EdvanceAppIcon — Gerundetes Quadrat (App-Icon / Avatar / Badge)
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface EdvanceAppIconProps {
   size?: number;
