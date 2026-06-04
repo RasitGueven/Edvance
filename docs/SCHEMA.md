@@ -15,6 +15,10 @@ microskills         → id, cluster_id, code, name, description, class_level, pr
 tasks               → id, microskill_id, cluster_id, content_type, title, question, solution, hint, common_errors, coach_note, difficulty, estimated_minutes, class_level, is_active, created_at, cognitive_type, input_type, is_diagnostic, curriculum_ref, question_payload, typical_errors[]
 task_coach_metadata → id, task_id, typical_errors, observation_hints, intervention_triggers, updated_at
 
+> Konzept für erweiterte Aufgaben-Metadaten (Haupt-/Nebenkompetenz, K1–K6,
+> Empirie, Lifecycle) über `tasks` **und** `screening_items`: siehe
+> `docs/METADATA.md` (noch nicht migriert).
+
 #### KMK-Kompetenzbereiche Mathematik (Kl. 8-10)
 1. Zahl & Rechnen
 2. Algebra & Funktionen
