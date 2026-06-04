@@ -1,0 +1,312 @@
+[
+  {
+    "iqb_titel": "VERA8-DEMO-01 Rabatt",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": true,
+    "leitidee_raw": "Zahl",
+    "kompetenzfeld_ki": "L1",
+    "kompetenzfelder": ["Prozentrechnung"],
+    "afb_ki": 1,
+    "aufgabe_typ": "geschlossen",
+    "kontext": "Ein Fahrrad kostet regulär 480 €. Im Schlussverkauf wird es um 15 % reduziert.",
+    "aufgabe_text_clean": "Berechne den neuen Preis des Fahrrads.",
+    "akzeptierte_antworten": ["408", "408 €", "408 Euro"],
+    "loesung_pro_ta": [
+      { "key": "-", "loesung": "15 % von 480 € = 72 €; 480 € - 72 € = 408 €" }
+    ],
+    "kodierung": "Richtig: 408 € (auch ohne Einheit). Rechenweg nicht erforderlich.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Nur den Rabatt (72 €) als Endpreis angegeben; 2) 15 % addiert statt subtrahiert (552 €)",
+      "didaktischer_hinweis": "Grundwert, Prozentwert und Prozentsatz sauber trennen; Endpreis = Grundwert - Prozentwert.",
+      "schwierigkeit_einschaetzung": "leicht"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-02 Handytarif",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Funktionaler Zusammenhang",
+    "kompetenzfeld_ki": "L4",
+    "kompetenzfelder": ["Lineare Funktionen"],
+    "afb_ki": 2,
+    "aufgabe_typ": "mehrteilig",
+    "kontext": "Ein Handytarif kostet 8 € Grundgebühr pro Monat plus 0,10 € pro Gesprächsminute.",
+    "aufgabe_text_clean": "Bearbeite die folgenden Teilaufgaben zum Tarif.",
+    "teilaufgaben": [
+      {
+        "key": "a",
+        "prompt": "Wie viel zahlt man bei 60 Gesprächsminuten in einem Monat?",
+        "input_type": "NUMERIC",
+        "accepted": ["14", "14 €", "14 Euro"]
+      },
+      {
+        "key": "b",
+        "prompt": "Stelle eine Gleichung für die monatlichen Kosten K in Abhängigkeit von der Minutenzahl m auf.",
+        "input_type": "OPEN",
+        "accepted": ["K = 8 + 0,10 · m", "K = 8 + 0,1m", "K=8+0,1*m"]
+      },
+      {
+        "key": "c",
+        "prompt": "In einem Monat betrugen die Kosten 20 €. Wie viele Minuten wurde telefoniert?",
+        "input_type": "NUMERIC",
+        "accepted": ["120", "120 Minuten", "120 min"]
+      }
+    ],
+    "akzeptierte_antworten": [],
+    "loesung_pro_ta": [
+      { "key": "a", "loesung": "8 € + 60 · 0,10 € = 14 €" },
+      { "key": "b", "loesung": "K = 8 + 0,10 · m" },
+      { "key": "c", "loesung": "20 = 8 + 0,10 · m  ->  m = 120" }
+    ],
+    "kodierung": "Teilaufgaben unabhängig bewerten. b) jede äquivalente Gleichung gilt als richtig.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Grundgebühr in a) vergessen; 2) in b) Faktor und Summand vertauscht; 3) in c) nicht durch 0,10 dividiert",
+      "didaktischer_hinweis": "Lineares Modell K = b + m·x: konstanter Term = Grundgebühr, Steigung = Minutenpreis.",
+      "schwierigkeit_einschaetzung": "mittel"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-03 Leiter",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": true,
+    "leitidee_raw": "Raum und Form",
+    "kompetenzfeld_ki": "L3",
+    "kompetenzfelder": ["Satz des Pythagoras"],
+    "afb_ki": 2,
+    "aufgabe_typ": "geschlossen",
+    "datei_ext": "png",
+    "urls": { "abbildung": "PLATZHALTER_skizze_leiter.png" },
+    "kontext": "Eine 5 m lange Leiter lehnt an einer senkrechten Wand. Der Fuß der Leiter steht 3 m von der Wand entfernt (siehe Skizze).",
+    "aufgabe_text_clean": "Wie hoch reicht die Leiter an der Wand? Runde auf eine Stelle nach dem Komma.",
+    "akzeptierte_antworten": ["4", "4 m", "4,0", "4,0 m"],
+    "loesung_pro_ta": [
+      { "key": "-", "loesung": "h = Wurzel(5² - 3²) = Wurzel(25 - 9) = Wurzel(16) = 4 m" }
+    ],
+    "kodierung": "Richtig: 4 m (auch 4,0). Bei fehlender Einheit dennoch richtig.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Hypotenuse und Kathete vertauscht (Wurzel(25+9)); 2) ohne Wurzel gerechnet",
+      "didaktischer_hinweis": "Die Leiter ist die Hypotenuse (längste Seite, liegt der rechten Wand-Boden-Ecke gegenüber).",
+      "schwierigkeit_einschaetzung": "mittel"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-04 Glücksrad",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Daten und Zufall",
+    "kompetenzfeld_ki": "L5",
+    "kompetenzfelder": ["Wahrscheinlichkeit"],
+    "afb_ki": 1,
+    "aufgabe_typ": "geschlossen",
+    "kontext": "Ein Glücksrad hat 8 gleich große Felder: 3 rote, 2 blaue und 3 grüne.",
+    "aufgabe_text_clean": "Mit welcher Wahrscheinlichkeit zeigt das Rad nach einer Drehung Rot? Gib das Ergebnis als Bruch oder in Prozent an.",
+    "akzeptierte_antworten": ["3/8", "0,375", "37,5 %", "37,5%"],
+    "loesung_pro_ta": [
+      { "key": "-", "loesung": "P(Rot) = 3/8 = 0,375 = 37,5 %" }
+    ],
+    "kodierung": "Richtig: 3/8 oder 0,375 oder 37,5 %. Gekürzte/äquivalente Brüche gelten.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Nenner 6 statt 8 (nur farbige Felder gezählt); 2) Verhältnis 3:5 statt Wahrscheinlichkeit",
+      "didaktischer_hinweis": "Laplace: günstige durch alle gleich wahrscheinlichen Ergebnisse (Nenner = 8).",
+      "schwierigkeit_einschaetzung": "leicht"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-05 Regentonne",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Messen",
+    "kompetenzfeld_ki": "L2",
+    "kompetenzfelder": ["Volumen von Körpern"],
+    "afb_ki": 2,
+    "aufgabe_typ": "geschlossen",
+    "kontext": "Eine zylinderförmige Regentonne hat einen Durchmesser von 60 cm und eine Höhe von 90 cm.",
+    "aufgabe_text_clean": "Berechne das Fassungsvermögen der Tonne in Litern. Runde auf ganze Liter. (Hinweis: 1 Liter = 1 dm³)",
+    "akzeptierte_antworten": ["254", "254 l", "254 Liter"],
+    "loesung_pro_ta": [
+      { "key": "-", "loesung": "r = 30 cm = 3 dm; h = 9 dm; V = pi · 3² · 9 ≈ 254,47 dm³ ≈ 254 l" }
+    ],
+    "kodierung": "Richtig: 254 l (Toleranz 253-255 je nach Rundung von pi). Einheit nicht zwingend.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Durchmesser als Radius eingesetzt (4-facher Wert); 2) cm³ nicht in Liter umgerechnet",
+      "didaktischer_hinweis": "Erst Radius bestimmen, dann Einheiten konsequent in dm umrechnen (1 dm³ = 1 l).",
+      "schwierigkeit_einschaetzung": "mittel"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-06 Sparbuch",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": true,
+    "leitidee_raw": "Zahl",
+    "kompetenzfeld_ki": "L1",
+    "kompetenzfelder": ["Zinsrechnung"],
+    "afb_ki": 2,
+    "aufgabe_typ": "mehrteilig",
+    "kontext": "Frau Becker legt 2 500 € für ein Jahr auf ein Sparkonto mit 2 % Zinsen pro Jahr an.",
+    "aufgabe_text_clean": "Bearbeite die Teilaufgaben.",
+    "teilaufgaben": [
+      {
+        "key": "a",
+        "prompt": "Wie viel Zinsen erhält sie nach einem Jahr?",
+        "input_type": "NUMERIC",
+        "accepted": ["50", "50 €", "50 Euro"]
+      },
+      {
+        "key": "b",
+        "prompt": "Über welchen Betrag verfügt sie nach einem Jahr inklusive Zinsen?",
+        "input_type": "NUMERIC",
+        "accepted": ["2550", "2550 €", "2.550 €", "2 550 €"]
+      }
+    ],
+    "akzeptierte_antworten": [],
+    "loesung_pro_ta": [
+      { "key": "a", "loesung": "2 % von 2 500 € = 50 €" },
+      { "key": "b", "loesung": "2 500 € + 50 € = 2 550 €" }
+    ],
+    "kodierung": "a) und b) getrennt bewerten. Tausenderpunkt/Leerzeichen ignorieren.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Zinsen mit Kapital verwechselt; 2) in b) Zinsen nicht addiert",
+      "didaktischer_hinweis": "Zinsen Z = K · p / 100; Endkapital = K + Z.",
+      "schwierigkeit_einschaetzung": "leicht"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-07 Klassenarbeit",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Daten und Zufall",
+    "kompetenzfeld_ki": "L5",
+    "kompetenzfelder": ["Kenngrößen von Daten"],
+    "afb_ki": 1,
+    "aufgabe_typ": "mehrteilig",
+    "kontext": "In einer Klassenarbeit wurden folgende Noten geschrieben: 2, 3, 1, 4, 3, 2, 5, 3.",
+    "aufgabe_text_clean": "Werte die Notenliste aus.",
+    "teilaufgaben": [
+      {
+        "key": "a",
+        "prompt": "Berechne den Mittelwert (Durchschnitt) der Noten.",
+        "input_type": "NUMERIC",
+        "accepted": ["2,875", "2.875", "2,88", "2,9"]
+      },
+      {
+        "key": "b",
+        "prompt": "Bestimme den Median (Zentralwert) der Noten.",
+        "input_type": "NUMERIC",
+        "accepted": ["3"]
+      }
+    ],
+    "akzeptierte_antworten": [],
+    "loesung_pro_ta": [
+      { "key": "a", "loesung": "Summe 23 : 8 = 2,875" },
+      { "key": "b", "loesung": "sortiert: 1,2,2,3,3,3,4,5 -> Mittel aus 4. und 5. Wert (3 und 3) = 3" }
+    ],
+    "kodierung": "a) 2,875 oder sinnvoll gerundet (2,88 / 2,9). b) exakt 3.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Median ohne Sortieren bestimmt; 2) Summe falsch; 3) Mittelwert und Median verwechselt",
+      "didaktischer_hinweis": "Median: Werte erst der Größe nach ordnen; bei gerader Anzahl Mittel der beiden mittleren Werte.",
+      "schwierigkeit_einschaetzung": "leicht"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-08 Kerze",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Funktionaler Zusammenhang",
+    "kompetenzfeld_ki": "L4",
+    "kompetenzfelder": ["Modellieren mit Funktionen"],
+    "afb_ki": 3,
+    "aufgabe_typ": "offen",
+    "kontext": "Eine Kerze ist zu Beginn 20 cm hoch. Sie brennt gleichmäßig und wird pro Stunde 2,5 cm kürzer.",
+    "aufgabe_text_clean": "Nach wie vielen Stunden ist die Kerze vollständig heruntergebrannt? Begründe deine Antwort.",
+    "aufgabe_text_roh": "Eine Kerze ist zu Beginn 20cm hoch. Sie brennt gleichmaessig und wird pro Stunde 2,5cm kuerzer. Nach wievielen Stunden ist die Kerze vollstaendig heruntergebrannt? Begruende deine Antwort.",
+    "akzeptierte_antworten": ["8", "8 Stunden", "8 h", "nach 8 Stunden"],
+    "loesung_pro_ta": [
+      { "key": "-", "loesung": "20 cm : 2,5 cm/h = 8 h. Höhe h(t) = 20 - 2,5·t; h(t) = 0 für t = 8." }
+    ],
+    "kodierung": "AFB III: volle Bewertung nur mit Begründung (Division 20 : 2,5 oder Funktionsgleichung). Reine Zahl 8 ohne Begründung = teilweise richtig.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) 20 · 2,5 statt 20 : 2,5; 2) Ergebnis ohne Begründung; 3) Einheit Stunden fehlt",
+      "didaktischer_hinweis": "Lineare Abnahme: Anfangswert durch konstante Änderungsrate teilen; Modell h(t) = 20 - 2,5·t aufstellen.",
+      "schwierigkeit_einschaetzung": "schwer"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-09 Landkarte",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Raum und Form",
+    "kompetenzfeld_ki": "L3",
+    "kompetenzfelder": ["Maßstab und Ähnlichkeit"],
+    "afb_ki": 2,
+    "aufgabe_typ": "geschlossen",
+    "kontext": "Auf einer Landkarte im Maßstab 1 : 250 000 sind zwei Orte 6 cm voneinander entfernt.",
+    "aufgabe_text_clean": "Wie weit sind die beiden Orte in Wirklichkeit voneinander entfernt? Gib das Ergebnis in Kilometern an.",
+    "akzeptierte_antworten": ["15", "15 km"],
+    "loesung_pro_ta": [
+      { "key": "-", "loesung": "6 cm · 250 000 = 1 500 000 cm = 15 000 m = 15 km" }
+    ],
+    "kodierung": "Richtig: 15 km. Zwischenergebnis in cm/m ohne km-Umrechnung = teilweise richtig.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Einheiten nicht umgerechnet (1 500 000 cm als Ergebnis); 2) durch statt mal Maßstab gerechnet",
+      "didaktischer_hinweis": "Maßstab 1:250 000 bedeutet: 1 cm Karte = 250 000 cm Realität; danach in km umrechnen (: 100 000).",
+      "schwierigkeit_einschaetzung": "mittel"
+    }
+  },
+  {
+    "iqb_titel": "VERA8-DEMO-10 Zimmer streichen",
+    "klasse": 8,
+    "quelle": "VERA8_DEMO",
+    "aktiv": false,
+    "fix_anker": false,
+    "leitidee_raw": "Messen",
+    "kompetenzfeld_ki": "L2",
+    "kompetenzfelder": ["Flächeninhalt und Sachrechnen"],
+    "afb_ki": 3,
+    "aufgabe_typ": "mehrteilig",
+    "kontext": "Ein rechteckiges Zimmer ist 4 m lang, 3 m breit und 2,5 m hoch. Die vier Wände sollen gestrichen werden. Türen und Fenster nehmen zusammen 5 m² ein. Eine Dose Farbe reicht für 8 m².",
+    "aufgabe_text_clean": "Plane den Anstrich der Wände.",
+    "teilaufgaben": [
+      {
+        "key": "a",
+        "prompt": "Berechne die tatsächlich zu streichende Wandfläche (ohne Türen und Fenster).",
+        "input_type": "NUMERIC",
+        "accepted": ["30", "30 m²", "30 m2", "30 qm"]
+      },
+      {
+        "key": "b",
+        "prompt": "Wie viele Dosen Farbe müssen mindestens gekauft werden? Begründe deine Antwort.",
+        "input_type": "OPEN",
+        "accepted": ["4", "4 Dosen"]
+      }
+    ],
+    "akzeptierte_antworten": [],
+    "loesung_pro_ta": [
+      { "key": "a", "loesung": "Umfang = 2·(4+3) = 14 m; Wandfläche = 14 · 2,5 = 35 m²; abzüglich 5 m² = 30 m²" },
+      { "key": "b", "loesung": "30 m² : 8 m² = 3,75 -> aufrunden auf 4 Dosen, da 3 Dosen nur 24 m² reichen" }
+    ],
+    "kodierung": "a) 30 m². b) AFB III: 4 Dosen MIT Begründung des Aufrundens (3 Dosen = 24 m² zu wenig). 3,75 ohne Aufrunden = teilweise richtig.",
+    "kommentar_highlights": {
+      "typische_fehler": "1) Boden/Decke mitgerechnet; 2) Türen/Fenster nicht abgezogen; 3) 3,75 abgerundet statt aufgerundet",
+      "didaktischer_hinweis": "Sachkontext: Bei Materialbedarf wird immer aufgerundet. Nur die vier Wände streichen.",
+      "schwierigkeit_einschaetzung": "schwer"
+    }
+  }
+]
