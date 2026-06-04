@@ -23,7 +23,10 @@
 // Nutzung:
 //   npm run export:vera8
 //   npm run export:vera8 -- --limit 0            (0 = alle Items)
-//   npm run export:vera8 -- --by-type            (Mix je Typ: MC/NUMERIC/MATCHING/STEPS_FINAL/OPEN)
+//   npm run export:vera8 -- --by-type            (Mix je Typ; Default-Gruppierung: input_type)
+//   npm run export:vera8 -- --by-type --group-by aufgabe_typ
+//                                                (VERA ist komplett OPEN -> echte Vielfalt
+//                                                 steckt in aufgabe_typ: kurzantwort/mehrteilig/zuordnung)
 //   npm run export:vera8 -- --source VERA8_IQB   (Default; --all-sources hebt Filter auf)
 //   npm run export:vera8 -- --active all|true|false   (Default: all)
 //   npm run export:vera8 -- --out scripts/examples/vera8_export.json
@@ -97,12 +100,12 @@ function toImportShape(r: Row): Record<string, unknown> {
   })
 }
 
-// Balancierter Mix: round-robin ueber die input_type-Gruppen, bis `total`
-// erreicht ist — so ist jeder vorhandene Aufgabentyp im Export vertreten.
-function roundRobinByType(rows: Row[], total: number): Row[] {
+// Balancierter Mix: round-robin ueber die Gruppen des Feldes `field`, bis
+// `total` erreicht ist — so ist jeder vorhandene Aufgabentyp im Export vertreten.
+function roundRobinByType(rows: Row[], total: number, field: string): Row[] {
   const groups = new Map<string, Row[]>()
   for (const r of rows) {
-    const k = String(r.input_type ?? 'OPEN')
+    const k = String(r[field] ?? '?')
     if (!groups.has(k)) groups.set(k, [])
     groups.get(k)!.push(r)
   }
@@ -156,6 +159,7 @@ async function main(): Promise<void> {
   // Source-Filter auf, weil VERA-Items alle OPEN sind — Typ-Vielfalt steckt in
   // den uebrigen Quellen (z.B. seed-screening-items).
   const byType = process.argv.includes('--by-type')
+  const groupBy = getArg('--group-by', 'input_type')! // z.B. aufgabe_typ
   const sourceExplicit = process.argv.includes('--source')
   const applySourceFilter = !allSources && (sourceExplicit || !byType)
 
@@ -187,19 +191,23 @@ async function main(): Promise<void> {
     console.warn('Tipp: zuerst `npm run seed:vera8` / `npm run seed:screening-items` ausfuehren.')
     process.exit(0)
   }
-  if (byType) rows = roundRobinByType(rows, limit > 0 ? limit : rows.length)
+  if (byType) rows = roundRobinByType(rows, limit > 0 ? limit : rows.length, groupBy)
 
   const items = rows.map(toImportShape)
   writeFileSync(out, JSON.stringify(items, null, 2) + '\n', 'utf-8')
 
   // Zusammenfassung + QS-Luecken-Uebersicht
   console.log(`Exportiert: ${items.length} Items -> ${out}`)
-  const byInputType = rows.reduce<Record<string, number>>((m, r) => {
-    const k = String(r.input_type ?? '?')
-    m[k] = (m[k] ?? 0) + 1
-    return m
-  }, {})
-  console.log('Aufgabentypen:', JSON.stringify(byInputType))
+  const dist = (field: string): string =>
+    JSON.stringify(
+      rows.reduce<Record<string, number>>((m, r) => {
+        const k = String(r[field] ?? '?')
+        m[k] = (m[k] ?? 0) + 1
+        return m
+      }, {}),
+    )
+  console.log('input_type :', dist('input_type'))
+  console.log('aufgabe_typ:', dist('aufgabe_typ'))
   const byLeitidee = items.reduce<Record<string, number>>((m, i) => {
     const k = String(i.kompetenzfeld_ki ?? i.leitidee_raw ?? '?')
     m[k] = (m[k] ?? 0) + 1
