@@ -1,11 +1,18 @@
-// Liest echte VERA-8 Items aus screening_items und schreibt sie als JSON im
-// Import-Format (Vera8Item) raus — als Vorlage fuer die QS. Nur tatsaechlich
-// befuellte Felder werden exportiert ("vorselektiert"), leere/NULL-Felder
-// fallen weg, damit die QS sofort sieht, was schon vorhanden ist und was fehlt.
+// Liest echte VERA-8 / Screening-Items aus screening_items und schreibt sie als
+// JSON im Import-Format (Vera8Item) raus — als Vorlage fuer die QS. Nur
+// tatsaechlich befuellte Felder werden exportiert ("vorselektiert"), leere/NULL-
+// Felder fallen weg, damit die QS sofort sieht, was vorhanden ist und was fehlt.
 //
 // Gegenstueck zu scripts/seed_vera8.ts (Reverse-Mapping DB-Spalten -> Vera8Item).
-// Das Ergebnis kann unveraendert wieder via `npm run seed:vera8` importiert werden
-// (iqb_titel ist UNIQUE => idempotent).
+// Reine VERA-Items (input_type=OPEN) sind 1:1 via `npm run seed:vera8`
+// re-importierbar. Im --by-type-Mix sind auch andere Typen enthalten
+// (MC/NUMERIC/MATCHING/STEPS_FINAL) — diese tragen input_type/payload/canonical
+// fuer die QS, werden vom VERA-Seed aber als OPEN behandelt.
+//
+// Hinweis zu Typen: screening_items kennt per DB-CHECK genau 5 input_type-Werte:
+//   MC, NUMERIC, MATCHING, STEPS_FINAL, OPEN.
+//   "Koordinatensystem" (COORDINATE) ist NUR Mock (firstSession.ts), nicht in der
+//   DB. DRAW wird im Editor als OPEN gespeichert. Beide kommen hier nicht vor.
 //
 // Voraussetzung (lokal, NICHT in der Cloud-Session):
 //   ENV in .env: VITE_SUPABASE_URL (oder SUPABASE_URL) + SUPABASE_SERVICE_ROLE_KEY.
@@ -16,6 +23,7 @@
 // Nutzung:
 //   npm run export:vera8
 //   npm run export:vera8 -- --limit 0            (0 = alle Items)
+//   npm run export:vera8 -- --by-type            (Mix je Typ: MC/NUMERIC/MATCHING/STEPS_FINAL/OPEN)
 //   npm run export:vera8 -- --source VERA8_IQB   (Default; --all-sources hebt Filter auf)
 //   npm run export:vera8 -- --active all|true|false   (Default: all)
 //   npm run export:vera8 -- --out scripts/examples/vera8_export.json
@@ -51,8 +59,8 @@ function compact<T extends Record<string, unknown>>(obj: T): Partial<T> {
 
 type Row = Record<string, any>
 
-// DB-Zeile -> Vera8Item-Importform. id + active bleiben als QS-Kontext erhalten
-// (werden vom Seed-Script ignoriert, schaden also beim Re-Import nicht).
+// DB-Zeile -> Vera8Item-Importform. id + active + input_type/payload/canonical
+// bleiben als QS-Kontext erhalten (vom VERA-Seed ignoriert, schaden also nicht).
 function toImportShape(r: Row): Record<string, unknown> {
   const meta = (r.meta ?? {}) as Record<string, any>
   const acceptedFromCanonical = Array.isArray(r.canonical?.accepted)
@@ -64,6 +72,8 @@ function toImportShape(r: Row): Record<string, unknown> {
     klasse: r.class_level,
     quelle: r.quelle ?? r.source,
     aktiv: r.active,
+    input_type: r.input_type,
+    check_type: r.check_type,
     fix_anker: r.fix_anker || undefined,
     leitidee_raw: r.topic,
     kompetenzfeld_ki: r.skill_code ?? meta.kompetenzfeld_ki ?? null,
@@ -73,6 +83,9 @@ function toImportShape(r: Row): Record<string, unknown> {
     kontext: r.kontext,
     aufgabe_text_clean: r.prompt,
     aufgabe_text_roh: meta.aufgabe_text_roh ?? null,
+    payload: r.payload,
+    canonical: r.canonical,
+    tolerance: r.tolerance,
     teilaufgaben: r.teilaufgaben,
     akzeptierte_antworten: r.akzeptierte_antworten ?? acceptedFromCanonical,
     loesung_pro_ta: r.loesung_pro_ta,
@@ -84,15 +97,39 @@ function toImportShape(r: Row): Record<string, unknown> {
   })
 }
 
+// Balancierter Mix: round-robin ueber die input_type-Gruppen, bis `total`
+// erreicht ist — so ist jeder vorhandene Aufgabentyp im Export vertreten.
+function roundRobinByType(rows: Row[], total: number): Row[] {
+  const groups = new Map<string, Row[]>()
+  for (const r of rows) {
+    const k = String(r.input_type ?? 'OPEN')
+    if (!groups.has(k)) groups.set(k, [])
+    groups.get(k)!.push(r)
+  }
+  const buckets = [...groups.values()]
+  const out: Row[] = []
+  let i = 0
+  while (out.length < total && buckets.some((b) => b.length > 0)) {
+    const b = buckets[i % buckets.length]
+    if (b.length > 0) out.push(b.shift()!)
+    i++
+  }
+  return out
+}
+
 // QS-Luecken-Check: welche zentralen Felder fehlen noch?
 const QS_CHECKS: Array<[string, (i: Record<string, unknown>) => boolean]> = [
   ['prompt', (i) => !!i.aufgabe_text_clean],
   ['leitidee', (i) => !!i.leitidee_raw],
   ['afb', (i) => i.afb_ki != null],
-  ['antworten', (i) =>
-    Array.isArray(i.akzeptierte_antworten) ||
-    (Array.isArray(i.teilaufgaben) &&
-      (i.teilaufgaben as any[]).some((t) => Array.isArray(t?.accepted) && t.accepted.length))],
+  [
+    'antworten',
+    (i) =>
+      Array.isArray(i.akzeptierte_antworten) ||
+      !!i.payload ||
+      (Array.isArray(i.teilaufgaben) &&
+        (i.teilaufgaben as any[]).some((t) => Array.isArray(t?.accepted) && t.accepted.length)),
+  ],
   ['kodierung', (i) => !!i.kodierung],
   ['hinweise', (i) => !!i.kommentar_highlights],
 ]
@@ -115,34 +152,54 @@ async function main(): Promise<void> {
   const source = getArg('--source', 'VERA8_IQB')!
   const allSources = process.argv.includes('--all-sources')
   const activeArg = getArg('--active', 'all')! // all | true | false
+  // --by-type: balancierter Mix ueber alle input_type-Werte. Hebt den Default-
+  // Source-Filter auf, weil VERA-Items alle OPEN sind — Typ-Vielfalt steckt in
+  // den uebrigen Quellen (z.B. seed-screening-items).
+  const byType = process.argv.includes('--by-type')
+  const sourceExplicit = process.argv.includes('--source')
+  const applySourceFilter = !allSources && (sourceExplicit || !byType)
 
   const supabase = createClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
   })
 
-  let q = supabase.from('screening_items').select('*').order('iqb_titel', { ascending: true })
-  if (!allSources) q = q.eq('source', source)
+  let q = supabase
+    .from('screening_items')
+    .select('*')
+    .order('input_type', { ascending: true })
+    .order('iqb_titel', { ascending: true })
+  if (applySourceFilter) q = q.eq('source', source)
   if (activeArg === 'true') q = q.eq('active', true)
   if (activeArg === 'false') q = q.eq('active', false)
-  if (limit > 0) q = q.limit(limit)
+  // by-type sampelt clientseitig -> groesseren Pool holen; sonst direkt limitieren.
+  if (byType) q = q.limit(2000)
+  else if (limit > 0) q = q.limit(limit)
 
   const { data, error } = await q
   if (error) {
     console.error('Lese-Fehler:', error.message)
     process.exit(1)
   }
-  const rows = (data ?? []) as Row[]
+  let rows = (data ?? []) as Row[]
   if (!rows.length) {
-    console.warn(`Keine Items gefunden (source=${allSources ? '*' : source}, active=${activeArg}).`)
-    console.warn('Tipp: zuerst `npm run seed:vera8` ausfuehren oder --all-sources / --source pruefen.')
+    const scope = applySourceFilter ? `source=${source}` : 'alle Quellen'
+    console.warn(`Keine Items gefunden (${scope}, active=${activeArg}).`)
+    console.warn('Tipp: zuerst `npm run seed:vera8` / `npm run seed:screening-items` ausfuehren.')
     process.exit(0)
   }
+  if (byType) rows = roundRobinByType(rows, limit > 0 ? limit : rows.length)
 
   const items = rows.map(toImportShape)
   writeFileSync(out, JSON.stringify(items, null, 2) + '\n', 'utf-8')
 
   // Zusammenfassung + QS-Luecken-Uebersicht
   console.log(`Exportiert: ${items.length} Items -> ${out}`)
+  const byInputType = rows.reduce<Record<string, number>>((m, r) => {
+    const k = String(r.input_type ?? '?')
+    m[k] = (m[k] ?? 0) + 1
+    return m
+  }, {})
+  console.log('Aufgabentypen:', JSON.stringify(byInputType))
   const byLeitidee = items.reduce<Record<string, number>>((m, i) => {
     const k = String(i.kompetenzfeld_ki ?? i.leitidee_raw ?? '?')
     m[k] = (m[k] ?? 0) + 1
@@ -155,7 +212,7 @@ async function main(): Promise<void> {
   for (const i of items) {
     const missing = QS_CHECKS.filter(([, ok]) => !ok(i)).map(([n]) => n)
     const flag = missing.length ? `FEHLT: ${missing.join(', ')}` : 'vollstaendig'
-    console.log(`  - ${String(i.iqb_titel)}: ${flag}`)
+    console.log(`  - ${String(i.iqb_titel ?? i.id)} [${String(i.input_type ?? '?')}]: ${flag}`)
   }
 }
 
