@@ -9,9 +9,11 @@ type DrawCanvasProps = {
   initialDataUrl?: string | null
 }
 
-const STROKE_COLOR = '#0F172A'
 const STROKE_WIDTH = 2.5
-const BG_COLOR = '#FFFFFF'
+
+function cssVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+}
 
 export function DrawCanvas({ onChange, height = 260, initialDataUrl }: DrawCanvasProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -35,9 +37,8 @@ export function DrawCanvas({ onChange, height = 260, initialDataUrl }: DrawCanva
     ctx.lineWidth = STROKE_WIDTH
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
-    ctx.strokeStyle = STROKE_COLOR
-    // weisser Hintergrund, damit beim Speichern als PNG nicht transparent
-    ctx.fillStyle = BG_COLOR
+    ctx.strokeStyle = cssVar('--color-text-primary')
+    ctx.fillStyle = cssVar('--color-bg-surface')
     ctx.fillRect(0, 0, cssWidth, height)
     if (initialDataUrl) {
       const img = new Image()
@@ -92,7 +93,7 @@ export function DrawCanvas({ onChange, height = 260, initialDataUrl }: DrawCanva
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     const dpr = window.devicePixelRatio || 1
-    ctx.fillStyle = BG_COLOR
+    ctx.fillStyle = cssVar('--color-bg-surface')
     ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr)
     setHasInk(false)
     onChange?.(null)

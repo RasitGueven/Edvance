@@ -16,10 +16,10 @@ const PATHS = {
 };
 
 const COLORS = {
-  midnight: '#334D7A',
-  white: '#F7F7F5',
-  black: '#1A1A18',
-  gold: '#E8A020',
+  midnight: 'var(--color-primary)',
+  white: 'var(--color-bg-app)',
+  black: 'var(--color-text-primary)',
+  gold: 'var(--color-accent)',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
