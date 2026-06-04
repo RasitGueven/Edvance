@@ -98,44 +98,89 @@ Neue Gruppe „Emotionale Momente" mit allen Moment-Farben (Level-Up, Moment-Lev
 
 ## 2. Befunde aus dem Code-Review
 
+`npx tsc --noEmit` — **Exit Code 0, kein Fehler.** Codebase vollständig typsicher.
+
 ### Blocker (vor nächstem Touch beheben)
 
-1. **`src/components/edvance/admin/DiagnosticsPage.tsx`**: 427 Zeilen (Limit: 400)
-   → `NewTaskForm` + `TaskRow` in `src/components/edvance/admin/` auslagern.
+**B1 — `src/components/brand/EdvanceLogo.tsx:18–23`**: Hardcodierte Hex-Farben im `COLORS`-Objekt
+```ts
+// JETZT
+const COLORS = { midnight: '#334D7A', white: '#F7F7F5', black: '#1A1A18', gold: '#E8A020' }
+// SOLL
+Default-Props auf var(--color-primary) / var(--color-bg-app) / var(--color-accent) umstellen
+```
 
-2. **`src/components/brand/EdvanceLogo.tsx:18–23`**: Hardcodierte Hex-Farben im `COLORS`-Objekt
-   ```ts
-   // JETZT
-   const COLORS = { midnight: '#334D7A', white: '#F7F7F5', ... }
-   // SOLL
-   Default-Werte auf var(--color-primary) / var(--color-accent) umstellen
-   ```
+**B2 — `src/components/brand/EdvanceLogo.tsx`**: Statische Inline-Styles (Z. 115, 137–148, 154–160, 201–212)
+`display: 'inline-flex'`, `alignItems: 'center'`, `flexShrink: 0`, `userSelect: 'none'`, `lineHeight: 1` — alles statisch, muss Tailwind-Klassen werden. Dynamische Werte (`size`-abgeleitete `fontSize`, `width`, `height`, `gap`) dürfen Inline bleiben.
 
-3. **`src/components/brand/EdvanceLogo.tsx`**: Statische Inline-Styles (Zeilen ~115, 137–148, 154–162, 201–211)
-   → `display: 'inline-flex'`, `flexShrink: 0` etc. auf Tailwind-Klassen umstellen.
+**B3 — `src/pages/admin/AdminDashboard.tsx` + `src/pages/coach/CoachDashboard.tsx`**: Rohes shadcn `Card` + Inline-`boxShadow`
+Beide Dateien definieren `SHADOW_CARD = '0 4px 24px 0 rgba(0,0,0,0.08)'` und wenden es als `style={{ boxShadow: SHADOW_CARD }}` an. CLAUDE.md: „Nie rohe `div` für Cards — immer `EdvanceCard`" + „Statische `boxShadow` in Inline-Styles verboten."
+→ Migration auf `EdvanceCard` mit `shadow-premium-sm`/`shadow-premium-md`; `SHADOW_ACTIVE` (dynamisch nach Session-Status) → `shadow-glow-primary` via Tailwind conditional.
+
+**B4 — `src/pages/admin/AdminDashboard.tsx`**: Kein `LoadingPulse` und kein `EmptyState` vorhanden
+Seite lädt Coaches + Tiers asynchron, hat aber weder Lade- noch Leer-Zustand-Behandlung auf Top-Level. CLAUDE.md: `LoadingPulse` und `EmptyState` sind Pflicht.
+
+**B5 — `src/pages/admin/DiagnosticsPage.tsx`**: 427 Zeilen (Limit: 400)
+`NewTaskForm` (Z. 40–212) + `TaskRow` (Z. 213–307) in `src/components/edvance/admin/` auslagern.
 
 ### ⚠️ Kritischer Konflikt — Token vs. v2-Spec
 
-**PR #18 wurde am 17.05.2026 gemergt. Die Notion v2-Design-System-Entscheidung fiel am 27.05.2026 — danach.**
+**PR #18 gemergt am 17.05.2026. Notion v2-Design-System-Entscheidung: 27.05.2026 — danach.**
 
 Die v2-Spec sagt explizit:
 > „Türkis als Level-Up-Identität (`#0E9E96` / `#19C9BC`) — **ersatzlos gestrichen**. Level-Up ist Navy-BG + Champagner-Krone + Altgold-XP."
 
-Die aktuellen Tokens in `src/styles/tokens.css` widersprechen dem:
-```css
---color-levelup:        #0E9E96;   /* ← durch v2-Spec gestrichen */
---color-moment-levelup: #19C9BC;   /* ← durch v2-Spec gestrichen */
---gradient-levelup:     linear-gradient(135deg, #1FD3C6 0%, #0B8B85 100%); /* ← weg */
---shadow-glow-levelup:  ...;       /* ← weg */
-```
+Betroffene Stellen im Code:
+- `src/styles/tokens.css:54–56` — `--color-levelup`, `--color-moment-levelup`, `--color-levelup-on`
+- `src/styles/globals.css:72,85,165,233–237` — `--gradient-levelup`, `--shadow-glow-levelup`, `.bg-gradient-levelup`, `.toast-levelup`
+- `src/components/edvance/index.tsx:96–99` — `EdvanceBadge variant="levelup"` auf Türkis-Token
 
-**Konsequenz**: Diese Tokens werden durch die Design-System v2 Migration (Branch `feature/v2-migration`) überschrieben. Keine weiteren Consumer daran bauen bis Migration läuft.
+**Konsequenz**: Alle Türkis-Level-Up-Tokens werden durch `feature/v2-migration` überschrieben. Keine weiteren Consumer bauen bis Migration läuft. Level-Up-Celebration-Screens nicht in Produktion shippen.
 
 ### Warnungen
 
-- **Space Grotesk** via Google Fonts (`index.html`) — Performance + Datenschutz (DSGVO). Vor Launch: `public/fonts/` lokal hosten.
-- **`src/pages/DiagnosisResult.tsx`**: 946 Zeilen, viele Inline-Styles. Bekannter Tech-Debt — nicht durch diese PRs eingeführt, eigener Cleanup-Ticket nötig.
-- **`DashboardTiles.tsx:21`**: `style={{ background: 'color-mix(...)' }}` — tolerierbar, kein Tailwind-Äquivalent.
+**W1 — `src/pages/admin/DiagnosticsPage.tsx`** (Überschneidung mit B5, separater Aspekt): Bekannter Notion-Backlog-Eintrag.
+
+**W2 — `src/pages/DiagnosisResult.tsx` (946 Z.) + `src/pages/DiagnosisSession.tsx` (764 Z.)**
+Pre-existing Tech-Debt, nicht durch PR #16–18 eingeführt. Eigene Refactor-Session nötig.
+
+**W3 — `src/components/edvance/tasks/MatchingWidget.tsx:14–17`**: Hardcodierte Hex-Farben im Farbpaletten-Array
+`#2D6A9F`, `#16a34a`, `#d97706`, `#7c3aed` — CSS-Variable-Äquivalente vorhanden (`--primary`, `--success`, `--warning`, `--level-purple`). Die `color-mix`-Ausdrücke sollten auf Variablen referenzieren.
+
+**W4 — `src/components/edvance/index.tsx:309–310`**: `AvatarInitials` `AVATAR_PALETTE`
+8-Farben-Array für algorithmische Avatar-Zuweisung. Tolerierbar (keine Named-Token-Äquivalente für Hash-indexierte Palette), aber Abweichung von der Regel dokumentiert.
+
+**W5 — `src/pages/student/StudentDashboard.tsx:305`**: `#9A6B00` hardcodiert
+`fg: '#9A6B00'` statt `var(--color-accent-on)` oder `var(--color-text-secondary)`.
+
+**W6 — `src/components/edvance/DrawCanvas.tsx:14–16`**: `STROKE_COLOR = '#0F172A'`, `BG_COLOR = '#FFFFFF'`
+Canvas-Zeichenprimitive. Bei Compile-Time-Konstanten muss der Wert mit dem Token übereinstimmen (`--color-text-primary`, `--color-bg-surface`). Für dynamische Auflösung: `getComputedStyle`.
+
+**W7 — `src/pages/student/StudentDashboard.tsx`**: Cluster-Loading und Leer-Zustand ohne `LoadingPulse`/`EmptyState`
+`<p className="text-sm text-muted">Lade Themen …</p>` statt `<LoadingPulse>` + rohes shadcn `Card` statt `<EmptyState>`.
+
+**W8 — `src/pages/student/StudentDashboard.tsx`**: Touch-Targets unter 44px
+- Z. 250–256: „Filter zurücksetzen"-Button — kein `min-h`-Class, ca. 20px gerendert. → `min-h-[44px] px-3` oder `<Button variant="ghost" size="sm">`.
+- Z. 232: Suche-Clear-Button nur `p-1` (ca. 24px). → `p-2.5` / `w-11 h-11`.
+
+**W9 — Space Grotesk via Google Fonts** (`index.html:8–12`) — DSGVO + Performance. Vor Launch: WOFF2 nach `public/fonts/`, `@font-face` in `globals.css`, Google-Fonts-Link entfernen.
+
+**W10 — `src/pages/admin/LeadsPage.tsx:219–224`**: Boolean-Toggle via Inline-Style statt Tailwind-Conditional
+`borderColor`/`background` auf aktiven/inaktiven Zustand — als Tailwind conditional class lösbar (niedriger Priorität).
+
+### Grün ✓
+
+- `npx tsc --noEmit` — Exit Code 0, keine Fehler
+- `.env` in `.gitignore` (Z. 7–8), nicht committet; nur `VITE_SUPABASE_ANON_KEY` im Frontend
+- `behavior_snapshots` append-only — nur `.insert()` in `behavior.ts`, kein `UPDATE`/`DELETE`
+- Supabase vollständig in `src/lib/` gekapselt — kein direkter Call in Pages/Komponenten
+- `EdvanceBadge` `levelup`/`repair`-Varianten nutzen korrekt CSS-Variablen (kein Hex)
+- `ToastBanner` `levelup` via CSS-Klasse `.toast-levelup` mit `var(--gradient-levelup)` — korrekt
+- RLS auf allen Tabellen (011–021) vorhanden
+- Auth-geschützte Routen ausschließlich via `ProtectedRoute`
+- `EdvanceNavbar` clean: nur Tailwind + CSS-Variablen, `EdvanceLogo` korrekt eingebunden
+- `globals.css` (356 Z.) + `tokens.css` (89 Z.) im Limit; `@theme inline`-Block mappt alle neuen Tokens korrekt
+- SVG-Brand-Assets bestätigt in `public/brand/` (5 Dateien)
 
 ### Grün ✓
 
