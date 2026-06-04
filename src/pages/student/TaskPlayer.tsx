@@ -197,7 +197,6 @@ export function TaskPlayer(): JSX.Element {
         />
       )}
       <main className="mx-auto max-w-3xl px-4 py-6">
-        {/* Breadcrumb */}
         <div className="mb-4 flex items-center gap-3 text-sm">
           <button
             type="button"
@@ -219,7 +218,6 @@ export function TaskPlayer(): JSX.Element {
           )}
         </div>
 
-        {/* Type + Difficulty Badges */}
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <TypeBadge type={task.content_type} />
           {task.difficulty != null && <DifficultyBadge difficulty={task.difficulty} />}
@@ -235,7 +233,6 @@ export function TaskPlayer(): JSX.Element {
           )}
         </div>
 
-        {/* Hauptbereich – Content je content_type */}
         <Card className="mb-4">
           <CardContent className="pt-6">
             {task.content_type === 'video' ? (
@@ -248,7 +245,6 @@ export function TaskPlayer(): JSX.Element {
           </CardContent>
         </Card>
 
-        {/* Antwort- / Bestaetigungs-Bereich */}
         {!submitted && task.content_type === 'exercise' && (
           <Card className="mb-4">
             <CardContent className="pt-6">
@@ -290,7 +286,6 @@ export function TaskPlayer(): JSX.Element {
           </Card>
         )}
 
-        {/* Navigation */}
         {siblings.length > 0 && (
           <div className="flex items-center justify-between gap-3">
             <Button

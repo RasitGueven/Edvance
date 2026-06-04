@@ -163,7 +163,6 @@ export function TaskWidgetDemo(): JSX.Element {
         </div>
 
         <div className="flex flex-col gap-8">
-          {/* Multiple Choice */}
           <Section
             type="MC"
             question={MC_DEMO.question}
@@ -179,7 +178,6 @@ export function TaskWidgetDemo(): JSX.Element {
             />
           </Section>
 
-          {/* Matching / Zuordnung */}
           <Section
             type="MATCHING"
             question={MATCHING_DEMO.question}
@@ -196,7 +194,6 @@ export function TaskWidgetDemo(): JSX.Element {
             />
           </Section>
 
-          {/* Steps / Rechnen */}
           <Section
             type="STEPS"
             question={STEPS_DEMO.question}
@@ -215,7 +212,6 @@ export function TaskWidgetDemo(): JSX.Element {
             />
           </Section>
 
-          {/* Freitext */}
           <Section
             type="FREE_INPUT"
             question={FREE_DEMO.question}
@@ -237,7 +233,6 @@ export function TaskWidgetDemo(): JSX.Element {
             </div>
           </Section>
 
-          {/* Zeichnen */}
           <Section
             type="DRAW"
             question={DRAW_DEMO.question}

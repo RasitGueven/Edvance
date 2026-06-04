@@ -63,7 +63,6 @@ export function LearningPathMap({
 
   return (
     <div className="relative mx-auto w-full max-w-md" style={{ height: totalPx }}>
-      {/* Gewundener Weg durch die Welt */}
       <svg
         className="absolute inset-0 h-full w-full"
         viewBox={`0 0 100 ${totalPx}`}
@@ -81,7 +80,6 @@ export function LearningPathMap({
         <path d={reachedD} fill="none" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ stroke: 'color-mix(in srgb, var(--color-gold-champagner) 50%, white)' }} opacity={0.7} vectorEffect="non-scaling-stroke" />
       </svg>
 
-      {/* Level-Knoten */}
       {nodes.map((node, i) => (
         <LevelNode
           key={node.id}
