@@ -7,6 +7,13 @@
 - CLAUDE.md Harness konfiguriert
 - Aufgaben-Schema: Tabellen, RLS-Policies, Seed-Script für KMK-Cluster
 - NRW Klasse 8 Mathe Taxonomie + Diagnostic-Generator
+- **Brand-System (PR #18, Retro 2026-06-05):**
+  - `EdvanceLogo`-Komponente (Symbol / Wordmark / AppIcon) + SVG-Assets in `public/brand/`
+  - Space Grotesk Webfont (Google Fonts, Self-Hosting ausstehend)
+  - Echtes Edvance-Logo in Navbar + Login; `public/favicon.svg` aktualisiert
+- **Level-Up Farbsystem (PR #18, Retro 2026-05-17):**
+  - Level-Up-Türkis-Tokens (`--color-levelup`), Streak-Repair-Lila, Gold vereinheitlicht
+  - ⚠️ Deprecated ab Design-System-v2-Entscheidung (27.05.2026) → Migration via `feature/v2-migration`
 - **Real-Data-Programm (Branch `feature/real-data-program`, siehe Retro 2026-05-16):**
   - Schema-Migrationen 011–021 (RLS-Fix, leads, intake_sessions, screening_tests/
     screening_ratings, tiers/subscriptions, student_coach, sessions, gamification,
