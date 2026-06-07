@@ -165,9 +165,9 @@ export function ParentDashboard(): JSX.Element {
                   </p>
                 ) : (
                   reports.map((r) => (
-                    <div
+                    <EdvanceCard
                       key={r.id}
-                      className="rounded-xl border border-[var(--color-border)] p-4"
+                      className="p-4"
                     >
                       <p className="text-sm font-semibold text-[var(--color-text-primary)]">
                         {new Date(r.period_start).toLocaleDateString('de-DE')} –{' '}
@@ -194,7 +194,7 @@ export function ParentDashboard(): JSX.Element {
                           {r.coach_note}
                         </p>
                       )}
-                    </div>
+                    </EdvanceCard>
                   ))
                 )}
               </div>
