@@ -2,13 +2,12 @@ import { Check } from 'lucide-react'
 import { EmptyState, LoadingPulse } from '@/components/edvance'
 import type { TierStepProps } from '@/types'
 
-const SELECTED_BG = 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
 const RECOMMENDED_INDEX = 1
 
-function tierBorder(selected: boolean, isRecommended: boolean): string {
-  if (selected) return 'var(--color-primary)'
-  if (isRecommended) return 'var(--color-primary-light)'
-  return 'var(--color-border)'
+function tierBorderCls(selected: boolean, isRecommended: boolean): string {
+  if (selected) return 'border-[var(--color-primary)]'
+  if (isRecommended) return 'border-[var(--color-primary-light)]'
+  return 'border-[var(--color-border)]'
 }
 
 function formatPrice(cents: number): string {
@@ -36,11 +35,11 @@ export function TierStep({ data, setData, tiers, loading }: TierStepProps): JSX.
             key={tier.id}
             type="button"
             onClick={() => setData({ ...data, tier: tier.name })}
-            className={`relative flex items-start justify-between rounded-xl border px-5 py-4 text-left transition-all ${selected ? 'ring-2' : ''}`}
-            style={{
-              borderColor: tierBorder(selected, isRecommended),
-              background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
-            }}
+            className={`relative flex items-start justify-between rounded-xl border px-5 py-4 text-left transition-all ${
+              selected
+                ? 'ring-2 bg-[color-mix(in_srgb,var(--color-primary)_8%,transparent)]'
+                : 'bg-[var(--color-bg-surface)]'
+            } ${tierBorderCls(selected, isRecommended)}`}
           >
             {isRecommended && (
               <span className="absolute -top-3 left-4 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white bg-[var(--color-primary)]">
