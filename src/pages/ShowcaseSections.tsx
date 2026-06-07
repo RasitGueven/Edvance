@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import {
   EdvanceCard,
   EdvanceBadge,
@@ -10,7 +11,7 @@ import {
   LoadingPulse,
 } from '@/components/edvance'
 
-export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+export function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
