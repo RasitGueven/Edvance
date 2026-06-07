@@ -4,14 +4,10 @@ import { Label } from '@/components/ui/label'
 import { CLASS_LEVELS, SCHOOL_TYPES } from '@/components/edvance/onboarding/constants'
 import type { SchoolType, StepProps } from '@/types'
 
-const HIGHLIGHT_BG = 'color-mix(in srgb, var(--color-primary) 10%, transparent)'
-
-function selectableStyle(selected: boolean): { borderColor: string; background: string; color: string } {
-  return {
-    borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
-    background: selected ? HIGHLIGHT_BG : 'transparent',
-    color: selected ? 'var(--color-primary)' : 'var(--foreground)',
-  }
+function selectableCls(selected: boolean): string {
+  return selected
+    ? 'border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-[var(--color-primary)]'
+    : 'border-[var(--color-border)] bg-transparent text-foreground'
 }
 
 export function StudentDataStep({ data, setData }: StepProps): JSX.Element {
@@ -58,8 +54,7 @@ export function StudentDataStep({ data, setData }: StepProps): JSX.Element {
                 key={level}
                 type="button"
                 onClick={() => setData({ ...data, classLevel: level })}
-                className="h-9 w-11 rounded-lg border text-sm font-medium transition-all"
-                style={selectableStyle(data.classLevel === level)}
+                className={`h-9 w-11 rounded-lg border text-sm font-medium transition-all ${selectableCls(data.classLevel === level)}`}
               >
                 {level}
               </button>
@@ -77,8 +72,7 @@ export function StudentDataStep({ data, setData }: StepProps): JSX.Element {
                   key={type}
                   type="button"
                   onClick={() => setData({ ...data, schoolType: type as SchoolType })}
-                  className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm text-left transition-all"
-                  style={selectableStyle(selected)}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm text-left transition-all ${selectableCls(selected)}`}
                 >
                   {selected && <Check className="h-3.5 w-3.5 shrink-0" />}
                   {type}

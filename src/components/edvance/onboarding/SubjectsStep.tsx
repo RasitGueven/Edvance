@@ -2,8 +2,6 @@ import { Check } from 'lucide-react'
 import { MAX_SUBJECTS_PER_STUDENT, SUBJECTS } from '@/components/edvance/onboarding/constants'
 import type { StepProps } from '@/types'
 
-const SELECTED_BG = 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
-
 export function SubjectsStep({ data, setData }: StepProps): JSX.Element {
   const toggleSubject = (subject: string): void => {
     const alreadySelected = data.subjects.includes(subject)
@@ -29,11 +27,11 @@ export function SubjectsStep({ data, setData }: StepProps): JSX.Element {
               type="button"
               disabled={disabled}
               onClick={() => toggleSubject(subject)}
-              className={`flex items-center justify-between rounded-xl border px-5 py-4 text-left transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${selected ? 'ring-2' : ''}`}
-              style={{
-                borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
-                background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
-              }}
+              className={`flex items-center justify-between rounded-xl border px-5 py-4 text-left transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                selected
+                  ? 'ring-2 border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_8%,transparent)]'
+                  : 'border-[var(--color-border)] bg-[var(--color-bg-surface)]'
+              }`}
             >
               <span className="font-medium text-foreground">{subject}</span>
               {selected && (
