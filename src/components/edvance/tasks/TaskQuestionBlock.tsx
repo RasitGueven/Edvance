@@ -17,8 +17,9 @@ type CognitiveMeta = {
   label: string
   desc: string
   icon: ReactNode
-  accent: string
-  accentBg: string
+  accentCls: string
+  accentBgCls: string
+  heroBgCls: string
 }
 
 const COGNITIVE_META: Record<CognitiveType, CognitiveMeta> = {
@@ -26,43 +27,39 @@ const COGNITIVE_META: Record<CognitiveType, CognitiveMeta> = {
     label: 'Wissen abrufen',
     desc: 'Setze eine Formel oder Definition direkt ein.',
     icon: <BookOpen className="h-4 w-4" />,
-    accent: 'var(--color-primary)',
-    accentBg: 'var(--color-primary-light)',
+    accentCls: 'text-[var(--color-primary)]',
+    accentBgCls: 'bg-[var(--color-primary)]',
+    heroBgCls: 'bg-[var(--color-primary-light)]',
   },
   TRANSFER: {
     label: 'Übertragen',
     desc: 'Wende Gelerntes auf eine neue Situation an.',
     icon: <MoveRight className="h-4 w-4" />,
-    accent: 'var(--color-success)',
-    accentBg: 'var(--color-success-light)',
+    accentCls: 'text-[var(--color-success)]',
+    accentBgCls: 'bg-[var(--color-success)]',
+    heroBgCls: 'bg-[var(--color-success-light)]',
   },
   ANALYSIS: {
     label: 'Analyse',
     desc: 'Verknüpfe Daten und schließe logisch auf das Ergebnis.',
     icon: <Microscope className="h-4 w-4" />,
-    accent: 'var(--color-gold-warning)',
-    accentBg: 'var(--color-gold-warning-light)',
+    accentCls: 'text-[var(--color-gold-warning)]',
+    accentBgCls: 'bg-[var(--color-gold-warning)]',
+    heroBgCls: 'bg-[var(--color-gold-warning-light)]',
   },
 }
 
 function CognitiveHero({ type }: { type: CognitiveType }): JSX.Element {
   const m = COGNITIVE_META[type]
   return (
-    <div
-      className="flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-2"
-      style={{ backgroundColor: m.accentBg }}
-    >
+    <div className={`flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-2 ${m.heroBgCls}`}>
       <span
-        className="flex h-7 w-7 flex-none items-center justify-center rounded-[var(--radius-full)] text-white"
-        style={{ backgroundColor: m.accent }}
+        className={`flex h-7 w-7 flex-none items-center justify-center rounded-[var(--radius-full)] text-white ${m.accentBgCls}`}
       >
         {m.icon}
       </span>
       <div className="min-w-0">
-        <p
-          className="text-xs font-bold uppercase tracking-widest"
-          style={{ color: m.accent }}
-        >
+        <p className={`text-xs font-bold uppercase tracking-widest ${m.accentCls}`}>
           {m.label}
         </p>
         <p className="text-xs text-[var(--color-text-secondary)]">{m.desc}</p>
@@ -92,11 +89,11 @@ function InputCueChip({ type }: { type: InputType }): JSX.Element | null {
   )
 }
 
-const SUBTASK_TINTS: { accent: string; bg: string }[] = [
-  { accent: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
-  { accent: 'var(--color-success)', bg: 'var(--color-success-light)' },
-  { accent: 'var(--color-gold-warning)', bg: 'var(--color-gold-warning-light)' },
-  { accent: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
+const SUBTASK_TINTS: { borderCls: string; bgCls: string }[] = [
+  { borderCls: 'border-l-[var(--color-primary)]',       bgCls: 'bg-[var(--color-primary)]' },
+  { borderCls: 'border-l-[var(--color-success)]',       bgCls: 'bg-[var(--color-success)]' },
+  { borderCls: 'border-l-[var(--color-gold-warning)]',  bgCls: 'bg-[var(--color-gold-warning)]' },
+  { borderCls: 'border-l-[var(--color-primary)]',       bgCls: 'bg-[var(--color-primary)]' },
 ]
 
 function SubtaskCard({
@@ -111,12 +108,10 @@ function SubtaskCard({
   const tint = SUBTASK_TINTS[index % SUBTASK_TINTS.length]
   return (
     <div
-      className="flex gap-4 rounded-[var(--radius-md)] border-l-4 bg-[var(--color-bg-surface)] p-4 shadow-card"
-      style={{ borderLeftColor: tint.accent }}
+      className={`flex gap-4 rounded-[var(--radius-md)] border-l-4 bg-[var(--color-bg-surface)] p-4 shadow-card ${tint.borderCls}`}
     >
       <div
-        className="flex h-9 w-9 flex-none items-center justify-center rounded-[var(--radius-full)] text-base font-bold uppercase text-white"
-        style={{ backgroundColor: tint.accent }}
+        className={`flex h-9 w-9 flex-none items-center justify-center rounded-[var(--radius-full)] text-base font-bold uppercase text-white ${tint.bgCls}`}
         aria-hidden="true"
       >
         {letter}

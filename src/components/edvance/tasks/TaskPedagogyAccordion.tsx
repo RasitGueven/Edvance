@@ -5,10 +5,19 @@ import type { Task } from '@/types'
 
 type Accent = 'primary' | 'success' | 'warning'
 
-const ACCENT_STYLES: Record<Accent, { bg: string; text: string }> = {
-  primary: { bg: 'var(--color-primary-light)', text: 'var(--color-primary)' },
-  success: { bg: 'var(--color-success-light)', text: 'var(--color-success)' },
-  warning: { bg: 'var(--color-gold-warning-light)', text: 'var(--color-gold-warning)' },
+const ACCENT_CLS: Record<Accent, { openBg: string; text: string }> = {
+  primary: {
+    openBg: 'bg-[var(--color-primary-light)]',
+    text: 'text-[var(--color-primary)]',
+  },
+  success: {
+    openBg: 'bg-[var(--color-success-light)]',
+    text: 'text-[var(--color-success)]',
+  },
+  warning: {
+    openBg: 'bg-[var(--color-gold-warning-light)]',
+    text: 'text-[var(--color-gold-warning)]',
+  },
 }
 
 function Section({
@@ -25,25 +34,23 @@ function Section({
   children: ReactNode
 }): JSX.Element {
   const [open, setOpen] = useState(defaultOpen)
-  const a = ACCENT_STYLES[accent]
+  const a = ACCENT_CLS[accent]
   return (
     <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 transition-colors"
-        style={{ backgroundColor: open ? a.bg : 'var(--color-bg-surface)' }}
+        className={`flex w-full items-center justify-between gap-3 px-4 py-3 transition-colors ${
+          open ? a.openBg : 'bg-[var(--color-bg-surface)]'
+        }`}
         aria-expanded={open}
       >
         <span className="inline-flex items-center gap-2">
-          <span style={{ color: a.text }}>{icon}</span>
-          <span className="text-sm font-semibold" style={{ color: a.text }}>
-            {title}
-          </span>
+          <span className={a.text}>{icon}</span>
+          <span className={`text-sm font-semibold ${a.text}`}>{title}</span>
         </span>
         <ChevronRight
-          className={`h-4 w-4 transition-transform ${open ? 'rotate-90' : 'rotate-0'}`}
-          style={{ color: a.text }}
+          className={`h-4 w-4 transition-transform ${a.text} ${open ? 'rotate-90' : 'rotate-0'}`}
         />
       </button>
       {open && (
