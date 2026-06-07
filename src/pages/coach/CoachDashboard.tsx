@@ -87,18 +87,17 @@ function DashStatCard({
   label,
   value,
   icon,
-  iconBg,
+  iconCls,
 }: {
   label: string
   value: string | number
   icon: JSX.Element
-  iconBg: string
+  iconCls: string
 }): JSX.Element {
   return (
     <EdvanceCard className="flex items-center gap-4">
       <div
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-        style={{ backgroundColor: iconBg }}
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconCls}`}
       >
         {icon}
       </div>
@@ -269,19 +268,19 @@ export function CoachDashboard(): JSX.Element {
             label="Sessions heute"
             value={todayCount}
             icon={<CalendarDays className="h-5 w-5 text-primary" />}
-            iconBg="color-mix(in srgb, var(--color-primary) 12%, transparent)"
+            iconCls="bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
           />
           <DashStatCard
             label="Aktive Schüler"
             value={totalActiveStudents(vms)}
             icon={<Users className="h-5 w-5 text-success" />}
-            iconBg="color-mix(in srgb, var(--color-success) 12%, transparent)"
+            iconCls="bg-[color-mix(in_srgb,var(--color-success)_12%,transparent)]"
           />
           <DashStatCard
             label="Nächste Session"
             value={nextUpcomingTime(vms)}
             icon={<Clock className="h-5 w-5 text-warning" />}
-            iconBg="color-mix(in srgb, var(--color-gold-warning) 12%, transparent)"
+            iconCls="bg-[color-mix(in_srgb,var(--color-gold-warning)_12%,transparent)]"
           />
         </div>
 
