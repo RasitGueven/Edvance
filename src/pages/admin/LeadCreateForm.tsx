@@ -179,13 +179,11 @@ export function LeadCreateForm({ onCreated }: { onCreated: () => void }): JSX.El
                 key={subject}
                 type="button"
                 onClick={() => toggleSubject(subject)}
-                className="rounded-xl border px-4 py-2 text-sm transition-all"
-                style={{
-                  borderColor: active ? 'var(--color-primary)' : 'var(--color-border)',
-                  background: active
-                    ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
-                    : 'var(--color-bg-surface)',
-                }}
+                className={`rounded-xl border px-4 py-2 text-sm transition-all ${
+                  active
+                    ? 'border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_8%,transparent)]'
+                    : 'border-[var(--color-border)] bg-[var(--color-bg-surface)]'
+                }`}
               >
                 {subject}
               </button>

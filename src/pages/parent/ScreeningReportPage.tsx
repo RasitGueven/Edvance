@@ -217,10 +217,11 @@ function ReportColumn({
   return (
     <div className="flex flex-col gap-2">
       <p
-        className="text-xs font-semibold uppercase tracking-widest"
-        style={{
-          color: accent === 'success' ? 'var(--color-success)' : 'var(--color-gold-warning)',
-        }}
+        className={`text-xs font-semibold uppercase tracking-widest ${
+          accent === 'success'
+            ? 'text-[var(--color-success)]'
+            : 'text-[var(--color-gold-warning)]'
+        }`}
       >
         {title}
       </p>
