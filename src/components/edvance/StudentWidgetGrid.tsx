@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { FlaskConical } from 'lucide-react'
 import { EdvanceBadge, EdvanceCard } from '@/components/edvance'
@@ -6,11 +6,23 @@ import type { ResumePoint } from '@/lib/supabase/resume'
 
 type StudentTileAccent = 'primary' | 'streak' | 'levelup' | 'xp'
 
-const ACCENT_VAR: Record<StudentTileAccent, string> = {
-  primary: 'var(--color-primary)',
-  streak:  'var(--color-accent-streak)',
-  levelup: 'var(--color-primary)',
-  xp:      'var(--color-accent)',
+const ACCENT_CLS: Record<StudentTileAccent, { chip: string; text: string }> = {
+  primary: {
+    chip: 'bg-[color-mix(in_srgb,var(--color-primary)_14%,white)] text-[var(--color-primary)]',
+    text: 'text-[var(--color-primary)]',
+  },
+  streak: {
+    chip: 'bg-[color-mix(in_srgb,var(--color-accent-streak)_14%,white)] text-[var(--color-accent-streak)]',
+    text: 'text-[var(--color-accent-streak)]',
+  },
+  levelup: {
+    chip: 'bg-[color-mix(in_srgb,var(--color-primary)_14%,white)] text-[var(--color-primary)]',
+    text: 'text-[var(--color-primary)]',
+  },
+  xp: {
+    chip: 'bg-[color-mix(in_srgb,var(--color-accent)_14%,white)] text-[var(--color-accent)]',
+    text: 'text-[var(--color-accent)]',
+  },
 }
 
 // ─── ContinueTile (2×2 Hero) ─────────────────────────────────────────────────
@@ -64,18 +76,13 @@ function StudentStatTile({
   label,
   loading = false,
 }: StudentStatTileProps): JSX.Element {
-  const accentColor = ACCENT_VAR[accent]
-  const chipStyle: CSSProperties = {
-    backgroundColor: `color-mix(in srgb, ${accentColor} 14%, white)`,
-    color: accentColor,
-  }
+  const cls = ACCENT_CLS[accent]
 
   return (
     <div className="col-span-1">
       <EdvanceCard className="h-full flex flex-col justify-between min-h-[120px]">
         <span
-          className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)] text-xl"
-          style={chipStyle}
+          className={`flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)] text-xl ${cls.chip}`}
           aria-hidden="true"
         >
           {emoji}
@@ -84,10 +91,7 @@ function StudentStatTile({
           {loading ? (
             <span className="h-9 w-14 rounded-[var(--radius-md)] bg-[var(--color-border)] animate-skeleton" />
           ) : (
-            <span
-              className="text-3xl font-bold leading-none"
-              style={{ color: accentColor }}
-            >
+            <span className={`text-3xl font-bold leading-none ${cls.text}`}>
               {value}
             </span>
           )}
@@ -115,12 +119,6 @@ function StudentActionTile({
   title,
   description,
 }: StudentActionTileProps): JSX.Element {
-  const accentColor = ACCENT_VAR['primary']
-  const chipStyle: CSSProperties = {
-    backgroundColor: `color-mix(in srgb, ${accentColor} 14%, white)`,
-    color: accentColor,
-  }
-
   return (
     <Link
       to={to}
@@ -129,8 +127,7 @@ function StudentActionTile({
       <EdvanceCard className="h-full flex flex-col justify-between gap-4">
         <div className="flex items-start justify-between gap-3">
           <span
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)]"
-            style={chipStyle}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] ${ACCENT_CLS.primary.chip}`}
             aria-hidden="true"
           >
             {icon}
