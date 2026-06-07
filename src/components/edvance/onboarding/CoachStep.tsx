@@ -3,7 +3,6 @@ import { EmptyState, LoadingPulse } from '@/components/edvance'
 import { getInitials } from '@/lib/utils'
 import type { CoachStepProps } from '@/types'
 
-const SELECTED_BG = 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
 const AVATAR_GRADIENT = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)'
 
 export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): JSX.Element {
@@ -28,11 +27,11 @@ export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): 
             key={coach.id}
             type="button"
             onClick={() => setData({ ...data, coachId: coach.id })}
-            className={`flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all ${selected ? 'ring-2' : ''}`}
-            style={{
-              borderColor: selected ? 'var(--color-primary)' : 'var(--color-border)',
-              background: selected ? SELECTED_BG : 'var(--color-bg-surface)',
-            }}
+            className={`flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all ${
+              selected
+                ? 'ring-2 border-[var(--color-primary)] bg-[color-mix(in_srgb,var(--color-primary)_8%,transparent)]'
+                : 'border-[var(--color-border)] bg-[var(--color-bg-surface)]'
+            }`}
           >
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
