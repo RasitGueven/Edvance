@@ -12,20 +12,23 @@ export const TYPE_LABEL: Record<ContentType, string> = {
   course: 'Kurs',
 }
 
-const TYPE_BADGE: Record<ContentType, { bg: string; fg: string }> = {
-  exercise: { bg: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', fg: 'var(--color-primary)' },
-  exercise_group: { bg: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', fg: 'var(--color-primary)' },
-  article: { bg: 'color-mix(in srgb, var(--color-success) 12%, transparent)', fg: 'var(--color-success)' },
-  video: { bg: 'color-mix(in srgb, var(--color-gold-warning) 12%, transparent)', fg: 'var(--color-gold-warning)' },
-  course: { bg: 'color-mix(in srgb, var(--color-repair) 12%, transparent)', fg: 'var(--color-repair)' },
+const TYPE_BADGE_CLS: Record<ContentType, string> = {
+  exercise:
+    'bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] text-[var(--color-primary)]',
+  exercise_group:
+    'bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] text-[var(--color-primary)]',
+  article:
+    'bg-[color-mix(in_srgb,var(--color-success)_12%,transparent)] text-[var(--color-success)]',
+  video:
+    'bg-[color-mix(in_srgb,var(--color-gold-warning)_12%,transparent)] text-[var(--color-gold-warning)]',
+  course:
+    'bg-[color-mix(in_srgb,var(--color-repair)_12%,transparent)] text-[var(--color-repair)]',
 }
 
 export function TypeBadge({ type }: { type: ContentType }): JSX.Element {
-  const { bg, fg } = TYPE_BADGE[type]
   return (
     <span
-      className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-      style={{ background: bg, color: fg }}
+      className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${TYPE_BADGE_CLS[type]}`}
     >
       {TYPE_LABEL[type]}
     </span>
@@ -33,18 +36,18 @@ export function TypeBadge({ type }: { type: ContentType }): JSX.Element {
 }
 
 export function DifficultyBadge({ difficulty }: { difficulty: number }): JSX.Element {
-  const dots = [1, 2, 3, 4, 5].map((i) => (
-    <span
-      key={i}
-      className="inline-block h-1.5 w-1.5 rounded-full"
-      style={{
-        background: i <= difficulty ? 'var(--color-primary)' : 'var(--color-neutral-unknown)',
-      }}
-    />
-  ))
   return (
     <span className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-muted">
-      {dots}
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span
+          key={i}
+          className={`inline-block h-1.5 w-1.5 rounded-full ${
+            i <= difficulty
+              ? 'bg-[var(--color-primary)]'
+              : 'bg-[var(--color-neutral-unknown)]'
+          }`}
+        />
+      ))}
     </span>
   )
 }

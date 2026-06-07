@@ -248,10 +248,11 @@ function DifficultyDots({ difficulty }: { difficulty: number }): JSX.Element {
       {[1, 2, 3, 4, 5].map((i) => (
         <span
           key={i}
-          className="h-1.5 w-1.5 rounded-full"
-          style={{
-            background: i <= difficulty ? 'var(--color-primary)' : 'var(--color-neutral-unknown)',
-          }}
+          className={`h-1.5 w-1.5 rounded-full ${
+            i <= difficulty
+              ? 'bg-[var(--color-primary)]'
+              : 'bg-[var(--color-neutral-unknown)]'
+          }`}
         />
       ))}
     </span>
