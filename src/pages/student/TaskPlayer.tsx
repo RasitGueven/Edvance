@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { LoadingPulse, EmptyState } from '@/components/edvance'
 import { TaskAnswerArea } from '@/components/edvance/tasks/TaskAnswerArea'
 import { useAuth } from '@/hooks/useAuth'
 import { useBehaviorTracker } from '@/hooks/useBehaviorTracker'
@@ -148,7 +149,7 @@ export function TaskPlayer(): JSX.Element {
       <div className="min-h-screen bg-background">
         <EdvanceNavbar subtitle="Aufgabe" />
         <main className="mx-auto max-w-3xl px-4 py-8">
-          <p className="text-sm text-muted">Lade Aufgabe …</p>
+          <LoadingPulse type="card" />
         </main>
       </div>
     )
@@ -159,14 +160,16 @@ export function TaskPlayer(): JSX.Element {
       <div className="min-h-screen bg-background">
         <EdvanceNavbar subtitle="Aufgabe" />
         <main className="mx-auto max-w-3xl px-4 py-8">
-          <Card>
-            <CardContent className="pt-6 text-sm text-destructive">
-              {error ?? 'Unbekannter Fehler'}
-            </CardContent>
-          </Card>
-          <Button variant="outline" onClick={() => navigate(-1)} className="mt-4">
-            <ArrowLeft className="mr-1 h-4 w-4" /> Zurueck
-          </Button>
+          <EmptyState
+            icon="⚠️"
+            title="Aufgabe nicht geladen"
+            description={error ?? 'Unbekannter Fehler'}
+            action={
+              <Button variant="outline" onClick={() => navigate(-1)}>
+                <ArrowLeft className="mr-1 h-4 w-4" /> Zurück
+              </Button>
+            }
+          />
         </main>
       </div>
     )

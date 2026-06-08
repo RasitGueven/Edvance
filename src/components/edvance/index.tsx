@@ -306,8 +306,14 @@ interface AvatarInitialsProps {
 }
 
 const AVATAR_PALETTE = [
-  '#2D6A9F', '#0F6E56', '#D97706', '#7C3AED',
-  '#EA580C', '#0E7490', '#BE185D', '#065F46',
+  'var(--primary)',
+  'var(--success)',
+  'var(--warning)',
+  'var(--level-purple)',
+  'var(--streak-orange)',
+  'var(--info)',
+  'var(--success-dark)',
+  'var(--primary-shadow)',
 ]
 
 function nameToColor(name: string): string {

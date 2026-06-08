@@ -27,10 +27,9 @@ function MinimalHeader({ subtitle }: { subtitle: string }) {
     <nav className="flex items-center justify-between bg-card px-6 py-4 border-b-2 border-border">
       <div className="flex items-center gap-3">
         <div
-          className="flex h-10 w-10 items-center justify-center rounded-2xl text-base font-black text-white"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl text-base font-black text-white shadow-press-primary"
           style={{
             background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-            boxShadow: '0 3px 0 0 var(--primary-shadow)',
           }}
         >
           E
