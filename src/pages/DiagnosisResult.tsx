@@ -12,6 +12,7 @@ import type { BehaviorAnalysis, BehaviorSnapshot } from '@/types/diagnosis'
 import type { RunTask } from '@/types'
 import { Button } from '@/components/ui/button'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { getInitials } from '@/lib/utils'
 
 // Mapping: Diagnose-Mock-Cluster (M8.* taxonomy) → KMK-Kompetenzbereich
 // (Schema seit Migration 001). Bei Klick auf einen Fokus-Cluster im
@@ -70,14 +71,6 @@ function formatDuration(ms: number) {
   return `${min}m ${sec}s`
 }
 
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
 
 // ── Radial Gauge ──────────────────────────────────────────────────────────────
 
@@ -631,18 +624,18 @@ export function DiagnosisResult() {
           {/* Decorative circles */}
           <div
             className="absolute -top-12 -right-12 h-48 w-48 rounded-full opacity-10"
-            style={{ background: 'white' }}
+            style={{ background: 'var(--surface)' }}
           />
           <div
             className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full opacity-5"
-            style={{ background: 'white' }}
+            style={{ background: 'var(--surface)' }}
           />
 
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-5">
               <div
                 className="flex h-20 w-20 items-center justify-center rounded-3xl text-3xl font-black text-primary shrink-0"
-                style={{ background: 'white', borderBottom: '4px solid color-mix(in srgb, white 80%, black)' }}
+                style={{ background: 'var(--surface)', borderBottom: '4px solid color-mix(in srgb, var(--surface) 80%, black)' }}
               >
                 {getInitials(result.student_name)}
               </div>
