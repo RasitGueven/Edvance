@@ -302,7 +302,7 @@ const CLUSTER_TINTS = [
   { bg: 'var(--color-success-light)',     fg: 'var(--color-success)' },
   { bg: 'var(--color-warning-light)',     fg: 'var(--color-warning)' },
   { bg: 'var(--color-info-light)',        fg: 'var(--color-info)' },
-  { bg: 'color-mix(in srgb, var(--xp-gold) 14%, white)', fg: '#9A6B00' },
+  { bg: 'color-mix(in srgb, var(--xp-gold) 14%, white)', fg: 'var(--warning-dark)' },
 ]
 
 function ClusterGrid({ clusters }: { clusters: SkillCluster[] }): JSX.Element {
