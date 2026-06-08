@@ -22,11 +22,6 @@ import type {
 } from '@/types'
 
 const PLACEHOLDER_DASH = '–'
-const SHADOW_CARD = '0 1px 6px 0 rgba(0,0,0,0.07)'
-const SHADOW_ACTIVE = '0 2px 12px 0 rgba(15,110,86,0.10)'
-const ICON_BG_PRIMARY = 'color-mix(in srgb, var(--primary) 12%, transparent)'
-const ICON_BG_SUCCESS = 'color-mix(in srgb, var(--success) 12%, transparent)'
-const ICON_BG_WARNING = 'color-mix(in srgb, var(--warning) 12%, transparent)'
 
 const STATUS_BORDER_COLOR: Record<SessionStatus, string> = {
   active: 'border-l-success',
@@ -71,19 +66,18 @@ function StatCard({
   label,
   value,
   icon,
-  iconBackground,
+  iconClassName,
 }: {
   label: string
   value: string | number
   icon: JSX.Element
-  iconBackground: string
+  iconClassName: string
 }): JSX.Element {
   return (
-    <Card style={{ boxShadow: SHADOW_CARD }}>
+    <Card className="shadow-card">
       <CardContent className="flex items-center gap-4 pt-6">
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: iconBackground }}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconClassName}`}
         >
           {icon}
         </div>
@@ -106,8 +100,7 @@ function SessionCard({
   const { session, students } = vm
   return (
     <Card
-      className={`border-l-4 ${STATUS_BORDER_COLOR[session.status]} ${STATUS_BG[session.status]}`}
-      style={{ boxShadow: session.status === 'active' ? SHADOW_ACTIVE : SHADOW_CARD }}
+      className={`border-l-4 ${STATUS_BORDER_COLOR[session.status]} ${STATUS_BG[session.status]} ${session.status === 'active' ? 'shadow-elevation-sm' : 'shadow-card'}`}
     >
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -267,19 +260,19 @@ export function CoachDashboard(): JSX.Element {
             label="Sessions heute"
             value={vms.length}
             icon={<CalendarDays className="h-5 w-5 text-primary" />}
-            iconBackground={ICON_BG_PRIMARY}
+            iconClassName="bg-primary/10"
           />
           <StatCard
             label="Aktive Schüler"
             value={totalActiveStudents(vms)}
             icon={<Users className="h-5 w-5 text-success" />}
-            iconBackground={ICON_BG_SUCCESS}
+            iconClassName="bg-success/10"
           />
           <StatCard
             label="Nächste Session"
             value={nextUpcomingTime(vms)}
             icon={<Clock className="h-5 w-5 text-warning" />}
-            iconBackground={ICON_BG_WARNING}
+            iconClassName="bg-warning/10"
           />
         </div>
 

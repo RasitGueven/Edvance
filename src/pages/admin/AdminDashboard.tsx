@@ -17,9 +17,6 @@ import { listTiers } from '@/lib/supabase/subscriptions'
 import { provisionStudent } from '@/lib/supabase/provision'
 import type { Coach, OnboardingFormData, SchoolKind, TierPlan } from '@/types'
 
-const SHADOW_CARD = '0 4px 24px 0 rgba(0,0,0,0.08)'
-const SUCCESS_ICON_BG = 'color-mix(in srgb, var(--success) 15%, transparent)'
-
 const STEP_DATA = 0
 const STEP_SUBJECTS = 1
 const STEP_TIER = 2
@@ -68,9 +65,9 @@ type SuccessStateProps = {
 function SuccessState({ data, coaches, onReset }: SuccessStateProps): JSX.Element {
   const coachName = coaches.find((entry) => entry.id === data.coachId)?.full_name
   return (
-    <Card style={{ boxShadow: SHADOW_CARD }}>
+    <Card className="shadow-card">
       <CardContent className="flex flex-col items-center gap-4 py-14 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full" style={{ background: SUCCESS_ICON_BG }}>
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/15">
           <Check className="h-8 w-8 text-success" />
         </div>
         <div>
@@ -180,7 +177,7 @@ export function AdminDashboard(): JSX.Element {
         {done ? (
           <SuccessState data={data} coaches={coaches} onReset={handleReset} />
         ) : (
-          <Card style={{ boxShadow: SHADOW_CARD }}>
+          <Card className="shadow-card">
             <CardHeader className="pb-2">
               <h1 className="text-xl font-bold text-foreground">Schüler-Onboarding</h1>
               <p className="text-sm text-muted">
