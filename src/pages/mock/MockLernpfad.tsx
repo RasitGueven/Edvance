@@ -17,7 +17,6 @@ export function MockLernpfad(): JSX.Element {
   const { t } = useTranslation('student')
   const navigate = useNavigate()
 
-  // Klick auf ein freigeschaltetes Level startet die Session.
   const handleSelect = (): void => {
     navigate('/mock/first-session')
   }
