@@ -1,9 +1,8 @@
 import { Check } from 'lucide-react'
 import { EmptyState, LoadingPulse } from '@/components/edvance'
 import { getInitials } from '@/lib/utils'
+import { PRIMARY_GRADIENT } from '@/components/edvance/onboarding/constants'
 import type { CoachStepProps } from '@/types'
-
-const AVATAR_GRADIENT = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)'
 
 export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): JSX.Element {
   if (loading) return <LoadingPulse type="list" lines={3} />
@@ -35,7 +34,7 @@ export function CoachStep({ data, setData, coaches, loading }: CoachStepProps): 
           >
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
-              style={{ background: AVATAR_GRADIENT }}
+              style={{ background: PRIMARY_GRADIENT }}
             >
               {getInitials(name)}
             </span>

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn, getInitials } from '@/lib/utils'
 
 interface AvatarInitialsProps {
   name: string
@@ -24,12 +24,6 @@ function nameToColor(name: string): string {
     hash = hash & hash
   }
   return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length]
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
 }
 
 export function AvatarInitials({ name, size = 'md', color = 'auto' }: AvatarInitialsProps) {
