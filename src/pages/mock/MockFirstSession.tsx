@@ -25,7 +25,6 @@ export function MockFirstSession(): JSX.Element {
   const [correctCount, setCorrectCount] = useState<number>(0)
   const [checkIn, setCheckIn] = useState<CheckInAnswers | null>(null)
 
-  // Lehrer-Themen → gefilterte Aufgaben (Mock-Auswahl-Logik).
   const sessionTasks: MockTask[] = useMemo(
     () => selectTasksForSession(checkIn?.teacherTopicIds ?? []),
     [checkIn?.teacherTopicIds],
