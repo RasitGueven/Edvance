@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { Search, X } from 'lucide-react'
-import { CONTENT_TYPE_LABELS } from '@/lib/taskLabels'
+import { COGNITIVE_TYPE_LABELS, CONTENT_TYPE_LABELS } from '@/lib/taskLabels'
 import type { CognitiveType, ContentType } from '@/types'
 
 export interface TaskFilterState {
@@ -29,9 +29,8 @@ export function isFilterActive(state: TaskFilterState): boolean {
   )
 }
 
-const CONTENT_TYPES: ContentType[] = ['exercise', 'exercise_group', 'article', 'video', 'course']
-
-const COGNITIVE_TYPES: CognitiveType[] = ['FACT', 'TRANSFER', 'ANALYSIS']
+const CONTENT_TYPES = Object.keys(CONTENT_TYPE_LABELS) as ContentType[]
+const COGNITIVE_TYPES = Object.keys(COGNITIVE_TYPE_LABELS) as CognitiveType[]
 
 function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
   const next = new Set(set)
