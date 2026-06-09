@@ -1,8 +1,6 @@
 import { Check } from 'lucide-react'
-import { STEP_LABELS } from '@/components/edvance/onboarding/constants'
+import { STEP_LABELS, PRIMARY_GRADIENT } from '@/components/edvance/onboarding/constants'
 import type { StepIndicatorProps } from '@/types'
-
-const ACTIVE_BG = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)'
 
 function stepLabelCls(done: boolean, active: boolean): string {
   if (active) return 'text-[var(--color-primary)]'
@@ -26,7 +24,7 @@ export function StepIndicator({ current }: StepIndicatorProps): JSX.Element {
                     background: done
                       ? 'var(--color-success)'
                       : active
-                      ? ACTIVE_BG
+                      ? PRIMARY_GRADIENT
                       : 'var(--color-border)',
                   }}
                 >
