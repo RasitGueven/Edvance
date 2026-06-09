@@ -15,6 +15,9 @@ export const MAX_SUBJECTS_PER_STUDENT = 2
 
 export const STEP_LABELS = ['Stammdaten', 'Fächer', 'Tarif', 'Coach', 'Abschluss'] as const
 
+export const PRIMARY_GRADIENT =
+  'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)'
+
 export const EMPTY_FORM: OnboardingFormData = {
   firstName: '',
   lastName: '',
