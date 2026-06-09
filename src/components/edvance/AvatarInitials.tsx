@@ -17,6 +17,12 @@ const AVATAR_PALETTE = [
   'var(--color-success)',
 ]
 
+const SIZE_STYLES: Record<string, string> = {
+  sm: 'w-8 h-8 text-xs',
+  md: 'w-10 h-10 text-sm',
+  lg: 'w-14 h-14 text-lg',
+}
+
 function nameToColor(name: string): string {
   let hash = 0
   for (let i = 0; i < name.length; i++) {
@@ -29,17 +35,11 @@ function nameToColor(name: string): string {
 export function AvatarInitials({ name, size = 'md', color = 'auto' }: AvatarInitialsProps) {
   const bg = color === 'auto' ? nameToColor(name) : color
 
-  const sizeStyles: Record<string, string> = {
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-10 h-10 text-sm',
-    lg: 'w-14 h-14 text-lg',
-  }
-
   return (
     <div
       className={cn(
         'flex-none flex items-center justify-center rounded-[var(--radius-full)] font-bold text-white select-none',
-        sizeStyles[size],
+        SIZE_STYLES[size],
       )}
       style={{ backgroundColor: bg }}
       title={name}
