@@ -14,10 +14,8 @@ import {
   listScreeningItems,
   setScreeningItemActive,
 } from '@/lib/supabase/screeningItems'
+import { SELECT_SM as SELECT_CLASS } from '@/lib/formStyles'
 import type { ScreeningItem, SkillCluster, Subject } from '@/types'
-
-const SELECT_CLASS =
-  'h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 text-sm'
 
 type Filter = 'all' | 'active' | 'inactive'
 type V2Filter = 'all' | 'v2' | 'legacy'

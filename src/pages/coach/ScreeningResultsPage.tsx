@@ -25,14 +25,12 @@ import {
   formatMedianSeconds,
 } from '@/lib/screening/results/kpis'
 import { formatDateLongDe } from '@/lib/utils'
+import { SELECT_MD as SELECT_CLASS } from '@/lib/formStyles'
 import type {
   ScreeningItemResult,
   ScreeningTest,
   StudentWithName,
 } from '@/types'
-
-const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm text-[var(--color-text-primary)]'
 
 function formatCompleted(at: string | null): string {
   if (!at) return 'Datum unbekannt'
