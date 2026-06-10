@@ -15,15 +15,13 @@ import {
   addStudentToSession,
 } from '@/lib/supabase/sessions'
 import { formatSessionDate } from '@/lib/datetime'
+import { SELECT_MD as SELECT_CLASS } from '@/lib/formStyles'
 import type {
   Coach,
   CoachingSession,
   SessionStatus,
   StudentWithName,
 } from '@/types'
-
-const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm'
 
 const STATUS_VARIANT: Record<SessionStatus, 'primary' | 'warning' | 'success'> = {
   upcoming: 'primary',
