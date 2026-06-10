@@ -15,10 +15,9 @@ import {
   listActiveAssignments,
   setStudentCoach,
 } from '@/lib/supabase/studentCoach'
+import { SELECT_MD } from '@/lib/formStyles'
+import { cn } from '@/lib/utils'
 import type { Coach, StudentWithName } from '@/types'
-
-const SELECT_CLASS =
-  'h-11 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm sm:w-64'
 
 export function AssignmentsPage(): JSX.Element {
   const [students, setStudents] = useState<StudentWithName[]>([])
@@ -149,7 +148,7 @@ export function AssignmentsPage(): JSX.Element {
                     </div>
                   </div>
                   <select
-                    className={SELECT_CLASS}
+                    className={cn(SELECT_MD, 'w-full sm:w-64')}
                     value={current}
                     disabled={savingId === s.id}
                     onChange={(e) => void change(s.id, e.target.value)}
