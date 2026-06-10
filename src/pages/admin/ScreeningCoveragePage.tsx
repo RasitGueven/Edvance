@@ -18,6 +18,7 @@ import {
   getCell,
   type CoverageStatus,
 } from '@/lib/screening/v2/coverage'
+import { SELECT_SM as SELECT_CLASS } from '@/lib/formStyles'
 import type {
   ScreeningAfb,
   ScreeningItem,
@@ -25,9 +26,6 @@ import type {
   SkillCluster,
   Subject,
 } from '@/types'
-
-const SELECT_CLASS =
-  'h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 text-sm'
 
 const STATUS_LABEL: Record<CoverageStatus, string> = {
   missing: 'fehlt',

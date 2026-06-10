@@ -12,16 +12,12 @@ import {
   getIntakeByStudent,
   updateIntakeSession,
 } from '@/lib/supabase/intake'
+import { SELECT_MD as INPUT_CLS, TEXTAREA_MD as TEXTAREA_CLASS } from '@/lib/formStyles'
 import type {
   IntakeInput,
   IntakeSession,
   StudentWithName,
 } from '@/types'
-
-const INPUT_CLS =
-  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm'
-const TEXTAREA_CLASS =
-  'min-h-[80px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)]'
 
 type FormState = Omit<IntakeInput, 'student_id'> & { known_weak_topics_text: string }
 

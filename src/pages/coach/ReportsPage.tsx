@@ -18,10 +18,8 @@ import {
   listReportsForStudent,
   publishReport,
 } from '@/lib/supabase/parentReports'
+import { SELECT_MD as SELECT_CLASS } from '@/lib/formStyles'
 import type { ParentReport, ParentReportDraft, StudentWithName } from '@/types'
-
-const SELECT_CLASS =
-  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm'
 const TEXTAREA_CLASS =
   'min-h-[90px] w-full resize-y rounded-xl border border-[var(--color-border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--color-primary)] focus:outline-none'
 
