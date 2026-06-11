@@ -56,7 +56,11 @@ Aktueller Gesamtstatus: **🔴 ROT** — 5 Blocker aktiv, kein Main-Merge bis P0
 - U4: Lead-Konvertierung an `provisionStudent()` angebunden
 - U5c: `/screening`-Route + DB-Persistenz, DB-Resume für unterbrochene Diagnosen
 
-**Schnellzugriff-Kacheln** für Schüler/Coach/Eltern-Dashboard hinzugefügt (`0c30186`)
+**Schnellzugriff-Kacheln** (`DashboardTiles.tsx`, 62 Zeilen) für Schüler/Coach/Eltern-Dashboard — wiederverwendbares Grid aus `EdvanceCard`-Kacheln mit React-Router-Links (`0c30186`)
+
+**Gelöscht:** `src/lib/mockData.ts` + `MockSession`/`MockStudent`-Typen aus `src/types/index.ts`
+
+**Screening-Resume:** `src/lib/screening/runtime.ts` — `rebuildRunTasks()` liefert deterministischen Resume aus `generated_test` (Snapshots + Ratings aus DB)
 
 ---
 
@@ -152,7 +156,45 @@ Kumuliert aus Reviews 08.–10.06.2026:
 
 ---
 
-## 7. Kontext-Dateien aktualisiert
+## 7. Geänderte / Gelöschte Dateien (vollständig)
+
+| Datei | Änderungsart | Commit |
+|---|---|---|
+| `src/components/brand/EdvanceLogo.tsx` | Neu (249 Z.) — EdvanceSymbol / EdvanceLogo / EdvanceAppIcon | `9051995` |
+| `src/components/edvance/DashboardTiles.tsx` | Neu (62 Z.) — Schnellzugriff-Kacheln-Komponente | `0c30186` |
+| `src/styles/tokens.css` | Erweitert — levelup-, repair-, accent-light-Tokens | `bb7af96` |
+| `src/styles/globals.css` | Erweitert — Legacy-Aliase, @theme-Mapping, Utility-Klassen | `bb7af96`, `4c921ec` |
+| `src/components/edvance/index.tsx` | Erweitert — EdvanceBadge levelup/repair; ToastBanner levelup | `4c921ec` |
+| `src/components/edvance/EdvanceNavbar.tsx` | Geändert — EdvanceLogo statt App-Icon + Bold-Text | `9051995`, `3cf2c29` |
+| `src/pages/Login.tsx` | Geändert — EdvanceAppIcon statt Platzhalter-E | `9051995` |
+| `index.html` | Erweitert — Space Grotesk Webfont | `3cf2c29` |
+| `public/favicon.svg` | Ersetzt durch echtes Edvance-Favicon | `9051995` |
+| `public/brand/` (5 SVGs) | Neu — Brand-SVG-Assets | `9051995` |
+| `src/pages/demo/ScenarioCelebration.tsx` | Geändert — gradient-levelup + shadow-glow-levelup | `4c921ec` |
+| `src/pages/DesignShowcase.tsx` | Erweitert — Gruppe „Emotionale Momente" | `401ad6c` |
+| `src/pages/coach/CoachDashboard.tsx` | Geändert — MOCK_SESSIONS raus, Echtdaten + DashboardTiles | `f635a35`, `0c30186` |
+| `src/pages/student/ClusterView.tsx` | Geändert — localStorage → `getCompletedTaskIds()` | `b6327d6` |
+| `src/pages/student/StudentDashboard.tsx` | Geändert — XP/Streak aus `student_progress` + DashboardTiles | `c693514`, `0c30186` |
+| `src/pages/parent/ParentDashboard.tsx` | Geändert — echte Kind-Daten + DashboardTiles | `a611e26`, `0c30186` |
+| `src/pages/admin/AdminDashboard.tsx` | Erweitert — provisionStudent + Link zu DiagnosticsPage | `2eb01b7`, `17e8156` |
+| `src/pages/admin/LeadsPage.tsx` | Erweitert — „In Schüler konvertieren" via provisionStudent | `2eb01b7` |
+| `src/pages/admin/DiagnosticsPage.tsx` | Neu (427 Z.) — Admin-Seeding-Oberfläche | `17e8156` |
+| `src/context/DiagnosisContext.tsx` | Geändert — localStorage raus, DB-Mode mit screeningTestId | `77bd4b8`, `6157f5a` |
+| `src/lib/screening/runtime.ts` | Erweitert — `buildRunTasks` / `rebuildRunTasks` für DB-Resume | `77bd4b8` |
+| `src/pages/DiagnosisSession.tsx` | Geändert — /screening-Route, DB-Persistenz, Coach-Rating | `77bd4b8` |
+| `src/pages/DiagnosisResult.tsx` | Geändert — `completeScreeningTest` bei DB-Mode | `77bd4b8` |
+| `src/App.tsx` | Erweitert — /screening, /screening/result, /admin/diagnostics | `77bd4b8`, `17e8156` |
+| `src/lib/supabase/tasks.ts` | Erweitert — `updateTaskDiagnostic` + `createDiagnosticTask` | `2326772` |
+| `src/types/index.ts` | Erweitert — `DiagnosticTaskInput`; MockSession/MockStudent entfernt | `2326772`, `f635a35` |
+| `supabase/functions/provision_student/index.ts` | Refactor — IDs per Destructuring (chat-copy-safe) | `bea0a9c` |
+| `src/lib/mockData.ts` | **Gelöscht** | `f635a35` |
+| `docs/ROADMAP.md` | Aktualisiert — Stand Real-Data-Programm | `0161ae5`, `6157f5a` |
+| `docs/retros/2026-05-16-real-data-program.md` | Neu | `0161ae5` |
+| `docs/retros/2026-05-17-farbsystem-feinschliff.md` | Neu | `401ad6c` |
+
+---
+
+## 8. Kontext-Dateien aktualisiert
 
 - `docs/ROADMAP.md` — Stand nach PR #17 eingetragen (Retro 2026-05-16)
 - `docs/retros/2026-05-16-real-data-program.md` — existiert
