@@ -152,7 +152,7 @@ export function TaskWidgetDemo(): JSX.Element {
           {/* Matching / Zuordnung */}
           <Section
             label="Zuordnung"
-            color="#7c3aed"
+            color="var(--level-purple)"
             question={MATCHING_DEMO.question}
             submitted={matchDone}
             onSubmit={() => pairs.size === MATCHING_DEMO.pairs.length && setMatchDone(true)}
