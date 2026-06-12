@@ -34,7 +34,7 @@ export function MCWidget({ options, selected, onChange, disabled }: Props): JSX.
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold"
               style={{
                 background: active ? 'var(--primary)' : 'var(--primary-pale)',
-                color: active ? '#fff' : 'var(--primary)',
+                color: active ? 'var(--text-inverse)' : 'var(--primary)',
               }}
             >
               {LETTERS[i] ?? i + 1}
