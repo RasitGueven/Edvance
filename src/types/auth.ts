@@ -1,0 +1,8 @@
+// Auth & Role types
+
+export type UserRole = 'student' | 'parent' | 'coach' | 'admin'
+export type Role = UserRole | null
+
+export const THEMES = ['edvance', 'ocean', 'forest', 'sunset'] as const
+export type Theme = (typeof THEMES)[number]
+export type ThemeColors = { primary: string; light: string; dark: string }
