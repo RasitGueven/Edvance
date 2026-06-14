@@ -14,6 +14,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/__tests__/setup.ts'],
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
