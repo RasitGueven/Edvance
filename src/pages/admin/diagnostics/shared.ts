@@ -1,11 +1,11 @@
 import { COGNITIVE_TYPE_LABELS, INPUT_TYPE_LABELS } from '@/lib/taskLabels'
+import { SELECT_SM } from '@/lib/formStyles'
 import type { CognitiveType, InputType } from '@/types'
 
 export const INPUT_TYPES = Object.keys(INPUT_TYPE_LABELS) as InputType[]
 export const COG_TYPES = Object.keys(COGNITIVE_TYPE_LABELS) as CognitiveType[]
 
-export const SELECT_CLASS =
-  'h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-2 text-sm'
+export const SELECT_CLASS = SELECT_SM
 
 export type Edit = {
   is_diagnostic: boolean
