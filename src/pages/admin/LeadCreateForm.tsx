@@ -5,10 +5,8 @@ import { Label } from '@/components/ui/label'
 import { EdvanceCard } from '@/components/edvance'
 import { CLASS_LEVELS, SCHOOL_TYPES, SUBJECTS } from '@/components/edvance/onboarding/constants'
 import { createLead } from '@/lib/supabase/leads'
+import { SELECT_MD as SELECT_CLS } from '@/lib/formStyles'
 import type { LeadGoal, LeadInput, SchoolKind } from '@/types'
-
-const SELECT_CLS =
-  'h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm'
 
 const GOALS: { value: LeadGoal; label: string }[] = [
   { value: 'IMPROVE_GRADES', label: 'Noten verbessern' },
