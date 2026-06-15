@@ -16,6 +16,7 @@ import {
 } from '@/lib/supabase/sessions'
 import { formatSessionDate } from '@/lib/datetime'
 import { SELECT_MD as SELECT_CLASS } from '@/lib/formStyles'
+import { studentSelectLabel } from '@/lib/utils'
 import type {
   Coach,
   CoachingSession,
@@ -125,8 +126,7 @@ function SessionRow({
             <option value="">Schüler zuweisen …</option>
             {available.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.full_name ?? 'Unbenannt'}
-                {s.class_level ? ` · Kl. ${s.class_level}` : ''}
+                {studentSelectLabel(s)}
               </option>
             ))}
           </select>

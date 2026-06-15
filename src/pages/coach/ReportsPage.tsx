@@ -19,6 +19,7 @@ import {
   publishReport,
 } from '@/lib/supabase/parentReports'
 import { SELECT_MD as SELECT_CLASS } from '@/lib/formStyles'
+import { studentSelectLabel } from '@/lib/utils'
 import type { ParentReport, ParentReportDraft, StudentWithName } from '@/types'
 const TEXTAREA_CLASS =
   'min-h-[90px] w-full resize-y rounded-xl border border-[var(--color-border)] bg-card p-3 text-sm leading-relaxed focus:border-[var(--color-primary)] focus:outline-none'
@@ -172,8 +173,7 @@ export function ReportsPage(): JSX.Element {
                 <option value="">–</option>
                 {students.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.full_name ?? 'Unbenannt'}
-                    {s.class_level ? ` · Kl. ${s.class_level}` : ''}
+                    {studentSelectLabel(s)}
                   </option>
                 ))}
               </select>
