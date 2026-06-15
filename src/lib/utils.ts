@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import type { StudentWithName } from '@/types'
 
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
@@ -23,4 +24,9 @@ export function formatDateLongDe(date: Date = new Date()): string {
     month: 'long',
     year: 'numeric',
   }).format(date)
+}
+
+/** Einheitliches Anzeigeformat für Schüler-Auswahllisten. */
+export function studentSelectLabel(s: StudentWithName): string {
+  return `${s.full_name ?? 'Unbenannt'}${s.class_level ? ` · Kl. ${s.class_level}` : ''}`
 }

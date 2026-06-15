@@ -24,7 +24,7 @@ import {
   computePendingByCluster,
   formatMedianSeconds,
 } from '@/lib/screening/results/kpis'
-import { formatDateLongDe } from '@/lib/utils'
+import { formatDateLongDe, studentSelectLabel } from '@/lib/utils'
 import { SELECT_MD as SELECT_CLASS } from '@/lib/formStyles'
 import type {
   ScreeningItemResult,
@@ -93,8 +93,6 @@ export function ScreeningResultsPage(): JSX.Element {
     })
   }
 
-  const studentLabel = (s: StudentWithName): string =>
-    `${s.full_name ?? 'Unbenannt'}${s.class_level ? ` · Kl. ${s.class_level}` : ''}`
 
   useEffect(() => {
     if (!selectedTestId) {
@@ -160,7 +158,7 @@ export function ScreeningResultsPage(): JSX.Element {
                 <option value="">– Schüler:in wählen –</option>
                 {students.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {studentLabel(s)}
+                    {studentSelectLabel(s)}
                   </option>
                 ))}
               </select>

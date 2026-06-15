@@ -13,6 +13,7 @@ import {
   updateIntakeSession,
 } from '@/lib/supabase/intake'
 import { SELECT_MD as INPUT_CLS, TEXTAREA_MD as TEXTAREA_CLASS } from '@/lib/formStyles'
+import { studentSelectLabel } from '@/lib/utils'
 import type {
   IntakeInput,
   IntakeSession,
@@ -151,8 +152,6 @@ export function IntakePage(): JSX.Element {
     loadSessions(studentId)
   }
 
-  const studentLabel = (s: StudentWithName): string =>
-    `${s.full_name ?? 'Unbenannt'}${s.class_level ? ` · Kl. ${s.class_level}` : ''}`
 
   return (
     <div className="min-h-screen bg-background">
@@ -193,7 +192,7 @@ export function IntakePage(): JSX.Element {
                 <option value="">– Schüler wählen –</option>
                 {students.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {studentLabel(s)}
+                    {studentSelectLabel(s)}
                   </option>
                 ))}
               </select>
