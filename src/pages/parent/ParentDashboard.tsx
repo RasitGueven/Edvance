@@ -9,6 +9,7 @@ import { getStudentProgress } from '@/lib/supabase/progress'
 import { listReportsForStudent } from '@/lib/supabase/parentReports'
 import { listUpcomingSessionsForStudent } from '@/lib/supabase/sessions'
 import { formatSessionDate } from '@/lib/datetime'
+import { studentSelectLabel } from '@/lib/utils'
 import type {
   CoachingSession,
   ParentReport,
@@ -116,8 +117,7 @@ export function ParentDashboard(): JSX.Element {
             <EdvanceCard className="flex flex-col gap-4 p-6">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-base font-semibold text-[var(--color-text-primary)]">
-                  {student.full_name ?? 'Unbenannt'}
-                  {student.class_level ? ` · Kl. ${student.class_level}` : ''}
+                  {studentSelectLabel(student)}
                 </span>
                 <EdvanceBadge variant="primary">
                   Level {progress?.level ?? 1}
