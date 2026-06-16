@@ -45,14 +45,13 @@ export function BossChallengeModal({
       aria-modal="true"
     >
       <div
-        className="w-full max-w-md rounded-[var(--radius-xl)] p-8 shadow-xl animate-scale-in text-center relative overflow-hidden"
+        className={`w-full max-w-md rounded-[var(--radius-xl)] p-8 shadow-xl animate-scale-in text-center relative overflow-hidden${isShadow ? ' text-white/60' : ' text-[var(--color-bg-surface)]'}`}
         style={{
           background: isShadow
             ? 'linear-gradient(120deg, var(--color-moment-boss-shadow-start), var(--color-moment-boss-shadow-end))'
             : 'linear-gradient(120deg, var(--color-moment-boss-bg-start), var(--color-moment-boss-bg-end))',
           backgroundSize: '200% 200%',
           animation: 'boss-shift 4s ease-in-out infinite',
-          color: isShadow ? 'rgba(255,255,255,0.6)' : 'var(--color-bg-surface)',
           filter: isShadow ? 'saturate(0.4)' : undefined,
         }}
         onClick={(e) => e.stopPropagation()}
@@ -101,7 +100,7 @@ function Stars(): JSX.Element {
             width: s.size,
             height: s.size,
             animationDelay: `${s.delay}ms`,
-            filter: 'drop-shadow(0 0 6px rgba(212, 168, 67, 0.4))',
+            filter: 'drop-shadow(0 0 6px color-mix(in srgb, var(--color-gold-altgold) 40%, transparent))',
           }}
           fill="currentColor"
         />

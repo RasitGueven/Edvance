@@ -49,7 +49,7 @@ function StatPanel({
       <div
         className="flex h-12 w-12 flex-none items-center justify-center rounded-[var(--radius-lg)]"
         style={{
-          backgroundColor: `color-mix(in srgb, ${color} 14%, white)`,
+          backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
           color,
         }}
       >
