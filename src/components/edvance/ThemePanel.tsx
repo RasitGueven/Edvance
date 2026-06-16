@@ -1,5 +1,4 @@
-import { THEMES, THEME_PREVIEW } from '@/context/ThemeContext'
-import { useTheme } from '@/hooks/useTheme'
+import { THEMES, THEME_PREVIEW, useThemeContext } from '@/context/ThemeContext'
 import { cn } from '@/lib/utils'
 import type { Theme } from '@/types'
 
@@ -9,7 +8,7 @@ export function ThemePanel(): JSX.Element | null {
 }
 
 function ThemePanelInner(): JSX.Element {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useThemeContext()
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border bg-card px-3 py-2 shadow-lg">
