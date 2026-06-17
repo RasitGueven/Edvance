@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { EdvanceAppIcon } from '@/components/brand/EdvanceLogo'
+import { EdvanceCard } from '@/components/edvance'
 import type { UserRole } from '@/types'
 
 const ROLE_ROUTES: Record<UserRole, string> = {
@@ -54,7 +55,7 @@ export function Login(): JSX.Element {
 
       {/* Glass-Card */}
       <div className="relative w-full max-w-md">
-        <div className="glass-card rounded-[var(--radius-xl)] shadow-xl p-8">
+        <EdvanceCard variant="glass" className="rounded-[var(--radius-xl)] shadow-xl p-8">
           {/* Logo + Headline */}
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="relative">
@@ -121,7 +122,7 @@ export function Login(): JSX.Element {
             <Sparkles className="h-3.5 w-3.5" />
             <span>Klasse 5 – 13 · Köln · Pre-Launch</span>
           </div>
-        </div>
+        </EdvanceCard>
       </div>
     </main>
   )
