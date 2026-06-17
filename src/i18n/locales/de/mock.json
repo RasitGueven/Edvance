@@ -6,6 +6,7 @@
       "backToHub": "Zurück zum Hub",
       "next": "Weiter",
       "close": "Schließen",
+      "exit": "Mock verlassen",
       "level": "Level {{level}}",
       "xpToNext": "noch {{xp}} XP",
       "xpUnit": "XP"
