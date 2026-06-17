@@ -152,7 +152,6 @@ export function IntakePage(): JSX.Element {
     loadSessions(studentId)
   }
 
-
   return (
     <div className="min-h-screen bg-background">
       <EdvanceNavbar subtitle="Erstgespräch" sticky />

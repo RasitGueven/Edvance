@@ -93,7 +93,6 @@ export function ScreeningResultsPage(): JSX.Element {
     })
   }
 
-
   useEffect(() => {
     if (!selectedTestId) {
       setResults([])
