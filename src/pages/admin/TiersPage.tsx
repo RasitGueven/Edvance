@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { EdvanceCard, EdvanceBadge, EmptyState, LoadingPulse } from '@/components/edvance'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
+import { TEXTAREA_MD } from '@/lib/formStyles'
 import { createTier, listAllTiers, updateTier } from '@/lib/supabase/tiers'
 import type { TierInput, TierPlan } from '@/types'
 
@@ -140,7 +141,7 @@ export function TiersPage(): JSX.Element {
             <Label htmlFor="t-feat">Features (eine pro Zeile)</Label>
             <textarea
               id="t-feat"
-              className="min-h-[96px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)]"
+              className={`${TEXTAREA_MD} min-h-[96px]`}
               value={form.features_text}
               onChange={(e) => setForm({ ...form, features_text: e.target.value })}
             />
