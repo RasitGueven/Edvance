@@ -93,6 +93,7 @@ export type {
   ScreeningItemResultInput,
   ScreeningItemRating,
   ScreeningItemRatingInput,
+  StudentFocusArea,
 } from './screening'
 
 export type {

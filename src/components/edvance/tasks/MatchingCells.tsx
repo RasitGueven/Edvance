@@ -40,8 +40,6 @@ export function LeftCell({
   return (
     <div
       ref={composedRef}
-      role="button"
-      tabIndex={0}
       onClick={onTap}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

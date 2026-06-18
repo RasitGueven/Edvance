@@ -197,8 +197,6 @@ function DraggableChip({
   return (
     <div
       ref={setNodeRef}
-      role="button"
-      tabIndex={0}
       aria-label={chip.label}
       onClick={onTap}
       onKeyDown={(e) => {

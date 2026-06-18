@@ -44,12 +44,15 @@ export type ScreeningInputType =
   | 'MATCHING'
   | 'STEPS_FINAL'
   | 'OPEN'
+  | 'CLOZE_DND'
+  | 'TABLE_LABEL'
 export type ScreeningCheckType =
   | 'mc_index'
   | 'numeric'
   | 'matching_set'
   | 'normalized'
   | 'manual'
+  | 'slot_map'
 
 export type ScreeningItem = {
   id: string
@@ -124,3 +127,16 @@ export type ScreeningItemRatingInput = Omit<
   ScreeningItemRating,
   'id' | 'created_at'
 >
+
+// Coach-/Admin-Schwerpunkt pro Schüler:in (Tabelle student_focus_areas).
+// Fließt gewichtet in die Adaptive-Engine (weightedTopics).
+export type StudentFocusArea = {
+  id: string
+  created_at: string
+  student_id: string
+  cluster_id: string
+  coach_id: string | null
+  source: string
+  note: string | null
+  active: boolean
+}

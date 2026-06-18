@@ -48,6 +48,8 @@ function mk(
     skill_label: `${topic} Skill`,
     level,
     curriculum_seq: 1,
+    afb: null,
+    phase: null,
     input_type: 'NUMERIC',
     prompt: `Wert ${value}?`,
     payload: null,
