@@ -16,6 +16,7 @@ import type {
   CognitiveType,
   SkillCluster,
 } from '@/types'
+import { TEXTAREA_MD } from '@/lib/formStyles'
 import { COG_TYPES, INPUT_TYPES, SELECT_CLASS } from './shared'
 
 export function NewTaskForm({
@@ -167,7 +168,7 @@ export function NewTaskForm({
         <Label htmlFor="d-q">Frage</Label>
         <textarea
           id="d-q"
-          className="min-h-[80px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+          className={TEXTAREA_MD}
           value={form.question}
           onChange={(e) => setForm({ ...form, question: e.target.value })}
         />
@@ -176,7 +177,7 @@ export function NewTaskForm({
         <Label htmlFor="d-s">Lösung</Label>
         <textarea
           id="d-s"
-          className="min-h-[60px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+          className={`${TEXTAREA_MD} min-h-[60px]`}
           value={form.solution ?? ''}
           onChange={(e) => setForm({ ...form, solution: e.target.value })}
         />
