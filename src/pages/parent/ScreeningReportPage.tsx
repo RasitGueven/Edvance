@@ -188,14 +188,14 @@ function ChildReportCard({
           </div>
 
           {test?.coach_note && (
-            <div className="rounded-xl border border-[var(--color-primary-light)] bg-[var(--color-primary-light)] p-4">
+            <EdvanceCard variant="blue-pale" className="flex flex-col gap-2 p-4">
               <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
                 Notiz vom Coach
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-primary)]">
+              <p className="text-sm leading-relaxed text-[var(--color-text-primary)]">
                 {test.coach_note}
               </p>
-            </div>
+            </EdvanceCard>
           )}
         </>
       )}
