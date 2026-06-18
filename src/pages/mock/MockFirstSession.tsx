@@ -1,7 +1,7 @@
 import { useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EdvanceNavbar } from '@/components/edvance/EdvanceNavbar'
-import { StreakPill, XPBar } from '@/components/edvance'
+import { EdvanceCard, StreakPill, XPBar } from '@/components/edvance'
 import { CheckInStep, type CheckInAnswers } from './firstSession/CheckInStep'
 import { PlanStep } from './firstSession/PlanStep'
 import { TaskStep } from './firstSession/TaskStep'
@@ -79,14 +79,14 @@ export function MockFirstSession(): JSX.Element {
             </div>
           </div>
 
-          <div className="glass-card p-5">
+          <EdvanceCard variant="glass" className="p-5">
             <XPBar
               current={totalXpAfter % XP_PER_LEVEL}
               max={XP_PER_LEVEL}
               level={MOCK_STUDENT_FIRST_SESSION.startLevel}
               levelName={`Level ${MOCK_STUDENT_FIRST_SESSION.startLevel}`}
             />
-          </div>
+          </EdvanceCard>
         </div>
       </section>
 
