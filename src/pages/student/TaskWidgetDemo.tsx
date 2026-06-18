@@ -5,7 +5,7 @@ import { MatchingWidget, type MatchPairs } from '@/components/edvance/tasks/Matc
 import { StepsWidget } from '@/components/edvance/tasks/StepsWidget'
 import { DrawCanvas } from '@/components/edvance/DrawCanvas'
 import { MathToolbar } from '@/components/edvance/MathToolbar'
-import { Card, CardContent } from '@/components/ui/card'
+import { EdvanceCard } from '@/components/edvance/EdvanceCard'
 import type { InputType } from '@/types'
 
 const MC_DEMO = {
@@ -89,32 +89,30 @@ function Section({
         )}
       </div>
 
-      <Card>
-        <CardContent className="pt-5">
-          <p className="mb-4 text-sm font-medium leading-relaxed text-foreground">{question}</p>
-          {children}
+      <EdvanceCard className="p-5">
+        <p className="mb-4 text-sm font-medium leading-relaxed text-foreground">{question}</p>
+        {children}
 
-          <div className="mt-4 flex gap-2">
-            {!submitted && (
-              <button
-                type="button"
-                onClick={onSubmit}
-                className="rounded-xl px-4 py-2 text-sm font-semibold text-white"
-                style={{ background: color }}
-              >
-                Antwort einreichen
-              </button>
-            )}
+        <div className="mt-4 flex gap-2">
+          {!submitted && (
             <button
               type="button"
-              onClick={onReset}
-              className="rounded-xl border-2 border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-muted hover:border-[var(--color-primary-light)]"
+              onClick={onSubmit}
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white"
+              style={{ background: color }}
             >
-              Reset
+              Antwort einreichen
             </button>
-          </div>
-        </CardContent>
-      </Card>
+          )}
+          <button
+            type="button"
+            onClick={onReset}
+            className="rounded-xl border-2 border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-muted hover:border-[var(--color-primary-light)]"
+          >
+            Reset
+          </button>
+        </div>
+      </EdvanceCard>
     </div>
   )
 }
