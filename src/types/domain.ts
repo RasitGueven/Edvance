@@ -132,3 +132,13 @@ export type StudentCoach = {
   assigned_at: string
   active: boolean
 }
+
+export type StudentFocusArea = {
+  id: string
+  created_at: string
+  student_id: string
+  cluster_id: string | null
+  topic: string | null
+  note: string | null
+  active: boolean
+}

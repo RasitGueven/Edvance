@@ -34,7 +34,7 @@ export function estimateLevel(log: AdaptiveAnswerLog[]): 0 | ScreeningLevel {
   }
   // Downgrade-Regel: Wenn die Mastery auf dem ermittelten Level < 50 %, ist
   // der Schüler dort noch wackelig — eine Stufe runter.
-  if (best > 0 && masteryOnLevel(log, best) < 0.5) {
+  if (best > 0 && masteryOnLevel(log, best as ScreeningLevel) < 0.5) {
     best = (best - 1) as 0 | ScreeningLevel
   }
   return best

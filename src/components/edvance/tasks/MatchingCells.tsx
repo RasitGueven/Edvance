@@ -40,8 +40,6 @@ export function LeftCell({
   return (
     <div
       ref={composedRef}
-      role="button"
-      tabIndex={0}
       onClick={onTap}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -51,6 +49,8 @@ export function LeftCell({
       }}
       {...listeners}
       {...attributes}
+      role="button"
+      tabIndex={0}
       style={style}
       className={`${CELL_BASE} cursor-grab active:cursor-grabbing ${
         isArmed

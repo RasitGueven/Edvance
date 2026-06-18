@@ -44,7 +44,7 @@ export async function buildAdaptiveConfigForStudent(
     getStudent(studentId),
     listFocusAreasForStudent(studentId, { active: true }),
   ])
-  const weightedClusterIds = (foci ?? []).map((f) => f.cluster_id)
+  const weightedClusterIds = (foci ?? []).map((f) => f.cluster_id).filter((id): id is string => id !== null)
   return {
     classLevel: student?.class_level ?? null,
     config: { weightedClusterIds },

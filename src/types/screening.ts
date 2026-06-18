@@ -44,11 +44,14 @@ export type ScreeningInputType =
   | 'MATCHING'
   | 'STEPS_FINAL'
   | 'OPEN'
+  | 'CLOZE_DND'
+  | 'TABLE_LABEL'
 export type ScreeningCheckType =
   | 'mc_index'
   | 'numeric'
   | 'matching_set'
   | 'normalized'
+  | 'slot_map'
   | 'manual'
 
 export type ScreeningItem = {

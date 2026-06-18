@@ -58,6 +58,8 @@ function mk(
     explanation: null,
     source: 'sim',
     active: true,
+    afb: null,
+    phase: null,
   }
 }
 

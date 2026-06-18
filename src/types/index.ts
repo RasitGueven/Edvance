@@ -42,6 +42,7 @@ export type {
   SubscriptionStatus,
   StudentSubscription,
   StudentCoach,
+  StudentFocusArea,
 } from './domain'
 
 export type {
